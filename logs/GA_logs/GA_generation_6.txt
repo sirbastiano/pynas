@@ -1,0 +1,21 @@
+Individual 0 - Genes: ['Ldo08arn1', 'Pa2', 'Lne6arn1', 'Uf2mnearest', 'S1', 'LDd0.35n1', 'HS'], Fitness: 16.255444060913963
+Individual 1 - Genes: ['LRr3agn1', 'Pa2', 'Lme4arn1', 'Uf2mnearest', 'S1', 'Lbo09k3s1p1arn1', 'HS'], Fitness: 16.2182717672332
+Individual 2 - Genes: ['LRr2agn1', 'PM2', 'LDd0.26n1', 'Uf2mnearest', 'S0', 'LDd0.13n1', 'HS'], Fitness: 16.093921015078667
+Individual 3 - Genes: ['Lne5arn1', 'Pa2', 'Ldo05arn1', 'Uf2mnearest', 'S0', 'Lne6arn1', 'HS'], Fitness: 16.000707071144735
+Individual 4 - Genes: ['Lne4agn1', 'PM2', 'Lme4arn1', 'Uf2mnearest', 'S1', 'LDd0.31n1', 'HS'], Fitness: 15.78427519518528
+Individual 5 - Genes: ['Lne6arn1', 'PM2', 'LDd0.28n1', 'Uf2mnearest', 'S0', 'Lbo11k3s1p1agn1', 'HS'], Fitness: 15.67921423295867
+Individual 6 - Genes: ['Lne6arn1', 'Pa2', 'Lne6agn1', 'Uf2mnearest', 'S0', 'Ldo06agn1', 'HS'], Fitness: 15.355999284180406
+Individual 7 - Genes: ['LDd0.13n1', 'PM2', 'Ldo06arn1', 'Uf2mnearest', 'S0', 'Lne5arn1', 'HS'], Fitness: 15.22859959465252
+Individual 8 - Genes: ['Lbo05k3s1p1arn1', 'Pa2', 'Lne3arn1', 'PM2', 'LRr4agn1', 'Uf2mnearest', 'S1', 'LRr3agn1', 'Uf2mnearest', 'S1', 'Lco04k3s1p1agn1', 'HS'], Fitness: 15.108609904672656
+Individual 9 - Genes: ['Ldo07arn1', 'Pa2', 'Lme5agn1', 'Uf2mnearest', 'S2', 'Ldo08agn1', 'HS'], Fitness: 13.175543848904933
+Individual 10 - Genes: ['LRr2arn1', 'Pa2', 'Lme4arn1', 'PM2', 'LRr2agn1', 'Uf2mnearest', 'S1', 'Lne5arn1', 'Uf2mnearest', 'S0', 'LRr3agn1', 'HS'], Fitness: 12.727518767058289
+Individual 11 - Genes: ['Lne3agn1', 'Pa2', 'LDd0.31n1', 'PM2', 'Lco12k3s1p1agn1', 'Uf2mnearest', 'S1', 'LDd0.31n1', 'Uf2mnearest', 'S0', 'Ldo07arn1', 'HS'], Fitness: 9.93578099910836
+Individual 12 - Genes: ['Ldo06agn1', 'Pa2', 'LDd0.31n1', 'PM2', 'LRr2agn1', 'Uf2mnearest', 'S0', 'LDd0.31n1', 'Uf2mnearest', 'S0', 'Lco09k3s1p1agn1', 'HS'], Fitness: 7.667649173817157
+Individual 13 - Genes: ['LDd0.30n1', 'Pa2', 'Lbo04k3s1p1agn1', 'PM2', 'Lco04k3s1p1agn1', 'Uf2mnearest', 'S0', 'Ldo08arn1', 'Uf2mnearest', 'S0', 'LRr2agn1', 'HS'], Fitness: -inf
+Individual 14 - Genes: ['Ldo06agn1', 'Pa2', 'LDd0.31n1', 'PM2', 'Lco12k3s1p1agn1', 'Uf2mnearest', 'S1', 'Lco04k3s1p1arn1', 'Uf2mnearest', 'S0', 'Lco09k3s1p1agn1', 'HS'], Fitness: -inf
+Individual 15 - Genes: ['Lbo11k3s1p1agn1', 'PM2', 'Lco11k3s1p1agn1', 'PM2', 'Lbo09k3s1p1agn1', 'PM2', 'Lbo09k3s1p1arn1', 'Uf2mnearest', 'S0', 'Lne5arn1', 'Uf2mnearest', 'S0', 'Leo05k3s1p1arn1', 'Uf2mnearest', 'S0', 'Lme6agn1', 'HS'], Fitness: -inf
+Individual 16 - Genes: ['Ldo12agn1', 'Pa2', 'Leo05k3s1p1agn1', 'Pa2', 'Lbo05k3s1p1arn1', 'Pa2', 'Ldo12agn1', 'Uf2mnearest', 'S2', 'Lbo05k3s1p1arn1', 'Uf2mnearest', 'S1', 'Leo05k3s1p1agn1', 'Uf2mnearest', 'S0', 'Lco04k3s1p1arn1', 'HS'], Fitness: -inf
+Individual 17 - Genes: ['Leo10k3s1p1agn1', 'Pa2', 'Ldo09arn1', 'Uf2mnearest', 'S0', 'Leo10k3s1p1agn1', 'HS'], Fitness: -inf
+Individual 18 - Genes: ['Lco09k3s1p1agn1', 'Pa2', 'LRr3arn1', 'Pa2', 'Lco12k3s1p1agn1', 'Uf2mnearest', 'S1', 'LDd0.31n1', 'Uf2mnearest', 'S0', 'Leo12k3s1p1agn1', 'HS'], Fitness: -inf
+Individual 19 - Genes: ['Ldo08arn1', 'Pa2', 'Lco10k3s1p1agn1', 'Uf2mnearest', 'S0', 'Ldo08arn1', 'HS'], Fitness: -inf
+Historical Fittest individual - Genes: Lne5arn1EPa2ELdo05arn1EUf2mnearestES0ELne6arn1EHSEE, Fitness: 16.64895673350849
