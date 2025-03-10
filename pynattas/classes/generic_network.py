@@ -59,7 +59,7 @@ class GenericNetwork(nn.Module):
 
         current_channels = input_channels
         current_height, current_width = input_height, input_width
-        print(f"In the init function of Generic Network.py, here the value of parsed layers is: {parsed_layers}")
+        # print(f"In the init function of Generic Network.py, here the value of parsed layers is: {parsed_layers}")
         
         total_params = 0
         max_params = 100000000  # 100 million parameter threshold
@@ -67,10 +67,10 @@ class GenericNetwork(nn.Module):
         for idx, layer in enumerate(parsed_layers):
             layer_type = layer['layer_type']
             
-            print(f"Parsing layer type in generic_network: {layer_type}, Full Layer: {layer}")  # Debug print
+            # print(f"Parsing layer type in generic_network: {layer_type}, Full Layer: {layer}")  # Debug print
 
             if layer_type == 'ConvAct':
-                print("Parsing ConvAct")
+                # print("Parsing ConvAct")
                 kernel_size = int(layer.get(
                     'kernel_size',
                     config['ConvAct']['default_kernel_size']
@@ -102,10 +102,10 @@ class GenericNetwork(nn.Module):
                 current_height = ((current_height - kernel_size + 2 * padding) // stride) + 1
                 current_width = ((current_width - kernel_size + 2 * padding) // stride) + 1
                 
-                print("Parsed ConvAct without error")
+                # print("Parsed ConvAct without error")
 
             elif layer_type == 'ConvBnAct':
-                print("Parsing ConvBnAct")
+                # print("Parsing ConvBnAct")
                 kernel_size = int(layer.get(
                     'kernel_size',
                     config['ConvBnAct']['default_kernel_size']
@@ -137,10 +137,10 @@ class GenericNetwork(nn.Module):
                 current_height = ((current_height - kernel_size + 2 * padding) // stride) + 1
                 current_width = ((current_width - kernel_size + 2 * padding) // stride) + 1
                 
-                print("Parsed ConvBnAct without error")
+                # print("Parsed ConvBnAct without error")
 
             elif layer_type == 'ConvSE':
-                print("Parsing ConvSE")
+                # print("Parsing ConvSE")
                 kernel_size = int(layer.get(
                     'kernel_size',
                     config['ConvSE']['default_kernel_size']
@@ -172,10 +172,10 @@ class GenericNetwork(nn.Module):
                 current_height = ((current_height - kernel_size + 2 * padding) // stride) + 1
                 current_width = ((current_width - kernel_size + 2 * padding) // stride) + 1
                 
-                print("Parsed ConvSE without error")
+                # print("Parsed ConvSE without error")
 
             elif layer_type == 'MBConv':
-                print("Parsing MBConv")
+                # print("Parsing MBConv")
                 # Extracting MBConv parameters
                 expansion_factor = int(layer.get(
                     'expansion_factor',
@@ -199,10 +199,10 @@ class GenericNetwork(nn.Module):
                 current_height = current_height
                 current_width = current_width
                 
-                print("Parsed MBConv without error")
+                # print("Parsed MBConv without error")
 
             elif layer_type == 'MBConvNoRes':
-                print("Parsing MBConvNoRes")
+                # print("Parsing MBConvNoRes")
                 # Extracting MBConv parameters
                 expansion_factor = int(layer.get(
                     'expansion_factor',
@@ -226,10 +226,10 @@ class GenericNetwork(nn.Module):
                 current_height = current_height
                 current_width = current_width
                 
-                print("Parsed MBConvNoRes without error")
+                # print("Parsed MBConvNoRes without error")
             
             elif layer_type == 'CSPConvBlock':
-                print("Parsing CSPConvBlock")
+                # print("Parsing CSPConvBlock")
                 # Extracting CSPBlock parameters
                 out_channels_coeff = float(layer.get(
                     'out_channels_coefficient',
@@ -253,7 +253,7 @@ class GenericNetwork(nn.Module):
                 
 
             elif layer_type == 'CSPMBConvBlock':
-                print("Parsing CSPMBConvBlock")
+                # print("Parsing CSPMBConvBlock")
                 # Extracting CSPBlock parameters
                 out_channels_coeff = float(layer.get(
                     'out_channels_coefficient',
@@ -283,10 +283,10 @@ class GenericNetwork(nn.Module):
                 )
                 current_channels = out_channels
                 
-                print("Parsed CSPMBConvBlock without error")
+                # print("Parsed CSPMBConvBlock without error")
 
             elif layer_type == 'DenseNetBlock':
-                print("Parsing DenseNetBlock")
+                # print("Parsing DenseNetBlock")
                 out_channels_coeff = float(layer.get(
                     'out_channels_coefficient',
                     config['DenseNetBlock']['default_out_channels_coefficient']
@@ -303,10 +303,10 @@ class GenericNetwork(nn.Module):
                 current_height = current_height
                 current_width = current_width
                 
-                print("Parsed DenseNetBlock without error")
+                # print("Parsed DenseNetBlock without error")
 
             elif layer_type == 'ResNetBlock':
-                print("Parsing ResNetBlock")
+                # print("Parsing ResNetBlock")
                 out_channels_coeff = float(layer.get(
                     'out_channels_coefficient',
                     config['ResNetBlock']['default_out_channels_coefficient']
@@ -326,12 +326,12 @@ class GenericNetwork(nn.Module):
                 current_channels = current_channels
                 current_height = current_height
                 current_width = current_width
-                print("Parsed ResNetBlock without error")
+                # print("Parsed ResNetBlock without error")
                 
                 # Adding the Upsampling, regoin start
                 
             elif layer_type == 'Upsample':
-                print("Parsing Upsample")
+                # print("Parsing Upsample")
                 scale_factor = float(layer.get(
                     'scale_factor',
                     config['Upsample']['default_scale_factor']
@@ -342,20 +342,20 @@ class GenericNetwork(nn.Module):
                 current_channels = current_channels
                 current_height = current_height * scale_factor
                 current_width = current_width * scale_factor
-                print("Parsed Upsample without error")  
+                # print("Parsed Upsample without error")  
  
             elif layer_type == 'SkipConnection':
-                print("Parsing SkipConnection")
+                # print("Parsing SkipConnection")
                 skip_index = idx
                 self.skip_indices.append(idx)
                 self.skip_connections[skip_index] = idx
-                print("Parsed Skip Connection withour error")
+                # print("Parsed Skip Connection withour error")
                 continue
                                     
                 # Region end
 
             elif layer_type == 'AvgPool':
-                print("Parsing AvgPool")
+                # print("Parsing AvgPool")
                 kernel_size = int(layer.get(
                     'kernel_size',
                     config['AvgPool']['default_kernel_size']
@@ -370,10 +370,10 @@ class GenericNetwork(nn.Module):
                 current_channels = current_channels
                 current_height = ((current_height - kernel_size) // stride) + 1
                 current_width = ((current_width - kernel_size) // stride) + 1
-                print("Parsed AvgPool without error")
+                # print("Parsed AvgPool without error")
 
             elif layer_type == 'MaxPool':
-                print("Parsing MaxPool")
+                # print("Parsing MaxPool")
                 kernel_size = int(layer.get(
                     'kernel_size',
                     config['MaxPool']['default_kernel_size']
@@ -388,36 +388,36 @@ class GenericNetwork(nn.Module):
                 current_channels = current_channels
                 current_height = ((current_height - kernel_size) // stride) + 1
                 current_width = ((current_width - kernel_size) // stride) + 1
-                print("Parsed MaxPool without error")
+                # print("Parsed MaxPool without error")
                 
                 
             elif layer_type == 'Dropout':
-                print("Parsing Dropout")
+                # print("Parsing Dropout")
                 dropout_rate = float(layer.get(
                     'dropout_rate',
                     config['Dropout']['default_dropout_rate']
                 ))
 
                 layer = nn.Dropout(p=dropout_rate)
-                print("Parsed Dropout without error")
+                # print("Parsed Dropout without error")
                 
                 
             elif layer_type == 'ClassificationHead':
-                print("Parsing ClassificationHead")
+                # print("Parsing ClassificationHead")
                 # Calculate the input size for ClassificationHead
                 num_classes = int(config['ClassificationHead']['num_classes'])
                 input_size_for_head = current_height * current_width * current_channels
                 
                 
                 layer = heads.ClassificationHead(input_size=input_size_for_head, num_classes=num_classes)
-                print("Parsed ClassificationHead without error")
+                # print("Parsed ClassificationHead without error")
                 
                             
             elif layer_type == 'SegmentationHead':
-                print("Parsing SegmentationHead")
+                # print("Parsing SegmentationHead")
                 num_layers = int(layer.get('num_layers', config['SegmentationHead']['default_num_layers']))
                 layer = heads.SegmentationHead(input_channels=current_channels, num_classes=num_classes, num_layers=num_layers)
-                print("Parsed SegmentationHead without error")
+                # print("Parsed SegmentationHead without error")
 
 
             else:
@@ -438,17 +438,17 @@ class GenericNetwork(nn.Module):
     @staticmethod
     def get_activation_fn(activation=activations.GELU):
         if activation == 'ReLU':
-            print("Parsing ReLU")
+            # print("Parsing ReLU")
             return activations.ReLU
-            print("Parsed ReLU without error")
+            # print("Parsed ReLU without error")
         elif activation == 'GELU':
-            print("Parsing GELU")
+            # print("Parsing GELU")
             return activations.GELU
         elif activation == 'Softmax':
-            print("Parsing Softmax")
+            # print("Parsing Softmax")
             return activations.Softmax
         elif activation == 'Sigmoid':
-            print("Parsing Sigmoid")
+            # print("Parsing Sigmoid")
             return activations.Sigmoid
             
         # Add more activation functions as needed

@@ -16,10 +16,11 @@ def gene_mutation(child, mutation_probability):
     """
     child = child.copy()
     
+    print("Mutation started")
+    
     for gene_index in range(len(child.chromosome)):
         rnd = random.random()
         if rnd <= mutation_probability:
-            print("Mutation!")
             gene = child.chromosome[gene_index]
             # Mutate based on the type of gene
             if gene[0]=='L':  # Backbone layers
