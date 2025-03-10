@@ -1,7 +1,7 @@
 import torch.nn as nn
 from .utils import Dropout
 import torch.nn.functional as F
-
+import torch
 
 class ClassificationHead(nn.Sequential):
     """

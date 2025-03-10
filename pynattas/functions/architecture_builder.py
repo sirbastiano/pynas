@@ -14,12 +14,12 @@ def get_task_type():
     task_type = config['Task']['type_head']
     return task_type
 
-def generate_random_architecture_code(max_layers):
+def generate_random_architecture_code(min_layers, max_layers):
     architecture_code = ""
     encoder_layers = []
     pooling_factors = []  # To store pooling factors
 
-    for _ in range(random.randint(1, max_layers)):
+    for _ in range(random.randint(min_layers, max_layers)):
         layer_code = generate_layer_code()
         encoder_layers.append(layer_code)
         architecture_code += layer_code + "E"
@@ -39,7 +39,9 @@ def generate_random_architecture_code(max_layers):
         architecture_code += decoder_layers
 
     # Add the head
-    architecture_code += generate_head_code() + "E"
+    # Removed head generation for now
+    # TODO: Add head generation
+    # architecture_code += generate_head_code() + "E"
 
     # Insert ender
     architecture_code += "E"

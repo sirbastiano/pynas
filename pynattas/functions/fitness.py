@@ -9,13 +9,22 @@ import os
 import time
 from datetime import datetime
 from .. import classes
-from datasets.L0_thraws_classifier.dataset import SentinelDataset, SentinelDataModule
-from datasets.Phisat2SimulatedData.segmentation_dataset import SegmentationDataset, SegmentationDataModule
-from datasets.wake_classifier.dataset import xAIWakesDataModule
+# from datasets.L0_thraws_classifier.dataset import SentinelDataset, SentinelDataModule
+from datasets.RawClassifier.loader import RawClassifierDataset, RawClassifierDataModule
+# from datasets.Phisat2SimulatedData.segmentation_dataset import SegmentationDataset, SegmentationDataModule
+# from datasets.wake_classifier.dataset import xAIWakesDataModule
 import torch.multiprocessing as mp
 
 
 mp.set_start_method('fork', force=True)
+
+
+DataClass = RawClassifierDataset
+DataModuleClass = RawClassifierDataModule
+
+
+SegmentationDataset = None
+SegmentationDataModule = None
 
 def compute_fitness_value(parsed_layers, log_learning_rate=None, batch_size=None, is_final=False):
     """
@@ -66,18 +75,21 @@ def compute_fitness_value(parsed_layers, log_learning_rate=None, batch_size=None
             transforms.ToTensor(),
             # Add any other transforms if needed
         ])
-        dataset = SentinelDataset(
+        
+        dataset = DataClass(
             root_dir=root_dir,
             transform=composed_transform,
         )
-        dm = SentinelDataModule(
+        image, label = dataset[0]
+        in_channels = image.shape[0]
+        
+        dm = DataModuleClass(
             root_dir=root_dir,
             batch_size=round(float(bs)),
             num_workers=num_workers,
             transform=composed_transform,
         )
-        image, label = dataset[0]
-        in_channels = image.shape[0]
+
 
     elif task_type == 'segmentation':
         composed_transform = transforms.Compose([
@@ -104,7 +116,7 @@ def compute_fitness_value(parsed_layers, log_learning_rate=None, batch_size=None
     print(f"\n\n***\n\n{parsed_layers}\n***\n\n")
 
     try:
-        # MODEL
+        # MODEL DEFINITION
         if not is_final:
             if task_type == 'classification':
                 model = classes.GenericLightningNetwork(
@@ -113,6 +125,7 @@ def compute_fitness_value(parsed_layers, log_learning_rate=None, batch_size=None
                     num_classes=num_classes,
                     learning_rate=lr,
                 )
+            
             elif task_type == 'segmentation':
                 model = classes.GenericLightningSegmentationNetwork(
                     parsed_layers=parsed_layers,
@@ -126,14 +139,14 @@ def compute_fitness_value(parsed_layers, log_learning_rate=None, batch_size=None
 
             # Check the number of parameters
             num_params = sum(p.numel() for p in model.parameters())
-            if num_params > 131000000:
+            if num_params > 20000000:
                 print(f"Skipping architecture, total parameters: {num_params} exceed the threshold of 10M")
                 return float('-inf')  # or another value to indicate invalid architecture
             
             print("Running in not final loop")
             trainer = pl.Trainer(
                 accelerator=accelerator,
-                devices=4,  # Specify the number of GPUs to use
+                devices=1,  # Specify the number of GPUs to use
                 #strategy='horovod',
                 min_epochs=1,
                 max_epochs=50,
@@ -143,6 +156,7 @@ def compute_fitness_value(parsed_layers, log_learning_rate=None, batch_size=None
             )
 
             # Training
+            print("\n\n\n")
             training_start_time = time.time()
             trainer.fit(model, dm)
             training_time = time.time() - training_start_time
@@ -220,14 +234,14 @@ def compute_fitness_value(parsed_layers, log_learning_rate=None, batch_size=None
             
             # Check the number of parameters
             num_params = sum(p.numel() for p in model.parameters())
-            if num_params > 131000000:
+            if num_params > 151000000:
                 print(f"Skipping architecture, total parameters: {num_params} exceed the threshold of 10M")
                 return float('-inf'), None, None, None  # or another value to indicate invalid architecture
             
             print("Running in final loop")
             trainer = pl.Trainer(
                 accelerator=accelerator,
-                devices=4,  # Specify the number of GPUs to use
+                devices=1,  # Specify the number of GPUs to use
                 #strategy='horovod',  # Use Distributed Data Parallel strategy
                 min_epochs=1,
                 max_epochs=50,

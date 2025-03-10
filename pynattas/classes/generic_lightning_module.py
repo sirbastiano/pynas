@@ -14,28 +14,42 @@ import matplotlib.pyplot as plt
 
 
 class GenericLightningNetwork(pl.LightningModule):
-    def __init__(self, parsed_layers, input_channels, num_classes, learning_rate=1e-3):
+    def __init__(self, model, num_classes, learning_rate=1e-3):
         super(GenericLightningNetwork, self).__init__()
         self.lr = learning_rate
-        self.model = GenericNetwork(
-            parsed_layers=parsed_layers,
-            input_channels=input_channels,
-            num_classes=num_classes,
-        )
+        self.model = model
 
+
+
+
+
+
+        self._initialize_metrics(num_classes)
+
+
+
+    def _initialize_metrics(self, num_classes):
         # Metrics
-        self.loss_fn = nn.CrossEntropyLoss()
-        self.accuracy = torchmetrics.classification.BinaryAccuracy()
-        self.f1_score = torchmetrics.classification.BinaryF1Score()
-        self.mcc = torchmetrics.classification.matthews_corrcoef.BinaryMatthewsCorrCoef()
-        self.conf_matrix = torchmetrics.classification.BinaryConfusionMatrix()
-        self.conf_matrix_pred = torchmetrics.classification.BinaryConfusionMatrix()
+        if num_classes > 2:
+            self.loss_fn = nn.CrossEntropyLoss()
+            self.accuracy = torchmetrics.classification.MulticlassAccuracy(num_classes=num_classes)
+            self.f1_score = torchmetrics.classification.MulticlassF1Score(num_classes=num_classes)
+            self.mcc = torchmetrics.classification.MulticlassMatthewsCorrCoef(num_classes=num_classes)
+            self.conf_matrix = torchmetrics.classification.MulticlassConfusionMatrix(num_classes=num_classes)
+            self.conf_matrix_pred = torchmetrics.classification.MulticlassConfusionMatrix(num_classes=num_classes)
+        else:
+            self.loss_fn = nn.CrossEntropyLoss()
+            self.accuracy = torchmetrics.classification.BinaryAccuracy()
+            self.f1_score = torchmetrics.classification.BinaryF1Score()
+            self.mcc = torchmetrics.classification.matthews_corrcoef.BinaryMatthewsCorrCoef()
+            self.conf_matrix = torchmetrics.classification.BinaryConfusionMatrix()
+            self.conf_matrix_pred = torchmetrics.classification.BinaryConfusionMatrix()
 
     def forward(self, x):
-        return self.model(x)
+        return self.model(x.float())
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
+        _, y = batch
         loss, scores, y = self._common_step(batch, batch_idx)
         accuracy = self.accuracy(torch.argmax(scores, dim=1), y)
         f1_score = self.f1_score(torch.argmax(scores, dim=1), y)
@@ -63,8 +77,17 @@ class GenericLightningNetwork(pl.LightningModule):
         return loss
 
     def test_step(self, batch, batch_idx):
+        import time
         x, y = batch
+
+        start_time = time.time()
         loss, scores, y = self._common_step(batch, batch_idx)
+        if x.is_cuda:
+            torch.cuda.synchronize()
+        elapsed_time = time.time() - start_time
+
+        fps = x.shape[0] / elapsed_time if elapsed_time > 0 else 0.0
+
         accuracy = self.accuracy(torch.argmax(scores, dim=1), y)
         f1_score = self.f1_score(torch.argmax(scores, dim=1), y)
         mcc = self.mcc(torch.argmax(scores, dim=1), y)
@@ -75,6 +98,7 @@ class GenericLightningNetwork(pl.LightningModule):
             'test_accuracy': accuracy,
             'test_f1_score': f1_score,
             'test_mcc': mcc.float(),
+            'fps': fps,
         },
             on_step=False,
             on_epoch=True,
@@ -83,21 +107,22 @@ class GenericLightningNetwork(pl.LightningModule):
         )
         return loss
 
+
     def on_test_end(self):
-        fig_, ax_ = self.conf_matrix.plot()  # to plot and save confusion matrix
+        self.conf_matrix.plot()  # to plot and save confusion matrix
         plt.xlabel('Prediction')
         plt.ylabel('Class')
         current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         plt.savefig(rf"./logs/tb_logs/confusion_matrix_{current_datetime}.png")
         # plt.show()
 
-    def _common_step(self, batch, batch_idx):
+    def _common_step(self, batch, _):
         x, y = batch
         scores = self.forward(x)
         loss = self.loss_fn(scores, y)
         return loss, scores, y
 
-    def predict_step(self, batch, batch_idx):
+    def predict_step(self, batch, _):
         x, y = batch
         scores = self.forward(x)
         preds = torch.argmax(scores, dim=1)
@@ -123,7 +148,7 @@ class GenericLightningNetwork(pl.LightningModule):
     """
 
     def configure_optimizers(self):
-        optimizer = optim.Adam(self.parameters(), lr=self.lr)  # 1e-3 is a sane default value for lr
+        optimizer = optim.Adam(self.model.parameters(), lr=self.lr)  # 1e-3 is a sane default value for lr
         return optimizer
 
     

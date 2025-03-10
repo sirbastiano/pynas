@@ -2,14 +2,22 @@ from ..functions import architecture_builder as builder
 import torch ##
 
 class Individual:
-    def __init__(self, max_layers):
-        self.architecture = builder.generate_random_architecture_code(max_layers=max_layers)
+    def __init__(self, max_layers, min_layers=3):
+        self.architecture = builder.generate_random_architecture_code(max_layers=max_layers, min_layers=min_layers)
         self.chromosome = self.architecture2chromosome(input_architecture=self.architecture)
+        self.parsed_layers = builder.parse_architecture_code(self.architecture)
+        self.reset()
+
+    def reset(self):
+        """
+        Resets the individual's fitness, IOU, FPS, and model size.
+        """
         self.fitness = 0.0
         self.iou = None
         self.fps = None
         self.model_size = None
-        self.model = None #
+        self.model = None
+
 
     def architecture2chromosome(self, input_architecture):
         """

@@ -47,7 +47,7 @@ class GenericNetwork(nn.Module):
         get_activation_fn(activation): Returns the activation function based on the specified string.
     """
 
-    def __init__(self, parsed_layers, input_channels=3, input_height=256, input_width=256, num_classes=2):
+    def __init__(self, parsed_layers, input_channels=3, input_height=1000, input_width=1000, num_classes=2):
         super(GenericNetwork, self).__init__()
         self.layers = nn.ModuleList()
         self.is_valid_architecture = True
@@ -62,7 +62,7 @@ class GenericNetwork(nn.Module):
         print(f"In the init function of Generic Network.py, here the value of parsed layers is: {parsed_layers}")
         
         total_params = 0
-        max_params = 10000000  # 10 million parameter threshold
+        max_params = 100000000  # 100 million parameter threshold
 
         for idx, layer in enumerate(parsed_layers):
             layer_type = layer['layer_type']
@@ -407,6 +407,8 @@ class GenericNetwork(nn.Module):
                 # Calculate the input size for ClassificationHead
                 num_classes = int(config['ClassificationHead']['num_classes'])
                 input_size_for_head = current_height * current_width * current_channels
+                
+                
                 layer = heads.ClassificationHead(input_size=input_size_for_head, num_classes=num_classes)
                 print("Parsed ClassificationHead without error")
                 

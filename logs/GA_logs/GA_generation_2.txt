@@ -1,3 +1,0 @@
-Individual 0 - Genes: ['Leo07k3s1p1arn1', 'PM2', 'Lme3arn1', 'Pa2', 'Lco09k3s1p1agn1', 'PM2', 'Lne3agn1', 'Uf2mnearest', 'S2', 'Lbo05k3s1p1arn1', 'Uf2mnearest', 'S1', 'Leo05k3s1p1agn1', 'Uf2mnearest', 'S0', 'Leo07k3s1p1arn1', 'HS'], Fitness: -inf
-Individual 1 - Genes: ['Lco04k3s1p1arn1', 'Pa2', 'Ldo05agn1', 'Pa2', 'Lbo05k3s1p1arn1', 'Pa2', 'Ldo12agn1', 'Uf2mnearest', 'S2', 'Lbo05k3s1p1arn1', 'Uf2mnearest', 'S1', 'Leo05k3s1p1agn1', 'Uf2mnearest', 'S0', 'Lco04k3s1p1arn1', 'HS'], Fitness: -inf
-Historical Fittest individual - Genes: Leo07k3s1p1arn1EPM2ELme3arn1EPa2ELme5arn1EPM2ELne3agn1EUf2mnearestES2ELme5arn1EUf2mnearestES1ELme3arn1EUf2mnearestES0ELeo07k3s1p1arn1EHSEE, Fitness: 17.138503011999706
