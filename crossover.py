@@ -1,38 +1,40 @@
 import random
 
-def single_point_crossover(parents):
+
+def single_point_crossover(parents, verbose=False):
     """
-    Performs a single-point crossover between two parent chromosomes if they have the same depth.
+    Performs a single-point crossover between two parent chromosomes.
 
     Parameters:
     parents (list): The parent chromosomes as lists of genes.
 
     Returns:
-    list: A list containing two new child chromosomes resulting from the crossover,
-          or the original parents if the crossover is not performed due to different depths.
+    list: A list containing two new child chromosomes resulting from the crossover.
+    The crossover point is randomly selected within the range of the shorter chromosome length.
     """
 
-    def crossover_segment(segment1, segment2):
-        min_length = min(len(segment1), len(segment2))
-        start = random.randint(0, min_length)
-        end = random.randint(start, min_length)
-        return (segment1[:start] + segment2[start:end] + segment1[end:], 
-                segment2[:start] + segment1[start:end] + segment2[end:])
+    # Determine the length of the shorter parent chromosome
+    min_length = min(len(parents[0].chromosome), len(parents[1].chromosome))
 
-    blocks_0 = (len(parents[0].chromosome) - 2) // 5
-    blocks_1 = (len(parents[1].chromosome) - 2) // 5
+    # Randomly select a crossover point, ensuring it is within the range of both chromosomes
+    crossover_cutoff = random.randint(1, min_length - 2)
+    
+    if verbose:
+        print(f"Cut off: {crossover_cutoff}")
+        print(f"Parent 0 chromosome: {parents[0].chromosome}")
+        print(f"Parent 1 chromosome: {parents[1].chromosome}")
 
-    index_mid_0 = blocks_0 * 2
-    index_mid_1 = blocks_1 * 2
-
-    encoder_0, encoder_1 = crossover_segment(parents[0].chromosome[:index_mid_0], 
-                                             parents[1].chromosome[:index_mid_1])
-
-    decoder_0, decoder_1 = crossover_segment(parents[0].chromosome[index_mid_0 + 1:-1], 
-                                             parents[1].chromosome[index_mid_1 + 1:-1])
-
+    # Perform crossover
     children = parents.copy()
-    children[0].chromosome = encoder_0 + [parents[0].chromosome[index_mid_0]] + decoder_0 + [parents[0].chromosome[-1]]
-    children[1].chromosome = encoder_1 + [parents[1].chromosome[index_mid_1]] + decoder_1 + [parents[1].chromosome[-1]]
+    children[0].chromosome = parents[0].chromosome[:crossover_cutoff] + parents[1].chromosome[crossover_cutoff:]
+    children[1].chromosome = parents[1].chromosome[:crossover_cutoff] + parents[0].chromosome[crossover_cutoff:]
 
+    if verbose:
+        print("Crossed over.")
+        print(f"Child 0 chromosome: {children[0].chromosome}")
+        print(f"Child 1 chromosome: {children[1].chromosome}")
+
+    for child in children:
+        child._reparse_layers()    
+    
     return children

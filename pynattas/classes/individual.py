@@ -8,6 +8,14 @@ class Individual:
         self.parsed_layers = builder.parse_architecture_code(self.architecture)
         self.reset()
 
+    def __str__(self):
+        return f'Individual: {self.architecture}'
+    
+    
+    def _reparse_layers(self):
+        self.parsed_layers = builder.parse_architecture_code(self.chromosome2architecture(self.chromosome))
+
+
     def reset(self):
         """
         Resets the individual's fitness, IOU, FPS, and model size.

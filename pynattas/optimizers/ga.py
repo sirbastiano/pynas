@@ -28,8 +28,8 @@ def single_point_crossover(parents):
     #print(f"Parent 0 length: {len(parents[0].chromosome)}")
     #print(f"Parent 1 length: {len(parents[1].chromosome)}")
 
-    blocks_0 = int((len(parents[0].chromosome) - 2) / 5)  # number of encoder/decoder blocks in parent 0
-    blocks_1 = int((len(parents[1].chromosome) - 2) / 5)  # number of encoder/decoder blocks in parent 1
+    blocks_0 = int((len(parents[0].chromosome) - 2) / 5)  # tnumber of encoder/decoder blocks in parent 0
+    blocks_1 = int((len(parents[1].chromosome) - 2) / 5)  # number of encoder/decoder blocks in paren 1
 
     #print(f"blocks for encoder/decoder in 0 are: {blocks_0}")
     #print(f"blocks for encoder/decoder in 1 are: {blocks_1}")
