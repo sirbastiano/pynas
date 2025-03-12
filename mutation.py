@@ -3,7 +3,7 @@ import architecture_builder
 
 # TODO: apply at chromosome, then _reparse_layers()
 
-def gene_mutation(child, mutation_probability):
+def gene_mutation(children, mutation_probability):
     """
     Apply mutation to a list of child chromosomes.
 
@@ -14,22 +14,23 @@ def gene_mutation(child, mutation_probability):
     Returns:
     list: The mutated child chromosomes.
     """
-    child = child.copy()
-    
-    print("Mutation started")
-    
-    for gene_index in range(len(child.chromosome)):
-        rnd = random.random()
-        if rnd <= mutation_probability:
-            gene = child.chromosome[gene_index]
-            # Mutate based on the type of gene
-            if gene[0]=='L':  # Backbone layers
-                child.chromosome[gene_index] = architecture_builder.generate_layer_code()
-            elif gene[0]=='P': # Pooling layer gene
-                child.chromosome[gene_index] = architecture_builder.generate_pooling_layer_code()
-            elif gene[0]=='H': # Head gene
-                break
-            else:
-                raise ValueError(f"Unrecognized gene type: {gene[0]}")
-    child._reparse_layers()
-    return child
+    new_children = []
+    for child in children:
+        child = child.copy()
+        
+        for gene_index in range(len(child.chromosome)):
+            rnd = random.random()
+            if rnd <= mutation_probability:
+                gene = child.chromosome[gene_index]
+                # Mutate based on the type of gene
+                if gene[0]=='L':  # Backbone layers
+                    child.chromosome[gene_index] = architecture_builder.generate_layer_code()
+                elif gene[0]=='P': # Pooling layer gene
+                    child.chromosome[gene_index] = architecture_builder.generate_pooling_layer_code()
+                elif gene[0]=='H': # Head gene
+                    break
+                else:
+                    raise ValueError(f"Unrecognized gene type: {gene[0]}")
+        child._reparse_layers()
+        new_children.append(child)
+    return new_children
