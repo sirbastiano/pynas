@@ -433,7 +433,7 @@ class GenericNetwork(nn.Module):
                 break
 
         if total_params <= max_params:
-            print(f"Architecture is valid, total parameters: {total_params}")
+            print(f"*** Architecture is valid, total parameters: {total_params} ***")
 
     @staticmethod
     def get_activation_fn(activation=activations.GELU):
