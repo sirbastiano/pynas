@@ -1,5 +1,6 @@
 import random
 import architecture_builder
+from copy import deepcopy
 
 # TODO: apply at chromosome, then _reparse_layers()
 
@@ -16,7 +17,7 @@ def gene_mutation(children, mutation_probability):
     """
     new_children = []
     for child in children:
-        child = child.copy()
+        child = deepcopy(child)
         
         for gene_index in range(len(child.chromosome)):
             rnd = random.random()
