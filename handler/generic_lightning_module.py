@@ -148,17 +148,10 @@ class GenericLightningNetwork(pl.LightningModule):
 
 
 class GenericLightningSegmentationNetwork(pl.LightningModule):
-    def __init__(self, parsed_layers, input_channels, num_classes, learning_rate=1e-3):
+    def __init__(self, model, learning_rate=1e-3):
         super(GenericLightningSegmentationNetwork, self).__init__()
         self.lr = learning_rate
-        self.model = GenericNetwork(
-            parsed_layers=parsed_layers,
-            input_channels=input_channels,
-            num_classes=num_classes,
-        )
-        
-        if not self.model.is_valid_architecture:  
-            raise ValueError("The architecture is invalid due to exceeding the parameter limit.")
+        self.model = model
         
         #self.loss_fn = CategoricalCrossEntropyLoss()
         self.loss_fn = FocalLoss()

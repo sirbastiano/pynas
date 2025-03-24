@@ -251,7 +251,7 @@ class ResNetBlock(nn.Module):
         x = torch.add(x, res)
         return x
     
-'''    
+ 
 class Upsample(nn.Module):
     def __init__(self, scale_factor=2, mode='nearest'):
         super().__init__()
@@ -259,7 +259,9 @@ class Upsample(nn.Module):
 
     def forward(self, x):
         return self.upsample(x)
-'''
+
+
+
 """
 class ResNextBlock(nn.Module):
     def __init__(self, in_channels, out_channels, reduction_factor=4, cardinality=1, activation=ReLU):
