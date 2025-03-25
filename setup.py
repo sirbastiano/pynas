@@ -9,7 +9,7 @@ from setuptools import setup
 
 setup(
     name="pynattas",
-    version="v0.0.0",
+    version="v0.1.0",
     description="Pynattas, a powerful open-source Python package"
     + " that provides a comprehensive set of tools for model building and deployment",
     long_description=open("README.md", encoding="cp437").read(),
@@ -36,7 +36,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Environment :: GPU :: NVIDIA CUDA :: 11.0",
     ],
-    packages=["pynattas", "pynattas.classes", "pynattas.functions", "pynattas.blocks", "pynattas.optimizers"],
+    packages=["pynas", "pynas.blocks", "pynas.train", "pynas.core", "pynas.opt"],
     python_requires=">=3.8, <4",
     project_urls={"Source": "https://github.com/sirbastiano/PyNA-tta-S"},
 )

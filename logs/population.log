@@ -1,0 +1,76 @@
+2025-03-25 15:33:23,728 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 7,986,121,382 > M: 200,000,000
+2025-03-25 15:33:27,643 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 205073295 Parameters
+2025-03-25 15:33:30,165 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 280,472,520 > M: 200,000,000
+2025-03-25 15:33:38,718 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 847284189 Parameters
+2025-03-25 15:33:39,706 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 43006955 Parameters
+2025-03-25 15:33:40,745 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 100935267 Parameters
+2025-03-25 15:33:41,488 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1749813 Parameters
+2025-03-25 15:33:43,886 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 295,722,462 > M: 200,000,000
+2025-03-25 15:33:44,403 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 963947 Parameters
+2025-03-25 15:33:44,498 - pynas.core.population - ERROR - Error saving DataFrame to ./models_traced/src/df_population_0.pkl: Cannot save file into a non-existent directory: 'models_traced/src'
+2025-03-25 15:33:44,498 - pynas.core.population - ERROR - Error saving population to ./models_traced/src/population_0.pkl: [Errno 2] No such file or directory: './models_traced/src/population_0.pkl'
+2025-03-25 15:37:31,759 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 7,986,121,382 > M: 200,000,000
+2025-03-25 15:37:35,543 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 205073295 Parameters
+2025-03-25 15:37:37,895 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 280,472,520 > M: 200,000,000
+2025-03-25 15:37:45,679 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 847284189 Parameters
+2025-03-25 15:37:46,463 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 43006955 Parameters
+2025-03-25 15:37:47,436 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 100935267 Parameters
+2025-03-25 15:37:47,936 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1749813 Parameters
+2025-03-25 15:37:50,226 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 295,722,462 > M: 200,000,000
+2025-03-25 15:37:50,666 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 963947 Parameters
+2025-03-25 15:37:50,728 - pynas.core.population - ERROR - Error saving DataFrame to ./models_traced/src/df_population_0.pkl: Cannot save file into a non-existent directory: 'models_traced/src'
+2025-03-25 15:37:50,728 - pynas.core.population - ERROR - Error saving population to ./models_traced/src/population_0.pkl: [Errno 2] No such file or directory: './models_traced/src/population_0.pkl'
+2025-03-25 15:38:55,270 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 554,597,300 > M: 200,000,000
+2025-03-25 15:38:55,270 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 554,597,300 > M: 200,000,000
+2025-03-25 15:38:57,868 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 294,565,695 > M: 200,000,000
+2025-03-25 15:38:57,868 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 294,565,695 > M: 200,000,000
+2025-03-25 15:38:58,107 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1529615 Parameters
+2025-03-25 15:38:58,107 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1529615 Parameters
+2025-03-25 15:38:58,227 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 766686 Parameters
+2025-03-25 15:38:58,227 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 766686 Parameters
+2025-03-25 15:39:02,632 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 466,987,166 > M: 200,000,000
+2025-03-25 15:39:02,632 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 466,987,166 > M: 200,000,000
+2025-03-25 15:39:04,595 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 87093163 Parameters
+2025-03-25 15:39:04,595 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 87093163 Parameters
+2025-03-25 15:39:05,451 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1327539 Parameters
+2025-03-25 15:39:05,451 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1327539 Parameters
+2025-03-25 15:39:06,522 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 840339 Parameters
+2025-03-25 15:39:06,522 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 840339 Parameters
+2025-03-25 15:39:07,990 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 144432399 Parameters
+2025-03-25 15:39:07,990 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 144432399 Parameters
+2025-03-25 15:39:08,385 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5410883 Parameters
+2025-03-25 15:39:08,385 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5410883 Parameters
+2025-03-25 15:39:08,689 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5523315 Parameters
+2025-03-25 15:39:08,689 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5523315 Parameters
+2025-03-25 15:39:08,861 - pynas.core.population - ERROR - Error saving DataFrame to ./models_traced/src/df_population_0.pkl: Cannot save file into a non-existent directory: 'models_traced/src'
+2025-03-25 15:39:08,861 - pynas.core.population - ERROR - Error saving DataFrame to ./models_traced/src/df_population_0.pkl: Cannot save file into a non-existent directory: 'models_traced/src'
+2025-03-25 15:39:08,862 - pynas.core.population - ERROR - Error saving population to ./models_traced/src/population_0.pkl: [Errno 2] No such file or directory: './models_traced/src/population_0.pkl'
+2025-03-25 15:39:08,862 - pynas.core.population - ERROR - Error saving population to ./models_traced/src/population_0.pkl: [Errno 2] No such file or directory: './models_traced/src/population_0.pkl'
+2025-03-25 15:57:06,146 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 7,986,121,382 > M: 200,000,000
+2025-03-25 15:57:10,085 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 205073295 Parameters
+2025-03-25 15:57:12,420 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 280,472,520 > M: 200,000,000
+2025-03-25 15:57:20,610 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 847284189 Parameters
+2025-03-25 15:57:21,396 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 43006955 Parameters
+2025-03-25 15:57:22,448 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 100935267 Parameters
+2025-03-25 15:57:23,034 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1749813 Parameters
+2025-03-25 15:57:25,327 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 295,722,462 > M: 200,000,000
+2025-03-25 15:57:25,831 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 963947 Parameters
+2025-03-25 15:57:30,592 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 554,597,300 > M: 200,000,000
+2025-03-25 15:57:33,189 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 294,565,695 > M: 200,000,000
+2025-03-25 15:57:33,460 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1529615 Parameters
+2025-03-25 15:57:33,587 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 766686 Parameters
+2025-03-25 15:57:38,035 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 466,987,166 > M: 200,000,000
+2025-03-25 15:57:40,192 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 87093163 Parameters
+2025-03-25 15:57:41,021 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1327539 Parameters
+2025-03-25 15:57:41,475 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
+2025-03-25 15:57:41,475 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
+2025-03-25 16:06:02,476 - pynas.core.population - ERROR - Error encountered when checking individual: Invalid output dimensions: height (0) width (250) is zero.
+2025-03-25 16:07:55,013 - pynas.core.population - ERROR - Error encountered when checking individual: Exceeded parameter limit. P: 14,859,373,000 > M: 200,000,000
+2025-03-25 16:08:34,617 - pynas.core.population - ERROR - Error encountered when checking individual: Invalid output dimensions: height (0) width (250) is zero.
+2025-03-25 16:09:27,724 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5403497 Parameters
+2025-03-25 16:09:28,944 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5699529 Parameters
+2025-03-25 16:09:29,882 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1896395 Parameters
+2025-03-25 16:09:30,297 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1230943 Parameters
+2025-03-25 16:09:32,703 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1677555 Parameters
+2025-03-25 16:09:32,754 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
+2025-03-25 16:09:32,755 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
