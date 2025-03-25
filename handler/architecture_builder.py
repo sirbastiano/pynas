@@ -2,20 +2,24 @@
 # architecture_builder.py
 import random
 import configparser
-import math
 from vocabulary import convolution_layer_vocabulary, layer_parameters, parameter_vocabulary, activation_functions_vocabulary, upsampling_layer_vocabulary, pooling_layer_vocabulary, head_vocabulary, skip_connection_layer_vocabulary
-import gc
 
-def get_task_type():
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-    task_type = config['Task']['type_head']
-    return task_type
 
-def generate_random_architecture_code(min_layers, max_layers):
+
+def generate_random_architecture_code(min_layers: int = 3, max_layers: int = 5):
+    """
+    Generates a random architecture code string consisting of layers and pooling layers.
+    The function creates a sequence of encoder layers and pooling layers, appending them
+    to form a string representation of an architecture. Each layer and pooling layer is 
+    separated by an "E". The architecture ends with an additional "E".
+    Args:
+        min_layers (int): The minimum number of layers to include in the architecture.
+        max_layers (int): The maximum number of layers to include in the architecture.
+    Returns:
+        str: A string representing the randomly generated architecture code.
+    """
     architecture_code = ""
     encoder_layers = []
-    pooling_factors = []  # To store pooling factors
 
     for _ in range(random.randint(min_layers, max_layers)):
         layer_code = generate_layer_code()
@@ -26,28 +30,35 @@ def generate_random_architecture_code(min_layers, max_layers):
         #pooling_factors.append(pooling_factor)
         architecture_code += pooling_layer_code + "E"
     
-    # Add the bridge layer for segmentation tasks
-    task_type = get_task_type()
-    if task_type == 'segmentation':
-        bridge_layer = generate_layer_code()
-        architecture_code += bridge_layer + "E"
-    
-        # Add the mirrored decoder layers
-        decoder_layers = mirror_encoder_layers(encoder_layers)
-        architecture_code += decoder_layers
-
-    # Add the head
-    # Removed head generation for now
-    # TODO: Add head generation
-    # architecture_code += generate_head_code() + "E"
-
     # Insert ender
     architecture_code += "E"
-
     return architecture_code
 
 
 def generate_layer_code():
+    """
+    Generates a string representation of a neural network layer configuration.
+    This function randomly selects a layer type from a predefined vocabulary and 
+    generates a corresponding layer code based on its parameters. The parameters 
+    are configured using values from a `config.ini` file. The generated code 
+    includes details such as activation type, kernel size, padding, stride, 
+    dropout rate, and other layer-specific attributes.
+    Returns:
+        str: A string representing the configuration of the generated layer.
+    """
+    def get_random_value(param, section, is_float=False, is_odd=False, format_str=None):
+        """Helper function to get a random value for a parameter."""
+        min_val = config.getfloat(section, f'min_{param}') if is_float else config.getint(section, f'min_{param}')
+        max_val = config.getfloat(section, f'max_{param}') if is_float else config.getint(section, f'max_{param}')
+        value = random.uniform(min_val, max_val) if is_float else random.randint(min_val, max_val)
+        
+        if is_odd and value % 2 == 0:
+            value += 1
+            if value > max_val:
+                value -= 2
+        
+        return f"{value:.2f}" if is_float else f"{value:02d}" if format_str == "02d" else str(value)
+
     layer_type = random.choice(list(convolution_layer_vocabulary.keys()))
     parameters = layer_parameters[convolution_layer_vocabulary[layer_type]]
     layer_code = f"L{layer_type}"
@@ -56,79 +67,57 @@ def generate_layer_code():
     config.read('config.ini')
     section = convolution_layer_vocabulary[layer_type]
 
-    task_type = get_task_type()
-
-    kernel_size = None
-
     for param in parameters:
+        code = parameter_vocabulary.get(param, "")
         if param == 'activation':
             activation_code = random.choice(['r', 'g'])  # Use only ReLU and GELU for intermediate layers
             layer_code += f"a{activation_code}"
-        elif param == 'num_blocks':
-            continue
         elif param == 'dropout_rate':
-            min_val = config.getfloat(section, 'min_dropout_rate')
-            max_val = config.getfloat(section, 'max_dropout_rate')
-            value = random.uniform(min_val, max_val)
-            code = parameter_vocabulary[param]
-            layer_code += f"{code}{value:.2f}"
+            layer_code += f"{code}{get_random_value(param, section, is_float=True)}"
         elif param == 'kernel_size':
-            min_val = config.getint(section, 'min_' + param)
-            max_val = config.getint(section, 'max_' + param)
-            kernel_size = random.randint(min_val, max_val)
-            
-            # Ensure the kernel size is odd
-            if kernel_size % 2 == 0:
-                kernel_size += 1
-                # Ensure that the kernel size does not exceed the max_val
-                if kernel_size > max_val:
-                    kernel_size -= 2  # Adjust to stay within bounds
-            
-            code = parameter_vocabulary[param]
-            layer_code += f"{code}{kernel_size}"
-        elif param == 'padding':
-            if task_type == 'segmentation' and kernel_size is not None:
-                padding_value = kernel_size // 2
-                layer_code += f"p{padding_value}"
-            else:
-                min_val = config.getint(section, 'min_' + param)
-                max_val = config.getint(section, 'max_' + param)
-                value = random.randint(min_val, max_val)
-                code = parameter_vocabulary[param]
-                layer_code += f"{code}{value}"
-        elif param == 'stride':
-            if task_type == 'segmentation':
-                layer_code += "s1"
-            else:
-                min_val = config.getint(section, 'min_' + param)
-                max_val = config.getint(section, 'max_' + param)
-                value = random.randint(min_val, max_val)
-                code = parameter_vocabulary[param]
-                layer_code += f"{code}{value}"
-        elif param == 'out_channels_coefficient':
-            min_val = config.getint(section, 'min_' + param)
-            max_val = config.getint(section, 'max_' + param)
-            value = random.randint(min_val, max_val)
-            code = parameter_vocabulary[param]
-            layer_code += f"{code}{value:02d}"
-        else:
-            min_val = config.getint(section, 'min_' + param)
-            max_val = config.getint(section, 'max_' + param)
-            value = random.randint(min_val, max_val)
-            code = parameter_vocabulary[param]
-            layer_code += f"{code}{str(value)}"
+            layer_code += f"{code}{get_random_value(param, section, is_odd=True)}"
+        elif param in ['padding', 'stride', 'out_channels_coefficient']:
+            format_str = "02d" if param == 'out_channels_coefficient' else None
+            layer_code += f"{code}{get_random_value(param, section, format_str=format_str)}"
+        elif param != 'num_blocks':  # Skip 'num_blocks' as it's not used
+            layer_code += f"{code}{get_random_value(param, section)}"
 
     layer_code += "n1"
     return layer_code
 
 def generate_pooling_layer_code():
+    """
+    Generates a string representing a pooling layer configuration.
+
+    The function randomly selects a pooling type from the `pooling_layer_vocabulary` 
+    and combines it with a predefined pooling factor to create a pooling layer code.
+
+    Returns:
+        str: A string representing the pooling layer configuration in the format 
+             "P<pooling_type><pooling_factor>".
+    """
     pooling_type = random.choice(list(pooling_layer_vocabulary.keys()))
     pooling_factor = 2  # Example factor, you can randomize or configure this as needed
     pooling_code = f"P{pooling_type}{pooling_factor}"
     return pooling_code #, pooling_factor
 
 
-def generate_upsampling_layer_code(scale_factor = 2):
+def generate_upsampling_layer_code(scale_factor=2):
+    """
+    Generates a string representing the configuration of an upsampling layer.
+
+    This function reads the available upsampling modes from a configuration file
+    ('config.ini') under the 'Upsample' section and randomly selects one of the modes.
+    It then combines the scale factor and the selected mode into a formatted string.
+
+    Args:
+        scale_factor (int, optional): The scaling factor for the upsampling layer. 
+            Defaults to 2.
+
+    Returns:
+        str: A formatted string representing the upsampling layer configuration 
+        in the format "Uf{scale_factor}m{mode}".
+    """
     config = configparser.ConfigParser()
     config.read('config.ini')
     modes = config.get('Upsample', 'modes').split(',')
@@ -138,44 +127,57 @@ def generate_upsampling_layer_code(scale_factor = 2):
     return upsampling_code
 
 
-def generate_head_code():
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-    task_type = config['Task']['type_head']
-    num_classes = config.getint('Dataset', 'num_classes')
-
-    if task_type == 'segmentation':
-        head_code = "HS"
-    else:
-        head_code = "HC"
-    '''
-    # Use 'Sigmoid' for binary classification/segmentation, 'Softmax' for multi-class
-    if num_classes == 2:
-        final_activation = 'sg'
-    else:
-        final_activation = 'sm'
-    
-    head_code += f"a{final_activation}"
-    '''
-    return head_code
-
 def generate_skip_connection_code(layer_index):
+    """
+    Generates a string representing a skip connection identifier for a given layer index.
+
+    Args:
+        layer_index (int): The index of the layer for which the skip connection identifier is generated.
+
+    Returns:
+        str: A string in the format "S{layer_index}" representing the skip connection identifier.
+    """
     return f"S{layer_index}"
-
-
-def mirror_encoder_layers(encoder_layers):
-    decoder_layers = ""
-    for i, layer_code in enumerate(reversed(encoder_layers)):
-        upsampling_layer_code = generate_upsampling_layer_code()
-        decoder_layers += upsampling_layer_code + "E"
-        decoder_layers += generate_skip_connection_code(len(encoder_layers) - i - 1) + "E"
-        
-        decoder_layers += layer_code + "E"
-    return decoder_layers
 
 
 
 def parse_architecture_code(architecture_code):
+    """
+    Parses a given architecture code string into a list of layer configurations.
+    The function interprets the architecture code by splitting it into segments,
+    identifying the type of each segment (e.g., convolution, pooling, upsampling, etc.),
+    and extracting the associated parameters based on predefined vocabularies and rules.
+    Args:
+        architecture_code (str): A string representing the architecture code. Each segment
+            of the code corresponds to a layer or operation, with specific characters
+            denoting the type and parameters of the layer.
+    Returns:
+        list[dict]: A list of dictionaries, where each dictionary represents a parsed layer
+            or operation. Each dictionary contains:
+            - 'layer_type' (str): The type of the layer (e.g., "Convolution", "Pooling").
+            - Additional keys for parameters specific to the layer type, such as:
+                - 'scale_factor' (int): The scale factor for upsampling layers.
+                - 'mode' (str): The mode for certain operations.
+                - 'dropout_rate' (float): The dropout rate for layers with dropout.
+                - 'activation' (str): The activation function for layers with activation.
+                - 'out_channels_coefficient' (int): Coefficient for output channels.
+                - Other parameters as defined in the layer's parameter vocabulary.
+    Notes:
+        - The function relies on several predefined vocabularies and mappings:
+            - `convolution_layer_vocabulary`: Maps codes to convolution layer types.
+            - `pooling_layer_vocabulary`: Maps codes to pooling layer types.
+            - `head_vocabulary`: Maps codes to head layer types.
+            - `upsampling_layer_vocabulary`: Maps codes to upsampling layer types.
+            - `layer_parameters`: Defines expected parameters for each layer type.
+            - `parameter_vocabulary`: Maps parameter codes to parameter names.
+            - `activation_functions_vocabulary`: Maps activation codes to function names.
+        - Segments with unknown or unsupported codes are assigned "Unknown" as the layer type.
+        - Skip connections are explicitly identified with the type "SkipConnection".
+    Example:
+        architecture_code = "L1f2mRPE2H3"
+        parsed_layers = parse_architecture_code(architecture_code)
+        # parsed_layers will be a list of dictionaries representing the parsed layers.
+    """
     segments = architecture_code.split('E')[:-1]
     parsed_layers = []
 
@@ -244,6 +246,28 @@ def parse_architecture_code(architecture_code):
     return parsed_layers
 
 def generate_code_from_parsed_architecture(parsed_layers):
+    """
+    Generates a compact string representation of a neural network architecture 
+    based on a list of parsed layer configurations.
+    The function converts each layer's type and parameters into a coded segment 
+    using predefined vocabularies and appends them together to form the final 
+    architecture code. Each layer segment ends with "E", and the entire 
+    architecture code ends with "EE".
+    Args:
+        parsed_layers (list of dict): A list of dictionaries where each dictionary 
+            represents a layer configuration. Each dictionary must contain a 
+            'layer_type' key and may include additional parameters specific to 
+            the layer type.
+    Returns:
+        str: A string representing the encoded architecture.
+    Notes:
+        - The function uses reverse mappings of predefined vocabularies to encode 
+          layer types and parameters.
+        - Special handling is applied for certain parameters like 'activation', 
+          'dropout_rate', and 'out_channels_coefficient'.
+        - Layer types such as "Dropout", "Upsample", and "SkipConnection" have 
+          specific encoding rules.
+    """
     architecture_code = ""
     
     # Utilize the provided configuration directly
@@ -294,5 +318,3 @@ def generate_code_from_parsed_architecture(parsed_layers):
     
     # Ensure the architecture code properly ends with "EE"
     return architecture_code + "E"
-
-gc.collect()

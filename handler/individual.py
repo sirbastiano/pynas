@@ -1,7 +1,39 @@
 import architecture_builder as builder
-import torch ##
+from copy import deepcopy
+
 
 class Individual:
+    """
+    The `Individual` class represents an individual entity in the genetic algorithm or evolutionary computation context. 
+    It encapsulates the architecture, chromosome, and associated properties such as fitness, IOU (Intersection over Union), 
+    FPS (Frames Per Second), and model size. The class provides methods for converting between architecture and chromosome 
+    representations, resetting properties, and creating deep copies of the individual.
+    Attributes:
+        architecture (str): The architecture code representing the individual's structure.
+        chromosome (list): A list representation of the architecture code.
+        parsed_layers (list): Parsed layers of the architecture code.
+        fitness (float): The fitness score of the individual.
+        iou (float or None): The Intersection over Union metric.
+        fps (float or None): The Frames Per Second metric.
+        model_size (float or None): The size of the model.
+        model (object or None): The trained model associated with the individual.
+    Methods:
+        __init__(max_layers, min_layers=3):
+            Initializes an individual with a random architecture and its corresponding chromosome.
+        __str__():
+            Returns a string representation of the individual.
+        _reparse_layers():
+            Reparses the layers of the architecture based on the chromosome.
+        reset():
+        architecture2chromosome(input_architecture):
+            Converts an architecture code into a chromosome list.
+        chromosome2architecture(input_chromosome):
+            Converts a chromosome list back into an architecture code.
+        copy():
+            Creates a deep copy of the individual, including its properties and model.
+        set_trained_model(model):
+            Sets the trained model for the individual.
+    """
     def __init__(self, max_layers, min_layers=3):
         self.architecture = builder.generate_random_architecture_code(max_layers=max_layers, min_layers=min_layers)
         self.chromosome = self.architecture2chromosome(input_architecture=self.architecture)
@@ -57,15 +89,15 @@ class Individual:
         chromosome, and fitness.
         """
         new_individual = Individual(max_layers=len(self.chromosome))
-        new_individual.architecture = self.architecture
-        new_individual.chromosome = self.chromosome.copy()
+        new_individual.architecture = deepcopy(self.architecture)
+        new_individual.chromosome = deepcopy(self.chromosome)
         new_individual.fitness = self.fitness
         new_individual.iou = self.iou
         new_individual.fps = self.fps
         new_individual.model_size = self.model_size
         
         if self.model is not None:
-            new_individual.model = self.model  # Copy the entire model
+            new_individual.model = deepcopy(self.model)  # Copy the entire model
 
         return new_individual    
     

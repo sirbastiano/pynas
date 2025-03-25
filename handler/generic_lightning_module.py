@@ -4,13 +4,13 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torchmetrics
 import pytorch_lightning as pl
-from .generic_network import GenericNetwork
-from .train_utils.losses import CategoricalCrossEntropyLoss, FocalLoss
-from .train_utils.custom_iou import calculate_iou
-#from .mean_squared_error import MeanSquaredError 
 from torchmetrics import MeanSquaredError
 from datetime import datetime
 import matplotlib.pyplot as plt
+
+from .generic_network import GenericNetwork
+from .train_utils.losses import CategoricalCrossEntropyLoss, FocalLoss
+from .train_utils.custom_iou import calculate_iou
 
 
 class GenericLightningNetwork(pl.LightningModule):
@@ -148,6 +148,32 @@ class GenericLightningNetwork(pl.LightningModule):
 
 
 class GenericLightningSegmentationNetwork(pl.LightningModule):
+    """
+    GenericLightningSegmentationNetwork is a PyTorch Lightning module designed for segmentation tasks. 
+    It wraps a given model and provides training, validation, testing, and prediction steps, 
+    along with logging for loss, mean squared error (MSE), and intersection over union (IoU).
+    Attributes:
+        model (torch.nn.Module): The segmentation model to be trained and evaluated.
+        learning_rate (float): The learning rate for the optimizer. Default is 1e-3.
+        loss_fn (callable): The loss function used for training. Default is FocalLoss.
+        mse (torchmetrics.Metric): Metric to compute mean squared error.
+        iou (callable): Function to calculate intersection over union (IoU).
+    Methods:
+        forward(x):
+            Performs a forward pass through the model.
+        _common_step(batch, batch_idx):
+            Computes the loss, MSE, and IoU for a given batch. Used internally by training, validation, and test steps.
+        training_step(batch, batch_idx):
+            Defines the training step, computes metrics, and logs them.
+        validation_step(batch, batch_idx):
+            Defines the validation step, computes metrics, and logs them.
+        test_step(batch, batch_idx):
+            Defines the test step, computes metrics, and logs them.
+        predict_step(batch, batch_idx, dataloader_idx=0):
+            Defines the prediction step, returning the model's output for a given batch.
+        configure_optimizers():
+            Configures the optimizer for training. Uses Adam optimizer with the specified learning rate.
+    """
     def __init__(self, model, learning_rate=1e-3):
         super(GenericLightningSegmentationNetwork, self).__init__()
         self.lr = learning_rate
@@ -323,7 +349,7 @@ class GenericLightningNetwork_Custom(pl.LightningModule):
 
 def ce_loss(logits, targets, weight=None, use_hard_labels=True, reduction="none"):
     """
-    wrapper for cross entropy loss in pytorch.
+    Wrapper for cross entropy loss in pytorch.
 
     Args
         logits: logit values, shape=[Batch size, # of classes]

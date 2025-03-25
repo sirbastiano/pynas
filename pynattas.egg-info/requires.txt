@@ -1,8 +1,0 @@
-numpy
-opencv-python
-pandas
-tqdm
-matplotlib
-seaborn
-rasterio
-tifffile

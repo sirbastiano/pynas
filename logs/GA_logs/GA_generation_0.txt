@@ -1,5 +1,0 @@
-Individual 0 - Genes: ['Lco12k3s1p1arn1', 'PM2', 'HC'], Fitness: -inf
-Individual 1 - Genes: ['LRr2arn1', 'Pa2', 'Lne6arn1', 'Pa2', 'HC'], Fitness: -inf
-Individual 2 - Genes: ['Leo04k3s1p1arn1', 'Pa2', 'Lbo06k3s1p1agn1', 'Pa2', 'HC'], Fitness: -inf
-Individual 3 - Genes: ['Lme6agn1', 'PM2', 'HC'], Fitness: -inf
-Historical Fittest individual - Genes: Lco12k3s1p1arn1EPM2EHCEE, Fitness: -inf

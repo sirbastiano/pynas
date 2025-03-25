@@ -4,14 +4,37 @@ import torch.nn.functional as F
 import configparser
 import inspect
 
-from .blocks import convolutions, pooling, heads, activations
-
-def list_convolution_layers():
-    # List all classes defined in the convolutions module
-    return [obj for name, obj in inspect.getmembers(convolutions, inspect.isclass)]
+from .blocks import convolutions, pooling, activations
 
 
 class UNetDecoder(nn.Module):
+    """
+    A PyTorch implementation of a U-Net decoder module.
+    This class implements the decoder part of the U-Net architecture, which
+    reconstructs the output from the bottleneck features by progressively
+    upsampling and combining them with skip connections from the encoder.
+    Attributes:
+        num_stages (int): The number of decoding stages, equal to the number of skip connections.
+        up_convs (nn.ModuleList): A list of transposed convolution layers for upsampling.
+        conv_blocks (nn.ModuleList): A list of convolutional blocks for processing concatenated
+                                     upsampled and skip connection features.
+        out_conv (nn.Conv2d): The final convolutional layer that produces the output.
+    Args:
+        encoder_shapes (list of torch.Size): A list of shapes of the encoder features in the order:
+                                             [skip0, skip1, ..., skip_(N-1), bottleneck].
+                                             Each shape is expected to be a `torch.Size` object.
+        num_classes (int, optional): The number of output classes. Default is 2.
+    Methods:
+        forward(encoder_features):
+            Performs the forward pass of the decoder.
+            Args:
+                encoder_features (list of torch.Tensor): A list of encoder feature maps in the order:
+                                                         [skip0, skip1, ..., skip_(N-1), bottleneck].
+                                                         The number of feature maps must match the
+                                                         number of stages + 1.
+            Returns:
+                torch.Tensor: The output tensor after decoding.
+    """
     def __init__(self, encoder_shapes, num_classes=2):
         super(UNetDecoder, self).__init__()
         # Expecting encoder_shapes as a list of torch.Size objects in order:
@@ -71,6 +94,35 @@ class UNetDecoder(nn.Module):
 
 
 class GenericUNetNetwork(nn.Module):
+    """GenericUNetNetwork is a PyTorch-based implementation of a generic U-Net architecture. 
+    This class allows for flexible construction of U-Net models by parsing layer configurations 
+    and dynamically building the encoder and decoder components.
+        parsed_layers (list): A list of layer configurations for building the encoder.
+        input_channels (int): Number of input channels for the input tensor. Default is 3.
+        input_height (int): Height of the input tensor. Default is 256.
+        input_width (int): Width of the input tensor. Default is 256.
+        num_classes (int): Number of output classes for the segmentation task. Default is 2.
+        max_params (int): Maximum allowed number of parameters for the model. Default is 200,000,000.
+        encoder (nn.ModuleList): A list of layers forming the encoder part of the U-Net.
+        decoder (nn.ModuleList): A list of layers forming the decoder part of the U-Net.
+        encoder_shapes (list): A list of shapes of the encoder outputs for use in the decoder.
+        total_params (int): Total number of parameters in the model.
+        config (ConfigParser): Configuration parser for reading additional settings from 'config.ini'.
+    Methods:
+        __init__(self, parsed_layers, input_channels=3, input_height=256, input_width=256, num_classes=2, MaxParams=200_000_000):
+            Initializes the GenericUNetNetwork with the given parameters and builds the encoder and decoder.
+        encoder_forward(self, x, features_only=True):
+            Performs a forward pass through the encoder and optionally returns only the encoder features.
+        _encoder_shapes_tracing(self):
+            Creates a dummy forward pass through the encoder to determine the shapes of the encoder outputs.
+        _build_encoder(self, parsed_layers):
+        _build_decoder(self):
+            Builds the decoder component of the U-Net model using the encoder shapes and number of output classes.
+        forward(self, x):
+            Defines the forward pass of the model, passing the input through the encoder and decoder.
+        get_activation_fn(activation):
+            Retrieves the specified activation function from the `activations` module.
+        """
     def __init__(self, parsed_layers, input_channels=3, input_height=256, input_width=256, num_classes=2, MaxParams=200_000_000):
         super(GenericUNetNetwork, self).__init__()
         self.config = configparser.ConfigParser()
@@ -244,6 +296,19 @@ class GenericUNetNetwork(nn.Module):
 
 
 
+def list_convolution_layers():
+    """
+    Retrieves a list of all classes defined in the `convolutions` module.
+
+    This function uses the `inspect` module to dynamically inspect the 
+    `convolutions` module and collect all objects that are classes.
+
+    Returns:
+        list: A list of class objects defined in the `convolutions` module.
+    """
+    # List all classes defined in the convolutions module
+    return [obj for name, obj in inspect.getmembers(convolutions, inspect.isclass)]
+
 
 def build_layer(layer, config, current_channels, current_height, current_width, idx, get_activation_fn):
     """
@@ -365,7 +430,6 @@ def build_layer(layer, config, current_channels, current_height, current_width, 
         raise ValueError(f"Unknown layer type: {lt}")
 
     return layer_inst, current_channels, current_height, current_width
-
 
 
 def parse_conv_params(layer, config, key, current_channels, current_height, current_width):
