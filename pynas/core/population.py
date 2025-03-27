@@ -4,13 +4,15 @@ import pickle
 from copy import deepcopy
 import tqdm, os
 
+from ..blocks.heads import MultiInputClassifier
 from .individual import Individual 
 from .generic_unet import GenericUNetNetwork
 from ..opt.evo import single_point_crossover, gene_mutation
-from .generic_lightning_module import GenericLightningSegmentationNetwork
+from .generic_lightning_module import GenericLightningSegmentationNetwork, GenericLightningNetwork
 import logging 
 
 import torch
+import torch.nn as nn
 import pytorch_lightning as pl
 
 
@@ -23,12 +25,16 @@ class Population:
         self.generation = 0
         self.max_parameters = max_parameters
         self.save_directory = "./models_traced"
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.logger = self.setup_logger()
+        
     
     @staticmethod
     def setup_logger(log_file='./logs/population.log', log_level=logging.DEBUG):
         """
         Set up a logger for the population module.
+
+        If the log file already exists, create a new one by appending a timestamp to the filename.
 
         Parameters:
             log_file (str): Path to the log file.
@@ -37,6 +43,11 @@ class Population:
         Returns:
             logging.Logger: Configured logger instance.
         """
+        if os.path.exists(log_file):
+            base, ext = os.path.splitext(log_file)
+            timestamp = pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')
+            log_file = f"{base}_{timestamp}{ext}"
+
         logger = logging.getLogger(__name__)
         logger.setLevel(log_level)
         # Create file handler and set level to debug
@@ -217,19 +228,6 @@ class Population:
         assert len(new_population) == self.n_individuals, f"Population size is {len(new_population)}, expected {self.n_individuals}"
         self.population = new_population
         self._checkpoint()
-    
-
-    def __getitem__(self, index):
-        """
-        Retrieve an individual from the population at the specified index.
-
-        Args:
-            index (int): The index of the individual to retrieve.
-
-        Returns:
-            object: The individual at the specified index in the population.
-        """
-        return self.population[index]
 
 
     def remove_duplicates(self, population):
@@ -273,7 +271,7 @@ class Population:
         return updated_population
         
     
-    def build_model(self, parsed_layers):
+    def build_model(self, parsed_layers, task="segmentation"):
         """
         Build a model based on the provided parsed layers.
 
@@ -287,13 +285,60 @@ class Population:
         Returns:
             A PyTorch model constructed with the encoder and head layer.
         """
-        model = GenericUNetNetwork(parsed_layers,
-                input_channels=self.dm.input_shape[0], 
-                input_height=self.dm.input_shape[1], 
-                input_width=self.dm.input_shape[2], 
-                num_classes=self.dm.num_classes,
-        )
-        valid = True
+        
+        def shape_tracer(self, encoder):
+            """
+            Traces the output shapes of a given encoder model when provided with a dummy input.
+            Args:
+                encoder (torch.nn.Module): The encoder model whose output shapes are to be traced.
+            Returns:
+                list[tuple]: A list of tuples representing the shapes of the encoder's outputs 
+                     (excluding the batch dimension). If the encoder outputs a single tensor, 
+                     the list will contain one tuple. If the encoder outputs multiple tensors 
+                     (e.g., a list or tuple of tensors), the list will contain a tuple for each output.
+            """
+            
+            dummy_input = torch.randn(1, *self.dm.input_shape).to(self.device)
+            with torch.no_grad():
+                output = encoder(dummy_input)
+            shapes = []
+            if isinstance(output, (list, tuple)):
+                for o in output:
+                    shape_without_batch = tuple(o.shape[1:])
+                    shapes.append(shape_without_batch)
+            else:
+                shape_without_batch = tuple(output.shape[1:])
+                shapes.append(shape_without_batch)
+            return shapes
+        
+        self.task = task
+        
+        if task == "segmentation":
+            model = GenericUNetNetwork(parsed_layers,
+                    input_channels=self.dm.input_shape[0], 
+                    input_height=self.dm.input_shape[1], 
+                    input_width=self.dm.input_shape[2], 
+                    num_classes=self.dm.num_classes,
+                    encoder_only=False,
+            )
+            valid = True
+        elif task == "classification": 
+            encoder = GenericUNetNetwork(parsed_layers,
+                    input_channels=self.dm.input_shape[0], 
+                    input_height=self.dm.input_shape[1], 
+                    input_width=self.dm.input_shape[2], 
+                    num_classes=self.dm.num_classes,
+                    encoder_only=True,
+            )
+            valid = True
+                
+            head = MultiInputClassifier(shape_tracer(self, encoder.to(self.device)), num_classes=self.dm.num_classes)
+            head = head.to(self.device)
+            model = nn.Sequential(encoder, head)
+            
+        else:
+            raise ValueError(f"Task {task} not supported.")
+        
         return model, valid
     
     
@@ -384,7 +429,7 @@ class Population:
             return None
     
 
-    def train_individual(self, idx, epochs=20, lr=1e-3):
+    def train_individual(self, idx, task, epochs=20, lr=1e-3, batch_size=None):
         """
         Train the individual using the data module and the specified number of epochs and learning rate.
 
@@ -397,21 +442,63 @@ class Population:
             None
         """
         individual = self.population[idx]
-        model, _ = self.build_model(individual.parsed_layers)
-        LM = GenericLightningSegmentationNetwork(
-            model=model,
-            learning_rate=lr,
-        )
         
+        
+        model, _ = self.build_model(individual.parsed_layers, task=task)
+        if task == "segmentation":
+            LM = GenericLightningSegmentationNetwork(
+                model=model,
+                learning_rate=lr,
+            )
+        
+        elif task == "classification":
+            LM = GenericLightningNetwork(
+                model=model,
+                learning_rate=lr,
+                num_classes=self.dm.num_classes,
+            )
+        else:
+            raise ValueError(f"Task {task} not supported.")
+        
+        # Create a PyTorch Lightning trainer
         trainer = pl.Trainer(
             max_epochs=epochs,
             accelerator="gpu" if torch.cuda.is_available() else "cpu"
         )
+        # Set the batch size if specified
+        if batch_size is not None:
+            self.dm.batch_size = batch_size
         # Train the lightning model
         trainer.fit(LM, self.dm)
         results = trainer.test(LM, self.dm)
         individual.results = results
         return results
+
+
+    def __getitem__(self, index):
+        """
+        Retrieve an individual from the population at the specified index.
+
+        Args:
+            index (int): The index of the individual to retrieve.
+
+        Returns:
+            object: The individual at the specified index in the population.
+        """
+        return self.population[index]
+
+
+    def __iter__(self):
+        """
+        Initialize the population iterator.
+
+        This method allows the use of the `iter()` function to initialize the population iterator.
+
+        Returns:
+            object: The population iterator.
+        """
+        self._iter_idx = 0
+        return self
 
 
     def __len__(self):

@@ -128,7 +128,7 @@ class GenericUNetNetwork(nn.Module):
         get_activation_fn(activation):
             Retrieves the specified activation function from the `activations` module.
         """
-    def __init__(self, parsed_layers, input_channels=3, input_height=256, input_width=256, num_classes=2, MaxParams=200_000_000):
+    def __init__(self, parsed_layers, input_channels=3, input_height=256, input_width=256, num_classes=2, MaxParams=200_000_00, encoder_only=False):
         super(GenericUNetNetwork, self).__init__()
         self.config = configparser.ConfigParser()
         self.config.read('config.ini')
@@ -147,9 +147,14 @@ class GenericUNetNetwork(nn.Module):
 
         # Encder Building:
         self._build_encoder(parsed_layers)
-        # Decoder Building:
-        if self.encoder is not None:
-            self._build_decoder()
+        if encoder_only:
+            self.decoder = nn.Identity() # Set decoder to identity function.
+        else:
+            # Decoder Building:
+            if self.encoder is not None:
+                self._build_decoder()
+            else:
+                raise ValueError("Error building encoder. Decoder not built.")
         
 
 

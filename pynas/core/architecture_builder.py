@@ -2,7 +2,8 @@
 # architecture_builder.py
 import random
 import configparser
-from vocabulary import convolution_layer_vocabulary, layer_parameters, parameter_vocabulary, activation_functions_vocabulary, upsampling_layer_vocabulary, pooling_layer_vocabulary, head_vocabulary, skip_connection_layer_vocabulary
+from .vocabulary import convolution_layer_vocabulary, layer_parameters, parameter_vocabulary
+from .vocabulary import activation_functions_vocabulary, upsampling_layer_vocabulary, pooling_layer_vocabulary 
 
 
 
@@ -193,8 +194,6 @@ def parse_architecture_code(architecture_code):
             layer_type = convolution_layer_vocabulary.get(layer_type_code, "Unknown")
         elif segment_type_code == 'P':
             layer_type = pooling_layer_vocabulary.get(layer_type_code, "Unknown")
-        elif segment_type_code == 'H':
-            layer_type = head_vocabulary.get(layer_type_code, "Unknown")
         elif segment_type_code == 'U':
             layer_type = upsampling_layer_vocabulary.get(segment_type_code, "Unknown")
         elif segment_type_code == 'S':  # For skip connections
@@ -273,7 +272,6 @@ def generate_code_from_parsed_architecture(parsed_layers):
     # Utilize the provided configuration directly
     reverse_convolution_layer_vocabulary = {v: k for k, v in convolution_layer_vocabulary.items()}
     reverse_pooling_layer_vocabulary = {v: k for k, v in pooling_layer_vocabulary.items()}
-    reverse_head_vocabulary = {v: k for k, v in head_vocabulary.items()}
     reverse_activation_functions_vocabulary = {v: k for k, v in activation_functions_vocabulary.items()}
     reverse_upsampling_functions_vocabulary = {v: k for k, v in upsampling_layer_vocabulary.items()}
 
@@ -286,8 +284,6 @@ def generate_code_from_parsed_architecture(parsed_layers):
             segment_code += "L" + reverse_convolution_layer_vocabulary[layer_type]
         elif layer_type in reverse_pooling_layer_vocabulary:
             segment_code += "P" + reverse_pooling_layer_vocabulary[layer_type]
-        elif layer_type in reverse_head_vocabulary:
-            segment_code += "H" + reverse_head_vocabulary[layer_type]
         elif layer_type == 'Dropout':
             segment_code += "LD"
         elif layer_type == "Upsample": 

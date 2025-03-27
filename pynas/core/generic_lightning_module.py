@@ -5,10 +5,11 @@ import torch.optim as optim
 import torchmetrics
 import pytorch_lightning as pl
 from torchmetrics import MeanSquaredError
+
+import os 
 from datetime import datetime
 import matplotlib.pyplot as plt
 
-from .generic_network import GenericNetwork
 from ..train.losses import CategoricalCrossEntropyLoss, FocalLoss
 from ..train.custom_iou import calculate_iou
 
@@ -107,8 +108,9 @@ class GenericLightningNetwork(pl.LightningModule):
         plt.xlabel('Prediction')
         plt.ylabel('Class')
         current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        os.makedirs(rf"./logs/tb_logs", exist_ok=True)
         plt.savefig(rf"./logs/tb_logs/confusion_matrix_{current_datetime}.png")
-        # plt.show()
+        plt.show()
 
     def _common_step(self, batch, _):
         x, y = batch
