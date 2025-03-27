@@ -15,6 +15,8 @@ import torch
 import torch.nn as nn
 import pytorch_lightning as pl
 
+from IPython.display import clear_output
+
 
 class Population:
     def __init__(self, n_individuals, max_layers, dm, max_parameters=100000):
@@ -368,11 +370,11 @@ class Population:
         for individual in self.population:
             generation = self.generation
             parsed_layers = individual.parsed_layers
-            fitness = individual.fitness
-            iou = individual.iou
+            metric = individual.metric
             fps = individual.fps
+            fitness = individual.fitness
             model_size = individual.model_size
-            data.append([generation, parsed_layers, fitness, iou, fps, model_size])
+            data.append([generation, parsed_layers, fitness, metric, fps, model_size])
         
         df = pd.DataFrame(data, columns=columns).sort_values(by="Fitness", ascending=False)
         df.reset_index(drop=True, inplace=True)
@@ -471,8 +473,74 @@ class Population:
         # Train the lightning model
         trainer.fit(LM, self.dm)
         results = trainer.test(LM, self.dm)
-        individual.results = results
-        return results
+        individual._prompt_fitness(results[0])
+        self._checkpoint()        
+
+
+    def train_generation(self, task='classification', lr=0.001, epochs=4, batch_size=32):
+        """
+        Train all individuals in the current generation that have not been trained yet.
+
+        Parameters:
+            task (str): The task type ('classification' or 'segmentation').
+            lr (float): Learning rate for training.
+            epochs (int): Number of epochs for training.
+            batch_size (int): Batch size for training.
+
+        Returns:
+            None
+        """
+        for idx in range(len(self)):
+            if 'Fitness' in self.df.columns and not pd.isna(self.df.loc[idx, 'Fitness']) and self.df.loc[idx, 'Fitness'] != 0:
+                print(f"Skipping individual {idx}/{len(self)} as it has already been trained")
+                continue
+
+            print(f"Training individual {idx}/{len(self)}")
+            self.train_individual(idx=idx, task=task, lr=lr, epochs=epochs, batch_size=batch_size)
+            clear_output(wait=True)
+
+        
+    def save_model(self, LM,
+                   save_torchscript=True, 
+                   ts_save_path=None,
+                   save_standard=True, 
+                   std_save_path=None):
+        # Use generation attribute from the Population object.
+        gen = self.population.generation
+        
+        if ts_save_path is None:
+            ts_save_path = f"models_traced/generation_{gen}/model_and_architecture_{self.idx}.pt"
+        if std_save_path is None:
+            std_save_path = f"models_traced/generation_{gen}/model_{self.idx}.pth"
+        
+        # Save the results to a text file.
+        with open(f"models_traced/generation_{gen}/results_model_{self.idx}.txt", "w") as f:
+            f.write("Test Results:\n")
+            for key, value in self.results[0].items():
+                f.write(f"{key}: {value}\n")
+        
+        # Prepare dummy input from dm.input_shape
+        input_shape = self.dm.input_shape
+        if len(input_shape) == 3:
+            input_shape = (1,) + input_shape
+        device = next(LM.parameters()).device
+        example_input = torch.randn(*input_shape).to(device)
+        
+        LM = LM.eval()  # set the model to evaluation mode
+        
+        if save_torchscript:
+            traced_model = torch.jit.trace(LM.model, example_input)
+            traced_model.save(ts_save_path)
+            print(f"Scripted (TorchScript) model saved at {ts_save_path}")
+        
+        if save_standard:
+            # Retrieve architecture code from the individual.
+            arch_code = self.population[self.idx].architecture
+            save_dict = {"state_dict": LM.model.state_dict()}
+            if arch_code is not None:
+                save_dict["architecture_code"] = arch_code
+            torch.save(save_dict, std_save_path)
+            print(f"Standard model saved at {std_save_path}")
 
 
     def __getitem__(self, index):
@@ -486,19 +554,6 @@ class Population:
             object: The individual at the specified index in the population.
         """
         return self.population[index]
-
-
-    def __iter__(self):
-        """
-        Initialize the population iterator.
-
-        This method allows the use of the `iter()` function to initialize the population iterator.
-
-        Returns:
-            object: The population iterator.
-        """
-        self._iter_idx = 0
-        return self
 
 
     def __len__(self):

@@ -1,5 +1,9 @@
 from . import architecture_builder as builder
+from ..train import myFit
 from copy import deepcopy
+
+
+evaluator = myFit.FitnessEvaluator()
 
 
 class Individual:
@@ -54,11 +58,23 @@ class Individual:
         """
         self.results = {}
         self.fitness = 0.0
-        self.iou = None
+        self.metric = None
         self.fps = None
         self.model_size = None
         self.model = None
 
+
+    # Implement the logic to prompt the fitnes
+    def _prompt_fitness(self, results):
+        fps = results['fps']
+        metric = results['test_mcc']
+        self.fps, self.metric = fps, metric
+        self.results = results
+
+        self.fitness = evaluator.weighted_sum_exponential(fps, metric)
+        return self.fitness
+    
+    
 
     def architecture2chromosome(self, input_architecture):
         """
@@ -85,6 +101,7 @@ class Individual:
         architecture_code = 'E'.join(input_chromosome) + 'EE'
         return architecture_code
 
+
     def copy(self):
         """
         Creates a deep copy of the current individual, including architecture,
@@ -102,6 +119,7 @@ class Individual:
             new_individual.model = deepcopy(self.model)  # Copy the entire model
 
         return new_individual    
+
     
     def set_trained_model(self, model):
         """
