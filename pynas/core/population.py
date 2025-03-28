@@ -837,6 +837,9 @@ class Population:
         # Train the lightning model
         trainer.fit(LM, self.dm)
         results = trainer.test(LM, self.dm)
+        #
+        # API call to get the test results
+        #
         individual._prompt_fitness(results[0])
         self._checkpoint()        
 

@@ -20,7 +20,6 @@ parser.add_argument('--gen', type=int, default=None, help='Path to the configura
 parser.add_argument('--config', type=str, default='config.ini', help='Path to the configuration file.')
 
 
-# Update config file path if provided
 
 def main(args):
     config = configparser.ConfigParser()
@@ -49,5 +48,4 @@ def main(args):
 
 if __name__ == '__main__':
     args = parser.parse_args()
-
     main(args=args)
