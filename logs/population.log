@@ -1,42 +1,173 @@
-2025-03-26 17:35:53,037 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5403497 Parameters
-2025-03-26 17:35:54,333 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5699529 Parameters
-2025-03-26 17:35:55,302 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1896395 Parameters
-2025-03-26 17:35:55,721 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1230943 Parameters
-2025-03-26 17:35:57,985 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1677555 Parameters
-2025-03-26 17:35:58,037 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
-2025-03-26 17:35:58,037 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
-2025-03-26 17:47:48,099 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5403497 Parameters
-2025-03-26 17:47:49,268 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5699529 Parameters
-2025-03-26 17:47:50,146 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1896395 Parameters
-2025-03-26 17:47:50,543 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1230943 Parameters
-2025-03-26 17:47:52,690 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1677555 Parameters
-2025-03-26 17:47:52,742 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
-2025-03-26 17:47:52,742 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
-2025-03-26 18:21:15,804 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5403497 Parameters
-2025-03-26 18:21:17,086 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5699529 Parameters
-2025-03-26 18:21:18,065 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1896395 Parameters
-2025-03-26 18:21:18,500 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1230943 Parameters
-2025-03-26 18:21:21,018 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1677555 Parameters
-2025-03-26 18:21:21,074 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
-2025-03-26 18:21:21,075 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
-2025-03-27 08:06:57,395 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5403497 Parameters
-2025-03-27 08:06:58,673 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5699529 Parameters
-2025-03-27 08:06:59,712 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1896395 Parameters
-2025-03-27 08:07:00,183 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1230943 Parameters
-2025-03-27 08:07:02,794 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1677555 Parameters
-2025-03-27 08:07:02,872 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
-2025-03-27 08:07:02,872 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
-2025-03-27 08:22:53,919 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5403497 Parameters
-2025-03-27 08:22:55,079 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5699529 Parameters
-2025-03-27 08:22:56,018 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1896395 Parameters
-2025-03-27 08:22:56,405 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1230943 Parameters
-2025-03-27 08:22:58,563 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1677555 Parameters
-2025-03-27 08:22:58,615 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
-2025-03-27 08:22:58,615 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
-2025-03-27 08:25:47,730 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5403497 Parameters
-2025-03-27 08:25:48,881 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 5699529 Parameters
-2025-03-27 08:25:49,808 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1896395 Parameters
-2025-03-27 08:25:50,209 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1230943 Parameters
-2025-03-27 08:25:52,685 - pynas.core.population - ERROR - Error encountered when checking individual: Model size is too big: 1677555 Parameters
-2025-03-27 08:25:52,742 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
-2025-03-27 08:25:52,743 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
+2025-03-28 17:03:06,743 - pynas.core.population - INFO - Initialized population with 20 individuals, max_layers=3, max_parameters=400000, device=cuda
+2025-03-28 17:03:15,547 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:15,547 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:16,563 - pynas.core.population - DEBUG - Model size: 40235 parameters
+2025-03-28 17:03:16,563 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 40235
+2025-03-28 17:03:16,565 - pynas.core.population - DEBUG - Added individual 1/20 (attempt 1, failed: 0)
+2025-03-28 17:03:16,569 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:16,570 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:18,238 - pynas.core.population - DEBUG - Model size: 5403497 parameters
+2025-03-28 17:03:18,238 - pynas.core.population - WARNING - Model too large: 5403497 parameters (max: 400000)
+2025-03-28 17:03:18,242 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:18,243 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:18,814 - pynas.core.population - DEBUG - Model size: 78747 parameters
+2025-03-28 17:03:18,815 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 78747
+2025-03-28 17:03:18,816 - pynas.core.population - DEBUG - Added individual 2/20 (attempt 3, failed: 1)
+2025-03-28 17:03:18,820 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:18,820 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:19,855 - pynas.core.population - DEBUG - Model size: 36337 parameters
+2025-03-28 17:03:19,855 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 36337
+2025-03-28 17:03:19,857 - pynas.core.population - DEBUG - Added individual 3/20 (attempt 4, failed: 1)
+2025-03-28 17:03:19,861 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:19,861 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:21,540 - pynas.core.population - DEBUG - Model size: 5699529 parameters
+2025-03-28 17:03:21,540 - pynas.core.population - WARNING - Model too large: 5699529 parameters (max: 400000)
+2025-03-28 17:03:21,544 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:21,544 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:22,361 - pynas.core.population - DEBUG - Model size: 833 parameters
+2025-03-28 17:03:22,362 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 833
+2025-03-28 17:03:22,363 - pynas.core.population - DEBUG - Added individual 4/20 (attempt 6, failed: 2)
+2025-03-28 17:03:22,367 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:22,367 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:22,894 - pynas.core.population - DEBUG - Model size: 27159 parameters
+2025-03-28 17:03:22,894 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 27159
+2025-03-28 17:03:22,896 - pynas.core.population - DEBUG - Added individual 5/20 (attempt 7, failed: 2)
+2025-03-28 17:03:22,900 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:22,900 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:23,553 - pynas.core.population - DEBUG - Model size: 117435 parameters
+2025-03-28 17:03:23,553 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 117435
+2025-03-28 17:03:23,555 - pynas.core.population - DEBUG - Added individual 6/20 (attempt 8, failed: 2)
+2025-03-28 17:03:23,560 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:23,561 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:24,393 - pynas.core.population - DEBUG - Model size: 14789 parameters
+2025-03-28 17:03:24,393 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 14789
+2025-03-28 17:03:24,395 - pynas.core.population - DEBUG - Added individual 7/20 (attempt 9, failed: 2)
+2025-03-28 17:03:24,399 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:24,399 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:24,952 - pynas.core.population - DEBUG - Model size: 16789 parameters
+2025-03-28 17:03:24,952 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 16789
+2025-03-28 17:03:24,954 - pynas.core.population - DEBUG - Added individual 8/20 (attempt 10, failed: 2)
+2025-03-28 17:03:24,954 - pynas.core.population - INFO - Population generation: 8/20 created (attempts: 10, failed: 2)
+2025-03-28 17:03:24,957 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:24,957 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:25,913 - pynas.core.population - DEBUG - Model size: 1896395 parameters
+2025-03-28 17:03:25,914 - pynas.core.population - WARNING - Model too large: 1896395 parameters (max: 400000)
+2025-03-28 17:03:25,918 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:25,918 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:26,862 - pynas.core.population - DEBUG - Model size: 1230943 parameters
+2025-03-28 17:03:26,862 - pynas.core.population - WARNING - Model too large: 1230943 parameters (max: 400000)
+2025-03-28 17:03:26,866 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:26,866 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:27,542 - pynas.core.population - DEBUG - Model size: 47571 parameters
+2025-03-28 17:03:27,542 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 47571
+2025-03-28 17:03:27,544 - pynas.core.population - DEBUG - Added individual 9/20 (attempt 13, failed: 4)
+2025-03-28 17:03:27,547 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:27,547 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:28,175 - pynas.core.population - DEBUG - Model size: 67918 parameters
+2025-03-28 17:03:28,175 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 67918
+2025-03-28 17:03:28,176 - pynas.core.population - DEBUG - Added individual 10/20 (attempt 14, failed: 4)
+2025-03-28 17:03:28,180 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:28,180 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:29,398 - pynas.core.population - DEBUG - Model size: 2643 parameters
+2025-03-28 17:03:29,398 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 2643
+2025-03-28 17:03:29,407 - pynas.core.population - DEBUG - Added individual 11/20 (attempt 15, failed: 4)
+2025-03-28 17:03:29,411 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:29,411 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:29,759 - pynas.core.population - DEBUG - Model size: 13754 parameters
+2025-03-28 17:03:29,759 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 13754
+2025-03-28 17:03:29,761 - pynas.core.population - DEBUG - Added individual 12/20 (attempt 16, failed: 4)
+2025-03-28 17:03:29,765 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:29,766 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:30,262 - pynas.core.population - DEBUG - Model size: 10259 parameters
+2025-03-28 17:03:30,262 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 10259
+2025-03-28 17:03:30,264 - pynas.core.population - DEBUG - Added individual 13/20 (attempt 17, failed: 4)
+2025-03-28 17:03:30,267 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:30,268 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:31,213 - pynas.core.population - DEBUG - Model size: 14211 parameters
+2025-03-28 17:03:31,214 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 14211
+2025-03-28 17:03:31,215 - pynas.core.population - DEBUG - Added individual 14/20 (attempt 18, failed: 4)
+2025-03-28 17:03:31,219 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:31,219 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:32,213 - pynas.core.population - DEBUG - Model size: 54523 parameters
+2025-03-28 17:03:32,213 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 54523
+2025-03-28 17:03:32,214 - pynas.core.population - DEBUG - Added individual 15/20 (attempt 19, failed: 4)
+2025-03-28 17:03:32,218 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:32,218 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:32,867 - pynas.core.population - DEBUG - Model size: 293795 parameters
+2025-03-28 17:03:32,867 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 293795
+2025-03-28 17:03:32,869 - pynas.core.population - DEBUG - Added individual 16/20 (attempt 20, failed: 4)
+2025-03-28 17:03:32,869 - pynas.core.population - INFO - Population generation: 16/20 created (attempts: 20, failed: 4)
+2025-03-28 17:03:32,873 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:32,873 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:33,693 - pynas.core.population - DEBUG - Model size: 503 parameters
+2025-03-28 17:03:33,693 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 503
+2025-03-28 17:03:33,694 - pynas.core.population - DEBUG - Added individual 17/20 (attempt 21, failed: 4)
+2025-03-28 17:03:33,698 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:33,698 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:34,660 - pynas.core.population - DEBUG - Model size: 36249 parameters
+2025-03-28 17:03:34,660 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 36249
+2025-03-28 17:03:34,661 - pynas.core.population - DEBUG - Added individual 18/20 (attempt 22, failed: 4)
+2025-03-28 17:03:34,665 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:34,666 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:35,639 - pynas.core.population - DEBUG - Model size: 60451 parameters
+2025-03-28 17:03:35,640 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 60451
+2025-03-28 17:03:35,641 - pynas.core.population - DEBUG - Added individual 19/20 (attempt 23, failed: 4)
+2025-03-28 17:03:35,645 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:35,645 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:36,691 - pynas.core.population - DEBUG - Model size: 1677555 parameters
+2025-03-28 17:03:36,691 - pynas.core.population - WARNING - Model too large: 1677555 parameters (max: 400000)
+2025-03-28 17:03:36,695 - pynas.core.population - DEBUG - Successfully created random individual with 6 layers
+2025-03-28 17:03:36,695 - pynas.core.population - DEBUG - Building model from individual with 6 layers
+2025-03-28 17:03:37,270 - pynas.core.population - DEBUG - Model size: 12623 parameters
+2025-03-28 17:03:37,271 - pynas.core.population - DEBUG - Individual passed all validation checks, model size: 12623
+2025-03-28 17:03:37,281 - pynas.core.population - DEBUG - Added individual 20/20 (attempt 25, failed: 5)
+2025-03-28 17:03:37,282 - pynas.core.population - INFO - Initial population created with 20 individuals, removing duplicates...
+2025-03-28 17:03:37,282 - pynas.core.population - INFO - Population generation completed. Created 20/20 individuals in 21.7 seconds (attempts: 25, success rate: 80.0%)
+2025-03-28 17:03:37,283 - pynas.core.population - DEBUG - Backed up ./models_traced/src/population_0.pkl to ./models_traced/backups/gen_0/population_0_20250328_170337.pkl
+2025-03-28 17:03:37,283 - pynas.core.population - DEBUG - Backed up ./models_traced/src/df_population_0.pkl to ./models_traced/backups/gen_0/df_population_0_20250328_170337.pkl
+2025-03-28 17:03:37,285 - pynas.core.population - DEBUG - Updated population dataframe
+2025-03-28 17:03:37,286 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
+2025-03-28 17:03:37,286 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
+2025-03-28 17:03:37,286 - pynas.core.population - INFO - Successfully checkpointed population at generation 0
+2025-03-28 17:09:46,191 - pynas.core.population - DEBUG - Backed up ./models_traced/src/population_0.pkl to ./models_traced/backups/gen_0/population_0_20250328_170946.pkl
+2025-03-28 17:09:46,192 - pynas.core.population - DEBUG - Backed up ./models_traced/src/df_population_0.pkl to ./models_traced/backups/gen_0/df_population_0_20250328_170946.pkl
+2025-03-28 17:09:46,194 - pynas.core.population - DEBUG - Updated population dataframe
+2025-03-28 17:09:46,195 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
+2025-03-28 17:09:46,196 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
+2025-03-28 17:09:46,196 - pynas.core.population - INFO - Successfully checkpointed population at generation 0
+2025-03-28 17:11:19,349 - pynas.core.population - DEBUG - Backed up ./models_traced/src/population_0.pkl to ./models_traced/backups/gen_0/population_0_20250328_171119.pkl
+2025-03-28 17:11:19,349 - pynas.core.population - DEBUG - Backed up ./models_traced/src/df_population_0.pkl to ./models_traced/backups/gen_0/df_population_0_20250328_171119.pkl
+2025-03-28 17:11:19,351 - pynas.core.population - DEBUG - Updated population dataframe
+2025-03-28 17:11:19,352 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
+2025-03-28 17:11:19,352 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
+2025-03-28 17:11:19,352 - pynas.core.population - INFO - Successfully checkpointed population at generation 0
+2025-03-28 17:13:19,344 - pynas.core.population - DEBUG - Backed up ./models_traced/src/population_0.pkl to ./models_traced/backups/gen_0/population_0_20250328_171319.pkl
+2025-03-28 17:13:19,344 - pynas.core.population - DEBUG - Backed up ./models_traced/src/df_population_0.pkl to ./models_traced/backups/gen_0/df_population_0_20250328_171319.pkl
+2025-03-28 17:13:19,346 - pynas.core.population - DEBUG - Updated population dataframe
+2025-03-28 17:13:19,347 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
+2025-03-28 17:13:19,348 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
+2025-03-28 17:13:19,348 - pynas.core.population - INFO - Successfully checkpointed population at generation 0
+2025-03-28 17:15:21,420 - pynas.core.population - DEBUG - Backed up ./models_traced/src/population_0.pkl to ./models_traced/backups/gen_0/population_0_20250328_171521.pkl
+2025-03-28 17:15:21,420 - pynas.core.population - DEBUG - Backed up ./models_traced/src/df_population_0.pkl to ./models_traced/backups/gen_0/df_population_0_20250328_171521.pkl
+2025-03-28 17:15:21,422 - pynas.core.population - DEBUG - Updated population dataframe
+2025-03-28 17:15:21,423 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
+2025-03-28 17:15:21,424 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
+2025-03-28 17:15:21,424 - pynas.core.population - INFO - Successfully checkpointed population at generation 0
+2025-03-28 17:17:07,179 - pynas.core.population - DEBUG - Backed up ./models_traced/src/population_0.pkl to ./models_traced/backups/gen_0/population_0_20250328_171707.pkl
+2025-03-28 17:17:07,180 - pynas.core.population - DEBUG - Backed up ./models_traced/src/df_population_0.pkl to ./models_traced/backups/gen_0/df_population_0_20250328_171707.pkl
+2025-03-28 17:17:07,181 - pynas.core.population - DEBUG - Updated population dataframe
+2025-03-28 17:17:07,182 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
+2025-03-28 17:17:07,182 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
+2025-03-28 17:17:07,183 - pynas.core.population - INFO - Successfully checkpointed population at generation 0
+2025-03-28 17:18:43,999 - pynas.core.population - DEBUG - Backed up ./models_traced/src/population_0.pkl to ./models_traced/backups/gen_0/population_0_20250328_171843.pkl
+2025-03-28 17:18:44,000 - pynas.core.population - DEBUG - Backed up ./models_traced/src/df_population_0.pkl to ./models_traced/backups/gen_0/df_population_0_20250328_171843.pkl
+2025-03-28 17:18:44,001 - pynas.core.population - DEBUG - Updated population dataframe
+2025-03-28 17:18:44,002 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
+2025-03-28 17:18:44,002 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
+2025-03-28 17:18:44,003 - pynas.core.population - INFO - Successfully checkpointed population at generation 0
+2025-03-28 17:20:45,596 - pynas.core.population - DEBUG - Backed up ./models_traced/src/population_0.pkl to ./models_traced/backups/gen_0/population_0_20250328_172045.pkl
+2025-03-28 17:20:45,596 - pynas.core.population - DEBUG - Backed up ./models_traced/src/df_population_0.pkl to ./models_traced/backups/gen_0/df_population_0_20250328_172045.pkl
+2025-03-28 17:20:45,598 - pynas.core.population - DEBUG - Updated population dataframe
+2025-03-28 17:20:45,598 - pynas.core.population - INFO - Population saved to ./models_traced/src/population_0.pkl
+2025-03-28 17:20:45,599 - pynas.core.population - INFO - DataFrame saved to ./models_traced/src/df_population_0.pkl
+2025-03-28 17:20:45,599 - pynas.core.population - INFO - Successfully checkpointed population at generation 0
