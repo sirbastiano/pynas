@@ -1,7 +1,10 @@
-/data/
+/data
+/datasets
 /Models/
 /models_traced
 /logs
+/lightning_logs
+/tests
 
 
 # Byte-compiled / optimized / DLL files
