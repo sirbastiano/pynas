@@ -19,16 +19,54 @@ from IPython.display import clear_output
 
 
 class Population:
-    def __init__(self, n_individuals, max_layers, dm, max_parameters=100000):
-        self.dm = dm # Data module for model creation
+    def __init__(self, n_individuals, max_layers, dm, max_parameters=100_000, save_directory=None):
+        """
+        Initialize a new population for the evolutionary neural architecture search.
         
+        Parameters:
+            n_individuals (int): Number of individuals in the population
+            max_layers (int): Maximum number of layers in an individual's architecture
+            dm (object): Data module for model creation and evaluation
+            max_parameters (int, optional): Maximum number of parameters allowed in a model. Defaults to 100,000.
+            save_directory (str, optional): Directory to save models and checkpoints. Defaults to "./models_traced".
+        
+        Raises:
+            ValueError: If input parameters are invalid (negative values, none data module)
+        """
+        # Validate input parameters
+        if not isinstance(n_individuals, int) or n_individuals <= 0:
+            raise ValueError(f"n_individuals must be a positive integer, got {n_individuals}")
+        if not isinstance(max_layers, int) or max_layers <= 0:
+            raise ValueError(f"max_layers must be a positive integer, got {max_layers}")
+        if dm is None:
+            raise ValueError("Data module (dm) cannot be None")
+        if not isinstance(max_parameters, int) or max_parameters <= 0:
+            raise ValueError(f"max_parameters must be a positive integer, got {max_parameters}")
+        
+        # Data and model parameters
+        self.dm = dm  # Data module for model creation
         self.n_individuals = n_individuals
         self.max_layers = max_layers
-        self.generation = 0
         self.max_parameters = max_parameters
-        self.save_directory = "./models_traced"
+        
+        # State tracking
+        self.generation = 0
+        self.population = []  # Initialize empty population
+        self.df = None  # Will hold population stats as DataFrame
+        
+        # File storage
+        self.save_directory = save_directory or "./models_traced"
+        # Create directories if they don't exist
+        os.makedirs(os.path.join(self.save_directory, "src"), exist_ok=True)
+        os.makedirs(os.path.join(self.save_directory, "backups"), exist_ok=True)
+        
+        # Hardware
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.logger = self.setup_logger()
+        
+        self.logger.info(f"Initialized population with {n_individuals} individuals, "
+                         f"max_layers={max_layers}, max_parameters={max_parameters}, "
+                         f"device={self.device}")
         
     
     @staticmethod
@@ -73,68 +111,380 @@ class Population:
         self._checkpoint()
 
 
-    def create_random_individual(self):
+    def create_random_individual(self, max_attempts=5):
         """
         Create a random individual with a random number of layers.
+        
+        This function attempts to create a valid random individual with
+        proper error handling and retry logic to ensure robustness.
+        
+        Parameters:
+            max_attempts (int): Maximum number of attempts to create a valid individual.
+                               Defaults to 5.
+        
+        Returns:
+            Individual: A valid random individual.
+            
+        Raises:
+            RuntimeError: If unable to create a valid individual after max_attempts.
         """
-        return Individual(max_layers=self.max_layers)
+        for attempt in range(max_attempts):
+            try:
+                individual = Individual(max_layers=self.max_layers)
+                
+                # Basic validation that the individual was created properly
+                if not hasattr(individual, 'parsed_layers') or not individual.parsed_layers:
+                    self.logger.warning(f"Created individual has invalid parsed_layers (attempt {attempt+1}/{max_attempts})")
+                    continue
+                    
+                self.logger.debug(f"Successfully created random individual with {len(individual.parsed_layers)} layers")
+                return individual
+                
+            except Exception as e:
+                self.logger.warning(f"Failed to create random individual (attempt {attempt+1}/{max_attempts}): {str(e)}")
+        
+        # If we reach here, all attempts failed
+        error_msg = f"Failed to create valid random individual after {max_attempts} attempts"
+        self.logger.error(error_msg)
+        raise RuntimeError(error_msg)
     
 
-    def sort_population(self):
+    def _sort_population(self):
         """
-        Sort the population by fitness.
+        Sort the population by fitness in descending order.
+        
+        This method:
+        1. Validates the population exists and is not empty
+        2. Handles individuals with missing or invalid fitness values
+        3. Provides comprehensive error handling
+        4. Logs sorting operations for debugging
+        
+        Returns:
+            list: Sorted population by fitness (descending order)
         """
-        self.population = sorted(self.population, key=lambda individual: individual.fitness, reverse=True)
-        self.checkpoint()
+        # Check if population exists and is not empty
+        if not hasattr(self, 'population') or not self.population:
+            self.logger.warning("Cannot sort population: population is empty or not initialized")
+            return []
+        
+        try:
+            # Filter out individuals with invalid fitness values
+            valid_individuals = []
+            invalid_count = 0
+            
+            for individual in self.population:
+                # Check if the individual has a fitness attribute and it's a valid value
+                if (hasattr(individual, 'fitness') and 
+                    individual.fitness is not None and 
+                    not np.isnan(individual.fitness)):
+                    valid_individuals.append(individual)
+                else:
+                    invalid_count += 1
+            
+            if invalid_count > 0:
+                self.logger.warning(f"Found {invalid_count} individuals with invalid fitness values")
+            
+            if not valid_individuals:
+                self.logger.error("No individuals with valid fitness values found!")
+                return self.population  # Return unsorted population as fallback
+            
+            # Sort the valid individuals
+            self.logger.debug(f"Sorting {len(valid_individuals)} individuals by fitness")
+            sorted_population = sorted(valid_individuals, key=lambda ind: ind.fitness, reverse=True)
+            
+            # Update the population with sorted individuals
+            self.population = sorted_population
+            
+            # Log the top fitness values for debugging
+            if sorted_population:
+                top_fitness = [ind.fitness for ind in sorted_population[:min(3, len(sorted_population))]]
+                self.logger.info(f"Top fitness values after sorting: {top_fitness}")
+            
+            # Checkpoint the sorted population (with error handling)
+            try:
+                self._checkpoint()
+            except Exception as e:
+                self.logger.error(f"Failed to checkpoint after sorting: {str(e)}")
+            
+            return sorted_population
+            
+        except Exception as e:
+            self.logger.error(f"Population sorting failed with error: {str(e)}")
+            return self.population  # Return unsorted population as fallback
         
 
     def _checkpoint(self):
         """
-        Save the current population.
+        Save the current population state to disk, including dataframes and serialized models.
+        
+        This implementation includes:
+        - Validation of population state before saving
+        - Comprehensive error handling for each saving step
+        - Backup of previous checkpoints
+        - Detailed logging
         """
-        os.makedirs(self.save_directory, exist_ok=True)
-        self._update_df()
-        self.save_population()
-        self.save_dataframe()
+        if not hasattr(self, 'population') or not self.population:
+            self.logger.error("Cannot checkpoint: population is empty or not initialized")
+            return False
+        
+        try:
+            # Create save directory if it doesn't exist
+            os.makedirs(self.save_directory, exist_ok=True)
+            
+            # Create backup directory for current generation
+            backup_dir = os.path.join(self.save_directory, f"backups/gen_{self.generation}")
+            os.makedirs(backup_dir, exist_ok=True)
+            
+            # Backup previous files if they exist
+            for file_type in ["population", "df_population"]:
+                src_path = f'{self.save_directory}/src/{file_type}_{self.generation}.pkl'
+                if os.path.exists(src_path):
+                    backup_path = f'{backup_dir}/{file_type}_{self.generation}_{pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")}.pkl'
+                    try:
+                        import shutil
+                        shutil.copy2(src_path, backup_path)
+                        self.logger.debug(f"Backed up {src_path} to {backup_path}")
+                    except Exception as e:
+                        self.logger.warning(f"Failed to backup {src_path}: {e}")
+            
+            # Update dataframe with current population stats
+            try:
+                self._update_df()
+                self.logger.debug("Updated population dataframe")
+            except Exception as e:
+                self.logger.error(f"Failed to update dataframe: {e}")
+                return False
+            
+            # Save population and dataframe
+            save_success = True
+            
+            try:
+                self.save_population()
+            except Exception as e:
+                self.logger.error(f"Failed to save population: {e}")
+                save_success = False
+                
+            try:
+                self.save_dataframe()
+            except Exception as e:
+                self.logger.error(f"Failed to save dataframe: {e}")
+                save_success = False
+                
+            if save_success:
+                self.logger.info(f"Successfully checkpointed population at generation {self.generation}")
+                return True
+            else:
+                self.logger.warning(f"Checkpoint at generation {self.generation} was incomplete")
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"Checkpoint failed with error: {e}")
+            return False
     
     
     def check_individual(self, individual):
+        """
+        Validate if an individual can be built into a functional model with acceptable parameters.
+        
+        This method:
+        1. Validates the input individual object
+        2. Attempts to build a model from the individual's genetic representation
+        3. Evaluates the model's parameter count
+        4. Ensures the model meets size constraints
+        5. Updates the individual with its model_size
+        
+        Parameters:
+            individual (Individual): The individual to check
+            
+        Returns:
+            bool: True if the individual is valid, False otherwise
+        """
+        if individual is None:
+            self.logger.error("Cannot check individual: received None")
+            return False
+            
+        if not hasattr(individual, 'parsed_layers') or not individual.parsed_layers:
+            self.logger.error(f"Individual is missing parsed_layers attribute or it's empty")
+            return False
+        
         try:
+            # Attempt to build the model
+            self.logger.debug(f"Building model from individual with {len(individual.parsed_layers)} layers")
             model_representation, is_valid = self.build_model(individual.parsed_layers)
-            if is_valid:
+            
+            if not is_valid:
+                self.logger.warning(f"Model building failed for individual: build_model returned is_valid=False")
+                return False
+                
+            # Evaluate the model's parameter count
+            try:
                 modelSize = self.evaluate_parameters(model_representation)
                 individual.model_size = modelSize
+                self.logger.debug(f"Model size: {modelSize} parameters")
+            except Exception as e:
+                self.logger.error(f"Failed to evaluate model parameters: {e}")
+                return False
+            
+            # Validate the model size
+            if modelSize <= 0:
+                self.logger.warning(f"Invalid model size: {modelSize} (must be positive)")
+                return False
                 
-                assert modelSize > 0, f"Model size must be greater then zero: {modelSize} Parameters"
-                assert modelSize < self.max_parameters, f"Model size is too big: {modelSize} Parameters"
-                assert modelSize is not None, f"Model size is None..."
-                return True # Individual is valid
+            if modelSize >= self.max_parameters:
+                self.logger.warning(f"Model too large: {modelSize} parameters (max: {self.max_parameters})")
+                return False
+                
+            if modelSize is None:
+                self.logger.warning("Model size is None")
+                return False
+            
+            # All checks passed
+            self.logger.debug(f"Individual passed all validation checks, model size: {modelSize}")
+            return True
+            
+        except AssertionError as e:
+            self.logger.warning(f"Assertion failed during individual check: {e}")
+            return False
+        except ValueError as e:
+            self.logger.warning(f"Value error during individual check: {e}")
+            return False
+        except RuntimeError as e:
+            self.logger.warning(f"Runtime error during individual check: {e}")
+            return False
         except Exception as e:
-                self.logger.error(f"Error encountered when checking individual: {e}")
-                return False # Individual is invalid
+            self.logger.error(f"Unexpected error checking individual: {str(e)}")
+            return False
 
 
-    def create_population(self):
+    def create_population(self, max_attempts=200, timeout_seconds=300):
         """
         Create a population of unique, valid individuals.
-
-        This function generates random individuals one by one and checks if they are valid using check_individual.
-        After each candidate is generated, duplicates are removed using remove_duplicates until the population
-        size reaches n_individuals.
-
+    
+        This function generates random individuals and checks if they're valid using check_individual.
+        It includes comprehensive error handling, duplicate removal, and recovery mechanisms.
+    
+        Parameters:
+            max_attempts (int): Maximum number of attempts to create valid individuals. Default: 200
+            timeout_seconds (int): Maximum time in seconds before giving up. Default: 300 (5 minutes)
+    
         Returns:
             list: A list of unique, valid individuals.
-        """
-        population = []
-        with tqdm.tqdm(total=self.n_individuals, desc="Generating Population") as pbar:
-            # Generate individuals until the population reaches n_individuals, removing duplicates along the way
-            while len(population) < self.n_individuals:
-                candidate = self.create_random_individual()  # Create a random individual
-                if self.check_individual(candidate):
-                    population.append(candidate)
-                    pbar.update(1)  # Update the progress bar for each valid individual
             
-            population = self.remove_duplicates(population)  # Remove duplicates
+        Raises:
+            RuntimeError: If unable to generate a complete population after max_attempts
+        """
+        import time
+        start_time = time.time()
+        population = []
+        attempts = 0
+        failed_attempts = 0
+        additional_attempts = 0  # Initialize here to avoid UnboundLocalError
+        
+        # Create progress bar for initial population generation
+        with tqdm.tqdm(total=self.n_individuals, desc="Generating Population") as pbar:
+            while len(population) < self.n_individuals:
+                # Check timeout
+                if time.time() - start_time > timeout_seconds:
+                    self.logger.warning(f"Population generation timed out after {timeout_seconds} seconds. "
+                                       f"Created {len(population)}/{self.n_individuals} individuals.")
+                    break
+                    
+                # Check max attempts
+                if attempts >= max_attempts:
+                    self.logger.warning(f"Reached maximum attempts ({max_attempts}) for population generation. "
+                                       f"Created {len(population)}/{self.n_individuals} individuals.")
+                    break
+                    
+                attempts += 1
+                
+                try:
+                    # Create a random individual
+                    candidate = self.create_random_individual()
+                    
+                    # Check if the individual is valid
+                    if self.check_individual(candidate):
+                        population.append(candidate)
+                        pbar.update(1)  # Update progress bar
+                        self.logger.debug(f"Added individual {len(population)}/{self.n_individuals} "
+                                         f"(attempt {attempts}, failed: {failed_attempts})")
+                    else:
+                        failed_attempts += 1
+                except Exception as e:
+                    failed_attempts += 1
+                    self.logger.warning(f"Failed to create individual on attempt {attempts}: {e}")
+                    
+                # Periodically log progress
+                if attempts % 10 == 0:
+                    self.logger.info(f"Population generation: {len(population)}/{self.n_individuals} created "
+                                    f"(attempts: {attempts}, failed: {failed_attempts})")
+        
+        # Handle duplicates and ensure we have enough individuals
+        original_count = len(population)
+        self.logger.info(f"Initial population created with {original_count} individuals, removing duplicates...")
+        
+        # First round of duplicate removal
+        population = self.remove_duplicates(population)
+        
+        # If removing duplicates reduced the population, attempt to fill it back up
+        if len(population) < self.n_individuals:
+            self.logger.warning(f"Population size after duplicate removal: {len(population)}/{self.n_individuals}")
+            self.logger.info(f"Attempting to generate additional {self.n_individuals - len(population)} unique individuals")
+            
+            # Create a separate progress bar for filling the missing individuals
+            with tqdm.tqdm(total=self.n_individuals - len(population), desc="Filling Missing") as pbar:
+                additional_attempts = 0
+                fill_start_time = time.time()
+                
+                while len(population) < self.n_individuals:
+                    # Check timeout and max attempts
+                    if time.time() - fill_start_time > timeout_seconds / 2:  # Allow half the original timeout
+                        self.logger.warning("Timed out while trying to fill population after duplicate removal")
+                        break
+                        
+                    if additional_attempts >= max_attempts / 2:  # Allow half the original max attempts
+                        self.logger.warning("Reached maximum attempts while trying to fill population after duplicate removal")
+                        break
+                        
+                    additional_attempts += 1
+                    
+                    try:
+                        # Check current architectures to avoid creating duplicates
+                        existing_archs = set(getattr(ind, 'architecture', str(ind.parsed_layers)) for ind in population)
+                        
+                        # Create a new individual
+                        candidate = self.create_random_individual()
+                        
+                        # Check if it's valid and not a duplicate
+                        if self.check_individual(candidate):
+                            new_arch = getattr(candidate, 'architecture', str(candidate.parsed_layers))
+                            if new_arch not in existing_archs:
+                                population.append(candidate)
+                                existing_archs.add(new_arch)
+                                pbar.update(1)
+                                self.logger.debug(f"Added missing individual {len(population)}/{self.n_individuals}")
+                    except Exception as e:
+                        self.logger.warning(f"Failed while filling population: {e}")
+        
+        # Final duplicate check and warning
+        final_unique_count = len(set(getattr(ind, 'architecture', str(ind.parsed_layers)) for ind in population))
+        if final_unique_count < len(population):
+            self.logger.warning(f"Final population still contains duplicates: "
+                              f"{len(population) - final_unique_count} duplicates detected")
+        
+        # Log final statistics
+        self.logger.info(f"Population generation completed. Created {len(population)}/{self.n_individuals} individuals "
+                       f"in {time.time() - start_time:.1f} seconds "
+                       f"(attempts: {attempts + additional_attempts}, success rate: "
+                       f"{len(population)/(attempts + additional_attempts):.1%})")
+        
+        # If we couldn't create enough individuals, log an error
+        if len(population) < self.n_individuals:
+            self.logger.error(f"Unable to create required population size. Created only "
+                             f"{len(population)}/{self.n_individuals} individuals.")
+            if len(population) < self.n_individuals * 0.5:  # Less than 50% of required individuals
+                raise RuntimeError(f"Failed to create a viable population. Only generated "
+                                 f"{len(population)}/{self.n_individuals} individuals.")
+        
         return population
 
 
@@ -152,8 +502,22 @@ class Population:
         Returns:
             list: A list containing deep copies of the elite individuals.
         """
-        sorted_pop = sorted(self, key=lambda individual: individual.fitness, reverse=True)
+            # Filter out individuals with invalid fitness values
+        valid_individuals = [ind for ind in self.population if hasattr(ind, 'fitness') 
+                            and ind.fitness is not None 
+                            and not np.isnan(ind.fitness)]
+        
+        if not valid_individuals:
+            self.logger.warning("No valid individuals with fitness values found!")
+            return []
+        sorted_pop = self._sort_population()
+        # Ensure we don't request more models than are available
+        k_best = min(k_best, len(sorted_pop))
+        # Create deep copies of the top models
         topModels = [deepcopy(sorted_pop[i]) for i in range(k_best)]
+        # Log the fitness of selected models for debugging
+        for i, model in enumerate(topModels):
+            self.logger.info(f"Selected elite model for next generation. Idx {i} with fitness: {model.fitness}")
         return topModels
 
 
