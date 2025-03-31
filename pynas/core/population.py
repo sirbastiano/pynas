@@ -873,7 +873,7 @@ class Population:
                    save_standard=True, 
                    std_save_path=None):
         # Use generation attribute from the Population object.
-        gen = self.population.generation
+        gen = self.generation
         
         if ts_save_path is None:
             ts_save_path = f"models_traced/generation_{gen}/model_and_architecture_{self.idx}.pt"
