@@ -49,6 +49,9 @@ class Population:
         self.max_layers = max_layers
         self.max_parameters = max_parameters
         
+        # Private attribute for controlling if using groupNorm
+        self._use_group_norm = False
+        
         # State tracking
         self.generation = 0
         self.population = []  # Initialize empty population
@@ -693,6 +696,7 @@ class Population:
                     input_width=self.dm.input_shape[2], 
                     num_classes=self.dm.num_classes,
                     encoder_only=False,
+                    use_gn=self._use_group_norm,
             )
             valid = True
         elif task == "classification": 
@@ -704,7 +708,7 @@ class Population:
                     encoder_only=True,
             )
             valid = True
-                
+            # Building the classifier with the feature only of the Unet encoder (we dont build decoder)
             head = MultiInputClassifier(shape_tracer(self, encoder.to(self.device)), num_classes=self.dm.num_classes)
             head = head.to(self.device)
             model = nn.Sequential(encoder, head)
