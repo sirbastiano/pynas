@@ -53,7 +53,7 @@ class SegmentationDataset(Dataset):
         if image.shape[-1] == 7:  # Assuming 7 channels
             image = image.transpose(2, 0, 1)
         mask = np.load(mask_path)
-        if mask.shape[-1] == 4:  # Assuming 7 channels
+        if mask.shape[-1] == 4:  # Assuming 4 channels
             mask = mask.transpose(2, 0, 1)
 
         if self.transform:

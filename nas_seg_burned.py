@@ -44,6 +44,9 @@ def main(args):
     
     # Define population
     pop = Population(n_individuals=n_individuals, max_layers=max_layers, dm=dm, max_parameters=400_000)
+    # if you want to use group norm in the decoder, set the following to True
+    pop._use_group_norm = False
+    
     if args.gen is not None:
         pop.load_generation(args.gen)
     else:
