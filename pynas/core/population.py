@@ -83,6 +83,11 @@ class Population:
         Returns:
             logging.Logger: Configured logger instance.
         """
+        # Ensure the directory for the log file exists
+        log_dir = os.path.dirname(log_file)
+        if log_dir and not os.path.exists(log_dir):
+            os.makedirs(log_dir, exist_ok=True)
+
         if os.path.exists(log_file):
             base, ext = os.path.splitext(log_file)
             timestamp = pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')
@@ -204,18 +209,20 @@ class Population:
             try:
                 self._checkpoint()
             except Exception as e:
+                print(f"Error during checkpointing after sorting: {str(e)}")
                 self.logger.error(f"Failed to checkpoint after sorting: {str(e)}")
             
             return sorted_population
             
         except Exception as e:
+            print(f"Population sorting failed with error: {str(e)}")
             self.logger.error(f"Population sorting failed with error: {str(e)}")
             return self.population  # Return unsorted population as fallback
         
 
     def _checkpoint(self):
         """
-        Save the current population state to disk, including dataframes and serialized models.
+        Save the current population state to disk, including dataframes and serialized population.
         
         This implementation includes:
         - Validation of population state before saving

@@ -36,6 +36,8 @@ def main(args):
     mutation_probability = float(config['GA']['mutation_probability'])
     epochs = int(config['GA']['epochs'])
     batch_size = int(config['GA']['batch_size'])
+    n_random = int(config['GA']['n_random'])
+    k_best = int(config['GA']['k_best'])
     
     # Define population
     pop = Population(n_individuals=n_individuals, max_layers=max_layers, dm=dm, max_parameters=400_000)
@@ -46,7 +48,7 @@ def main(args):
 
     for _ in range(max_gen):
         pop.train_generation(task='classification', lr=0.001, epochs=epochs, batch_size=batch_size)
-        pop.evolve(mating_pool_cutoff=mating_pool_cutoff, mutation_probability=mutation_probability, k_best=1, n_random=3)
+        pop.evolve(mating_pool_cutoff=mating_pool_cutoff, mutation_probability=mutation_probability, k_best=k_best, n_random=n_random)
 
 if __name__ == '__main__':
     args = parser.parse_args()

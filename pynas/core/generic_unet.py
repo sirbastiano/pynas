@@ -35,7 +35,7 @@ class UNetDecoder(nn.Module):
             Returns:
                 torch.Tensor: The output tensor after decoding.
     """
-    def __init__(self, encoder_shapes, num_classes=2):
+    def __init__(self, encoder_shapes, num_classes=2, output_shape=(224, 224)):
         super(UNetDecoder, self).__init__()
         # Expecting encoder_shapes as a list of torch.Size objects in order:
         # [skip0, skip1, ..., skip_(N-1), bottleneck]
@@ -52,26 +52,36 @@ class UNetDecoder(nn.Module):
         # Iterate over skip connections in reverse order.
         for i in range(self.num_stages - 1, -1, -1):
             skip_channels = encoder_shapes[i][1]
-            # Upsample from in_channels to the number of channels in the skip connection.
+            # Store the expected output size for each upsampling operation
+            out_h, out_w = encoder_shapes[i][2], encoder_shapes[i][3]
+            
+            # Replace transposed convolution with upsampling + conv
             self.up_convs.append(
-                nn.ConvTranspose2d(in_channels, skip_channels, kernel_size=2, stride=2)
+            nn.Sequential(
+                nn.Upsample(size=(out_h, out_w), mode='bilinear', align_corners=False),
+                nn.Conv2d(in_channels, skip_channels, kernel_size=1)
             )
+            )
+            
             # The conv block takes the concatenated tensor (upsampled + skip) as input.
             self.conv_blocks.append(
-                nn.Sequential(
-                    nn.Conv2d(skip_channels * 2, skip_channels, kernel_size=3, padding=1),
-                    nn.BatchNorm2d(skip_channels),
-                    nn.ReLU(inplace=True),
-                    nn.Conv2d(skip_channels, skip_channels, kernel_size=3, padding=1),
-                    nn.BatchNorm2d(skip_channels),
-                    nn.ReLU(inplace=True)
-                )
+            nn.Sequential(
+                nn.Conv2d(skip_channels * 2, skip_channels, kernel_size=3, padding=1),
+                nn.BatchNorm2d(skip_channels),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(skip_channels, skip_channels, kernel_size=3, padding=1),
+                nn.BatchNorm2d(skip_channels),
+                nn.ReLU(inplace=True)
+            )
             )
             # Update in_channels to be the skip_channels for the next stage.
             in_channels = skip_channels
 
-        # Final output convolution.
-        self.out_conv = nn.Conv2d(in_channels, num_classes, kernel_size=1)
+        # Final output convolution followed by upsampling to match the input height and width.
+        self.out_conv = nn.Sequential(
+            nn.Conv2d(in_channels, num_classes, kernel_size=1),
+            nn.Upsample(size=output_shape, mode='bilinear', align_corners=False)
+        )
 
     def forward(self, encoder_features, verbose=False):
         # encoder_features: list in order [skip0, skip1, ..., skip_(N-1), bottleneck]
@@ -128,7 +138,7 @@ class GenericUNetNetwork(nn.Module):
         get_activation_fn(activation):
             Retrieves the specified activation function from the `activations` module.
         """
-    def __init__(self, parsed_layers, input_channels=3, input_height=256, input_width=256, num_classes=2, MaxParams=200_000_00, encoder_only=False):
+    def __init__(self, parsed_layers, input_channels=3, input_height=256, input_width=256, num_classes=2, MaxParams=400_000, encoder_only=False):
         super(GenericUNetNetwork, self).__init__()
         self.config = configparser.ConfigParser()
         self.config.read('config.ini')
@@ -269,7 +279,7 @@ class GenericUNetNetwork(nn.Module):
             self.total_params (int): The total number of parameters in the model, 
                                      updated to include the decoder's parameters.
         """
-        self.decoder = UNetDecoder(self.encoder_shapes, self.num_classes)
+        self.decoder = UNetDecoder(self.encoder_shapes, self.num_classes, output_shape=(self.input_height, self.input_width))
         self.total_params += sum(p.numel() for p in self.decoder.parameters())
         if verbose:    
             print(f"{'U-Net Decoder Built Successfully!':^100}")
