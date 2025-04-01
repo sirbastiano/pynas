@@ -847,7 +847,7 @@ class Population:
         #
         # API call to get the test results
         #
-        individual._prompt_fitness(results[0])
+        individual._prompt_fitness(results[0], task=task)
         self._checkpoint()        
 
 

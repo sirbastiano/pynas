@@ -5,6 +5,7 @@
 /logs
 /lightning_logs
 /tests
+/utils
 
 
 # Byte-compiled / optimized / DLL files

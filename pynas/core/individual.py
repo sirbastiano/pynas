@@ -3,7 +3,7 @@ from ..train import myFit
 from copy import deepcopy
 
 
-evaluator = myFit.FitnessEvaluator()
+
 
 
 class Individual:
@@ -65,12 +65,13 @@ class Individual:
 
 
     # Implement the logic to prompt the fitnes
-    def _prompt_fitness(self, results):
+    def _prompt_fitness(self, results, task):
         fps = results['fps']
-        metric = results['test_mcc']
+        metric = results['metric']
         self.fps, self.metric = fps, metric
         self.results = results
-
+        # Init the fitness evaluator
+        evaluator = myFit.FitnessEvaluator(task=task)
         self.fitness = evaluator.weighted_sum_exponential(fps, metric)
         return self.fitness
     
