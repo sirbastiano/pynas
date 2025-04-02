@@ -552,7 +552,7 @@ class Population:
         """
         new_population = []
         self.generation += 1
-        self.topModels = self.elite_models(k_best=k_best)
+        topModels = self.elite_models(k_best=k_best)
 
 
         # 2. Create the mating pool based on the cutoff from the sorted population
@@ -600,9 +600,8 @@ class Population:
         
         
         # 4. Add the best individuals from the previous generation
-        new_population.extend(self.topModels)
+        new_population.extend(topModels)
        
-
         assert len(new_population) == self.n_individuals, f"Population size is {len(new_population)}, expected {self.n_individuals}"
         self.population = new_population
         self._checkpoint()
@@ -753,8 +752,10 @@ class Population:
             model_size = individual.model_size
             data.append([generation, parsed_layers, fitness, metric, fps, model_size])
         
-        df = pd.DataFrame(data, columns=columns).sort_values(by="Fitness", ascending=False)
-        df.reset_index(drop=True, inplace=True)
+        #df = pd.DataFrame(data, columns=columns).sort_values(by="Fitness", ascending=False)
+        #df.reset_index(drop=True, inplace=True)
+        # DO NOT SORT OR RESET INDEX — we want df index to match self.population[idx]
+        df = pd.DataFrame(data, columns=columns)
         
         self.df = df
     
