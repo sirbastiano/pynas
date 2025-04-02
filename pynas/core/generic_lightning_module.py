@@ -211,10 +211,22 @@ class GenericLightningSegmentationNetwork(pl.LightningModule):
         return loss
 
     def test_step(self, batch, batch_idx):
+        import time
+        x, y = batch
         loss, mse, iou = self._common_step(batch, batch_idx)
+
+        start_time = time.time()
+        loss, scores, y = self._common_step(batch, batch_idx)
+        if x.is_cuda:
+            torch.cuda.synchronize()
+        elapsed_time = time.time() - start_time
+
+        fps = x.shape[0] / elapsed_time if elapsed_time > 0 else 0.0
+        
         self.log('test_loss', loss)
         self.log('test_mse', mse)
         self.log('metric', iou)
+        self.log('fps', fps)
         return loss
 
     def predict_step(self, batch, batch_idx, dataloader_idx=0):
