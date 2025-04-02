@@ -3,13 +3,15 @@ import numpy as np
 import pickle
 from copy import deepcopy
 import tqdm, os
+import logging 
 
 from ..blocks.heads import MultiInputClassifier
 from .individual import Individual 
 from .generic_unet import GenericUNetNetwork
 from ..opt.evo import single_point_crossover, gene_mutation
 from .generic_lightning_module import GenericLightningSegmentationNetwork, GenericLightningNetwork
-import logging 
+from ..train.my_early_stopping import TrainEarlyStopping
+
 
 import torch
 import torch.nn as nn
@@ -818,6 +820,14 @@ class Population:
         Returns:
             None
         """
+        # Create the early stopping callback
+        early_stopping = TrainEarlyStopping(
+            monitor='val_loss',  # metric to monitor
+            patience=3,          # number of epochs with no improvement after which training will be stopped
+            verbose=True,        # print a message when early stopping occurs
+            mode='min',          # 'min' for metrics that decrease (like loss), 'max' for metrics that increase
+            min_delta=0.001      # minimum change to qualify as improvement
+        )
         individual = self.population[idx]
         
         
@@ -839,6 +849,7 @@ class Population:
         
         # Create a PyTorch Lightning trainer
         trainer = pl.Trainer(
+            callbacks=[early_stopping],
             max_epochs=epochs,
             accelerator="gpu" if torch.cuda.is_available() else "cpu"
         )

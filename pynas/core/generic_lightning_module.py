@@ -14,6 +14,8 @@ from ..train.losses import CategoricalCrossEntropyLoss, FocalLoss
 from ..train.custom_iou import calculate_iou
 
 
+
+
 class GenericLightningNetwork(pl.LightningModule):
     def __init__(self, model, num_classes, learning_rate=1e-3):
         super(GenericLightningNetwork, self).__init__()
@@ -184,9 +186,11 @@ class GenericLightningSegmentationNetwork(pl.LightningModule):
         self.loss_fn = FocalLoss()
         self.mse = MeanSquaredError()
         self.iou = calculate_iou
-
+        
+        
     def forward(self, x):
         return self.model(x)
+
 
     def _common_step(self, batch, batch_idx):
         x, y = batch
@@ -195,6 +199,7 @@ class GenericLightningSegmentationNetwork(pl.LightningModule):
         mse = self.mse(logits, y)
         iou = self.iou(logits, y).mean()  # Compute mean IoU for logging
         return loss, mse, iou
+
 
     def training_step(self, batch, batch_idx):
         loss, mse, iou = self._common_step(batch, batch_idx)

@@ -4,4 +4,4 @@
 rm -rf models_traced logs
 
 
-conda activate pynas && python3 main.py
+conda activate pynas && python3 nas_seg_burned.py
