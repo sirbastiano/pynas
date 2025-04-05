@@ -522,6 +522,7 @@ class Population:
         if not valid_individuals:
             self.logger.warning("No valid individuals with fitness values found!")
             return []
+        
         sorted_pop = self._sort_population()
         # Ensure we don't request more models than are available
         k_best = min(k_best, len(sorted_pop))
@@ -888,6 +889,8 @@ class Population:
             print(f"Training individual {idx}/{len(self)}")
             self.train_individual(idx=idx, task=task, lr=lr, epochs=epochs, batch_size=batch_size)
             clear_output(wait=True)
+            
+        
 
         
     def save_model(self, LM,
