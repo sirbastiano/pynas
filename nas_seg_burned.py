@@ -1,5 +1,6 @@
 import configparser
 import pandas as pd
+pd.set_option('display.max_colwidth', None)
 
 import torch
 import pytorch_lightning as pl
@@ -7,13 +8,14 @@ import pytorch_lightning as pl
 from pynas.core.population import Population
 from datasets.Phisat2SimulatedData.segmentation_dataset import SegmentationDataModule
 
-import argparse
+import argparse, os
+cwd = os.getcwd()
+
 
 # Define dataset module
-root_dir = '/Data_large/marine/PythonProjects/OtherProjects/lpl-PyNas/data/Phisat2Simulation'
+root_dir = os.path.join(cwd, 'data', 'Phisat2Simulation')
 dm = SegmentationDataModule(root_dir, batch_size=8, num_workers=1, transform=None, val_split=0.3)
 
-pd.set_option('display.max_colwidth', None)
 
 # Argument parser
 parser = argparse.ArgumentParser(description="Run the PyNAS genetic algorithm for neural architecture search.")
@@ -28,6 +30,8 @@ def main(args):
     seed = config.getint(section='Computation', option='seed')
     pl.seed_everything(seed=seed, workers=True)  # For reproducibility
     torch.set_float32_matmul_precision("medium")  # to make lightning happy
+    save_dir = os.path.join(cwd, 'Results')
+    os.makedirs(save_dir, exist_ok=True)
     
     # Model parameters
     max_layers = int(config['NAS']['max_layers'])
@@ -42,16 +46,30 @@ def main(args):
     task = str(config['GA']['task'])
     
     
-    # Define population
-    pop = Population(n_individuals=n_individuals, max_layers=max_layers, dm=dm, max_parameters=400_000)
-    # if you want to use group norm in the decoder, set the following to True
+
+    
+    # 0. Define population
+    pop = Population(n_individuals=n_individuals, 
+                    max_layers=max_layers, 
+                    dm=dm,
+                    save_directory=save_dir,
+                    max_parameters=400_000)
+    
+    # 1. Copy config.ini to the results directory
+    config_path = os.path.join(pop.save_directory, 'config.ini')
+    if not os.path.exists(config_path):
+        with open(config_path, 'w') as configfile:
+            config.write(configfile)
+    
+    
+    # TODO: if you want to use group norm in the decoder, set the following to True
     pop._use_group_norm = False
     
     if args.gen is not None:
-        pop.load_generation(args.gen)
+        pop.load_generation(args.gen) # load a generation from the saved models
     else:
-        pop.initial_poll()
-
+        pop.initial_poll() # create a new generation
+    # 2. Train and evolve the population
     for _ in range(max_gen):
         pop.train_generation(task=task, lr=0.001, epochs=epochs, batch_size=batch_size)
         pop.evolve(mating_pool_cutoff=mating_pool_cutoff, mutation_probability=mutation_probability, k_best=k_best, n_random=n_random)

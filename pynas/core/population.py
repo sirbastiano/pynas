@@ -4,6 +4,7 @@ import pickle
 from copy import deepcopy
 import tqdm, os
 import logging 
+import datetime
 
 from ..blocks.heads import MultiInputClassifier
 from .individual import Individual 
@@ -11,7 +12,7 @@ from .generic_unet import GenericUNetNetwork
 from ..opt.evo import single_point_crossover, gene_mutation
 from .generic_lightning_module import GenericLightningSegmentationNetwork, GenericLightningNetwork
 from ..train.my_early_stopping import TrainEarlyStopping
-
+from ..train.viz import plot_best_metrics, plot_population_metrics
 
 import torch
 import torch.nn as nn
@@ -60,7 +61,8 @@ class Population:
         self.df = None  # Will hold population stats as DataFrame
         
         # File storage
-        self.save_directory = save_directory or "./models_traced"
+        datetime_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.save_directory = os.path.join(save_directory, f"models_traced_{datetime_str}") if save_directory else f"./models_traced_{datetime_str}"
         # Create directories if they don't exist
         os.makedirs(os.path.join(self.save_directory, "src"), exist_ok=True)
         os.makedirs(os.path.join(self.save_directory, "backups"), exist_ok=True)
@@ -780,7 +782,7 @@ class Population:
     
     
     def load_dataframe(self, generation):
-        path = f'./models_traced/src/df_population_{generation}.pkl'
+        path = f'{self.save_directory}/src/df_population_{generation}.pkl'
         try:
             df = pd.read_pickle(path)
             return df
@@ -790,7 +792,7 @@ class Population:
     
     
     def save_population(self):
-        path = f'./models_traced/src/population_{self.generation}.pkl'
+        path = f'{self.save_directory}/src/population_{self.generation}.pkl'
         try:
             with open(path, 'wb') as f:
                 pickle.dump(self.population, f)
@@ -800,7 +802,7 @@ class Population:
     
     
     def load_population(self, generation):
-        path = f'./models_traced/src/population_{generation}.pkl'
+        path = f'{self.save_directory}/src/population_{generation}.pkl'
         try:
             with open(path, 'rb') as f:
                 population = pickle.load(f)
@@ -890,8 +892,9 @@ class Population:
             self.train_individual(idx=idx, task=task, lr=lr, epochs=epochs, batch_size=batch_size)
             clear_output(wait=True)
             
+        plot_population_metrics(os.path.join(self.save_directory, "src"), self.generation)
+        plot_best_metrics(os.path.join(self.save_directory, "src"), self.generation)
         
-
         
     def save_model(self, LM,
                    save_torchscript=True, 

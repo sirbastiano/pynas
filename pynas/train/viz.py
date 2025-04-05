@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 def plot_population_metrics(folder, num_generations=3, output_path=None):
     """
     Visualize metrics distribution across generations for a population.
