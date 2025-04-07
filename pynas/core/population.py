@@ -69,7 +69,7 @@ class Population:
         
         # Hardware
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.logger = self.setup_logger()
+        self.logger = self.setup_logger(log_file=f'{self.save_directory}/population.log')
         
         self.logger.info(f"Initialized population with {n_individuals} individuals, "
                          f"max_layers={max_layers}, max_parameters={max_parameters}, "
@@ -773,6 +773,13 @@ class Population:
         Returns:
             None
         """
+        try:
+            assert self.generation is not None, "Generation number is not set."
+            assert self.df is not None, "DataFrame is not initialized."
+        except AssertionError as e:
+            self.logger.error(f"Error during DataFrame saving: {e}")
+        # log:
+        self.logger.info(f"Saving DataFrame for generation {self.generation}")
         path = f'{self.save_directory}/src/df_population_{self.generation}.pkl'
         try:
             self.df.to_pickle(path)
@@ -891,7 +898,21 @@ class Population:
             print(f"Training individual {idx}/{len(self)}")
             self.train_individual(idx=idx, task=task, lr=lr, epochs=epochs, batch_size=batch_size)
             clear_output(wait=True)
-            
+    
+    
+    def _plot_metrics(self):
+        """Generates and saves plots of the population metrics.
+        
+        This method creates two types of visualizations:
+            1. Population-wide metrics showing statistics across all individuals
+            2. Metrics of the best performing individual(s)
+        
+        All plots are saved to the 'src' subdirectory within the configured save
+        directory. The current generation number is used to label/organize the plots.
+        
+        Returns:
+            None
+        """
         plot_population_metrics(os.path.join(self.save_directory, "src"), self.generation)
         plot_best_metrics(os.path.join(self.save_directory, "src"), self.generation)
         

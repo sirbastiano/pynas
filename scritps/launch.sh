@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Remove the folders models_traced and logs if they exist
-rm -rf  logs lightning_logs
-
-conda activate pynas && python3 /Data_large/marine/PythonProjects/OtherProjects/lpl-PyNas/nas_seg_burned.py
+conda activate pynas && python3 /Data_large/marine/PythonProjects/OtherProjects/lpl-PyNas/nas_seg_burned.py --mutation_probability 0.01
+conda activate pynas && python3 /Data_large/marine/PythonProjects/OtherProjects/lpl-PyNas/nas_seg_burned.py --mutation_probability 0.1
+conda activate pynas && python3 /Data_large/marine/PythonProjects/OtherProjects/lpl-PyNas/nas_seg_burned.py --mutation_probability 0.2
+conda activate pynas && python3 /Data_large/marine/PythonProjects/OtherProjects/lpl-PyNas/nas_seg_burned.py --mutation_probability 0.3
