@@ -6,7 +6,8 @@
 /lightning_logs
 /tests
 /utils
-
+/Results
+/notebooks/phisatnet
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

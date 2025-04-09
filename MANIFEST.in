@@ -1,0 +1,13 @@
+include README.md
+include LICENSE
+include config.ini
+global-include *.json
+global-exclude *.pyc
+global-exclude *.log
+recursive-exclude data *
+recursive-exclude datasets *
+recursive-exclude notebooks *
+recursive-exclude lightning_logs *
+recursive-exclude Results *
+prune build
+prune dist

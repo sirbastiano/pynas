@@ -1,1 +1,0 @@
-You can find the data in Param's Ohio based AWS Sagemaker instance

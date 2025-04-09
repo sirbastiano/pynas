@@ -3,13 +3,16 @@ import numpy as np
 import pickle
 from copy import deepcopy
 import tqdm, os
+import logging 
+import datetime
 
 from ..blocks.heads import MultiInputClassifier
 from .individual import Individual 
 from .generic_unet import GenericUNetNetwork
 from ..opt.evo import single_point_crossover, gene_mutation
 from .generic_lightning_module import GenericLightningSegmentationNetwork, GenericLightningNetwork
-import logging 
+from ..train.my_early_stopping import TrainEarlyStopping
+from ..train.viz import plot_best_metrics, plot_population_metrics
 
 import torch
 import torch.nn as nn
@@ -58,14 +61,15 @@ class Population:
         self.df = None  # Will hold population stats as DataFrame
         
         # File storage
-        self.save_directory = save_directory or "./models_traced"
+        datetime_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.save_directory = os.path.join(save_directory, f"models_traced_{datetime_str}") if save_directory else f"./models_traced_{datetime_str}"
         # Create directories if they don't exist
         os.makedirs(os.path.join(self.save_directory, "src"), exist_ok=True)
         os.makedirs(os.path.join(self.save_directory, "backups"), exist_ok=True)
         
         # Hardware
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.logger = self.setup_logger()
+        self.logger = self.setup_logger(log_file=f'{self.save_directory}/population.log')
         
         self.logger.info(f"Initialized population with {n_individuals} individuals, "
                          f"max_layers={max_layers}, max_parameters={max_parameters}, "
@@ -520,6 +524,7 @@ class Population:
         if not valid_individuals:
             self.logger.warning("No valid individuals with fitness values found!")
             return []
+        
         sorted_pop = self._sort_population()
         # Ensure we don't request more models than are available
         k_best = min(k_best, len(sorted_pop))
@@ -550,7 +555,7 @@ class Population:
         """
         new_population = []
         self.generation += 1
-        self.topModels = self.elite_models(k_best=k_best)
+        topModels = self.elite_models(k_best=k_best)
 
 
         # 2. Create the mating pool based on the cutoff from the sorted population
@@ -598,9 +603,8 @@ class Population:
         
         
         # 4. Add the best individuals from the previous generation
-        new_population.extend(self.topModels)
+        new_population.extend(topModels)
        
-
         assert len(new_population) == self.n_individuals, f"Population size is {len(new_population)}, expected {self.n_individuals}"
         self.population = new_population
         self._checkpoint()
@@ -751,8 +755,10 @@ class Population:
             model_size = individual.model_size
             data.append([generation, parsed_layers, fitness, metric, fps, model_size])
         
-        df = pd.DataFrame(data, columns=columns).sort_values(by="Fitness", ascending=False)
-        df.reset_index(drop=True, inplace=True)
+        #df = pd.DataFrame(data, columns=columns).sort_values(by="Fitness", ascending=False)
+        #df.reset_index(drop=True, inplace=True)
+        # DO NOT SORT OR RESET INDEX — we want df index to match self.population[idx]
+        df = pd.DataFrame(data, columns=columns)
         
         self.df = df
     
@@ -767,6 +773,13 @@ class Population:
         Returns:
             None
         """
+        try:
+            assert self.generation is not None, "Generation number is not set."
+            assert self.df is not None, "DataFrame is not initialized."
+        except AssertionError as e:
+            self.logger.error(f"Error during DataFrame saving: {e}")
+        # log:
+        self.logger.info(f"Saving DataFrame for generation {self.generation}")
         path = f'{self.save_directory}/src/df_population_{self.generation}.pkl'
         try:
             self.df.to_pickle(path)
@@ -776,7 +789,7 @@ class Population:
     
     
     def load_dataframe(self, generation):
-        path = f'./models_traced/src/df_population_{generation}.pkl'
+        path = f'{self.save_directory}/src/df_population_{generation}.pkl'
         try:
             df = pd.read_pickle(path)
             return df
@@ -786,7 +799,7 @@ class Population:
     
     
     def save_population(self):
-        path = f'./models_traced/src/population_{self.generation}.pkl'
+        path = f'{self.save_directory}/src/population_{self.generation}.pkl'
         try:
             with open(path, 'wb') as f:
                 pickle.dump(self.population, f)
@@ -796,7 +809,7 @@ class Population:
     
     
     def load_population(self, generation):
-        path = f'./models_traced/src/population_{generation}.pkl'
+        path = f'{self.save_directory}/src/population_{generation}.pkl'
         try:
             with open(path, 'rb') as f:
                 population = pickle.load(f)
@@ -818,6 +831,14 @@ class Population:
         Returns:
             None
         """
+        # Create the early stopping callback
+        early_stopping = TrainEarlyStopping(
+            monitor='val_loss',  # metric to monitor
+            patience=3,          # number of epochs with no improvement after which training will be stopped
+            verbose=True,        # print a message when early stopping occurs
+            mode='min',          # 'min' for metrics that decrease (like loss), 'max' for metrics that increase
+            min_delta=0.001      # minimum change to qualify as improvement
+        )
         individual = self.population[idx]
         
         
@@ -839,6 +860,7 @@ class Population:
         
         # Create a PyTorch Lightning trainer
         trainer = pl.Trainer(
+            callbacks=[early_stopping],
             max_epochs=epochs,
             accelerator="gpu" if torch.cuda.is_available() else "cpu"
         )
@@ -876,7 +898,24 @@ class Population:
             print(f"Training individual {idx}/{len(self)}")
             self.train_individual(idx=idx, task=task, lr=lr, epochs=epochs, batch_size=batch_size)
             clear_output(wait=True)
-
+    
+    
+    def _plot_metrics(self):
+        """Generates and saves plots of the population metrics.
+        
+        This method creates two types of visualizations:
+            1. Population-wide metrics showing statistics across all individuals
+            2. Metrics of the best performing individual(s)
+        
+        All plots are saved to the 'src' subdirectory within the configured save
+        directory. The current generation number is used to label/organize the plots.
+        
+        Returns:
+            None
+        """
+        plot_population_metrics(os.path.join(self.save_directory, "src"), self.generation)
+        plot_best_metrics(os.path.join(self.save_directory, "src"), self.generation)
+        
         
     def save_model(self, LM,
                    save_torchscript=True, 

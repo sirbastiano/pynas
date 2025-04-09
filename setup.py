@@ -8,14 +8,14 @@ https://github.com/pypa/sampleproject
 from setuptools import setup
 
 setup(
-    name="pynattas",
+    name="pynas",
     version="v0.1.0",
     description="Pynattas, a powerful open-source Python package"
-    + " that provides a comprehensive set of tools for model building and deployment",
+    + " that provides a comprehensive set of tools for Neural Architecture Search",
     long_description=open("README.md", encoding="cp437").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/sirbastiano/PyNA-tta-S",
-    author="Roberto Del Prete and Andrea Mazzeo",
+    author="Roberto Del Prete, Andrea Mazzeo, Parampuneet Thind",
     author_email="robertodelprete88@gmail.com",
     install_requires=[
         "numpy",
@@ -38,5 +38,5 @@ setup(
     ],
     packages=["pynas", "pynas.blocks", "pynas.train", "pynas.core", "pynas.opt"],
     python_requires=">=3.8, <4",
-    project_urls={"Source": "https://github.com/sirbastiano/PyNA-tta-S"},
+    project_urls={"Source": "https://github.com/sirbastiano/pynas"},
 )
