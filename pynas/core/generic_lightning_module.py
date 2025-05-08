@@ -193,12 +193,25 @@ class GenericLightningSegmentationNetwork(pl.LightningModule):
 
 
     def _common_step(self, batch, batch_idx):
-        x, y = batch
-        logits = self(x)
-        loss = self.loss_fn(logits, y)
-        mse = self.mse(logits, y)
-        iou = self.iou(logits, y).mean()  # Compute mean IoU for logging
-        return loss, mse, iou
+        total_loss = 0.0
+        total_mse = 0.0
+        total_iou = 0.0
+        tasks = batch["tasks"]
+        for task in tasks:
+            x = batch[f"{task}_img"]
+            y = batch[f"{task}_label"]
+            logits = self(x)
+            loss = self.loss_fn(logits, y)
+            mse = self.mse(logits, y)
+            iou = self.iou(logits, y).mean()
+            total_loss += loss
+            total_mse += mse
+            total_iou += iou
+        n = len(tasks)
+        avg_loss = total_loss / n
+        avg_mse = total_mse / n
+        avg_iou = total_iou / n
+        return avg_loss, avg_mse, avg_iou
 
 
     def training_step(self, batch, batch_idx):
@@ -217,21 +230,27 @@ class GenericLightningSegmentationNetwork(pl.LightningModule):
 
     def test_step(self, batch, batch_idx):
         import time
-        x, y = batch
-        loss, mse, iou = self._common_step(batch, batch_idx)
-
+        
+        # Measure performance (timing)
         start_time = time.time()
-        loss, scores, y = self._common_step(batch, batch_idx)
-        if x.is_cuda:
+        loss, mse, iou = self._common_step(batch, batch_idx)
+        
+        # Synchronize if using GPU to get accurate timing
+        if batch["tasks"][0] and batch[f"{batch['tasks'][0]}_img"].is_cuda:
             torch.cuda.synchronize()
         elapsed_time = time.time() - start_time
-
-        fps = x.shape[0] / elapsed_time if elapsed_time > 0 else 0.0
         
+        # Calculate FPS based on batch size (using first task's image)
+        first_task = batch["tasks"][0]
+        batch_size = batch[f"{first_task}_img"].shape[0]
+        fps = batch_size / elapsed_time if elapsed_time > 0 else 0.0
+        
+        # Log all metrics
         self.log('test_loss', loss)
         self.log('test_mse', mse)
         self.log('metric', iou)
         self.log('fps', fps)
+        
         return loss
 
     def predict_step(self, batch, batch_idx, dataloader_idx=0):
