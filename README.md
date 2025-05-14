@@ -3,7 +3,20 @@
 > **Disclaimer**  
 > Code will be released upon acceptance of the paper.  
 >  
-> Developed by [ESA Φ-lab](https://philab.esa.int) and [Little Place Lab](https://littleplacelab.space)
+> Developed by [ESA Φ-lab](https://philab.esa.int) and [Little Place Lab](https://www.littleplace.com/post/little-place-labs-announces-near-real-time-vessel-detection-classification-powered-by-sidus-space)
+
+<table>
+  <tr>
+    <td>
+      <img src="https://cdn-avatars.huggingface.co/v1/production/uploads/659bd3d128676374f33915bd/gbnR7qI_4yzAXZRG7okov.jpeg" alt="ESA Φ-lab" height="100">
+    </td>
+    <td>
+      <img src="https://media.licdn.com/dms/image/v2/D4D0BAQFtPj9y4P8iKA/company-logo_200_200/company-logo_200_200/0/1739206873060/little_place_labs_logo?e=2147483647&v=beta&t=nblD78izW1vko_P2mU9hqbIeB4fhVD7E6yivtuRH4AI" alt="Little Place Labs" height="100">
+    </td>
+  </tr>
+</table>
+
+
 ---
 
 ## Overview
