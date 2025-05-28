@@ -35,26 +35,11 @@ class UNetDecoder(nn.Module):
             Returns:
                 torch.Tensor: The output tensor after decoding.
     """
-    def __init__(self, encoder_shapes, num_classes=2, output_shape=(224, 224), use_gn = False):
+    def __init__(self, encoder_shapes, num_classes=2, output_shape=None):
         super(UNetDecoder, self).__init__()
         # Expecting encoder_shapes as a list of torch.Size objects in order:
         # [skip0, skip1, ..., skip_(N-1), bottleneck]
         # Number of decoding stages equals the number of skip connections.
-        
-        def get_valid_num_groups(skip_channels: int) -> int:
-            """Returns the largest allowed num_groups that divides skip_channels.
-            
-            Args:
-                skip_channels (int): Number of channels to normalize.
-            
-            Returns:
-                int: Largest valid num_groups that divides skip_channels.
-            """
-            for g in [16, 8, 6, 5, 4, 3, 2, 1]:
-                if skip_channels % g == 0:
-                    return g
-            return 1
-        
         self.num_stages = len(encoder_shapes) - 1
         
         # Build upsampling and convolution blocks dynamically.
@@ -78,22 +63,16 @@ class UNetDecoder(nn.Module):
             )
             )
             
-            if use_gn:
-                # Determine valid group count for GroupNorm
-                norm_layer = nn.GroupNorm(num_groups=get_valid_num_groups(skip_channels), num_channels=skip_channels)
-            else:
-                norm_layer = nn.BatchNorm2d(skip_channels)
-
             # The conv block takes the concatenated tensor (upsampled + skip) as input.
             self.conv_blocks.append(
-            nn.Sequential(
-                nn.Conv2d(skip_channels * 2, skip_channels, kernel_size=3, padding=1),
-                norm_layer,
-                nn.ReLU(inplace=True),
-                nn.Conv2d(skip_channels, skip_channels, kernel_size=3, padding=1),
-                norm_layer,
-                nn.ReLU(inplace=True)
-            )
+                nn.Sequential(
+                    nn.Conv2d(skip_channels * 2, skip_channels, kernel_size=3, padding=1),
+                    nn.BatchNorm2d(skip_channels),
+                    nn.ReLU(inplace=True),
+                    nn.Conv2d(skip_channels, skip_channels, kernel_size=3, padding=1),
+                    nn.BatchNorm2d(skip_channels),
+                    nn.ReLU(inplace=True)
+                )
             )
             # Update in_channels to be the skip_channels for the next stage.
             in_channels = skip_channels
@@ -122,6 +101,9 @@ class UNetDecoder(nn.Module):
             # Skip connection index: from last skip to the first.
             skip = encoder_features[self.num_stages - 1 - i]
             x = self.up_convs[i](x)
+            # Match spatial dimensions with skip connection (just in case upsampling mismatch occurs)
+            if x.shape[2:] != skip.shape[2:]:
+                x = F.interpolate(x, size=skip.shape[2:], mode='bilinear', align_corners=False)
             x = torch.cat([x, skip], dim=1)
             x = self.conv_blocks[i](x)
 
@@ -159,7 +141,7 @@ class GenericUNetNetwork(nn.Module):
         get_activation_fn(activation):
             Retrieves the specified activation function from the `activations` module.
         """
-    def __init__(self, parsed_layers, input_channels=3, input_height=256, input_width=256, num_classes=2, MaxParams=400_000, encoder_only=False, use_gn = False):
+    def __init__(self, parsed_layers, input_channels=3, input_height=256, input_width=256, num_classes=2, MaxParams=200_000_00, encoder_only=False):
         super(GenericUNetNetwork, self).__init__()
         self.config = configparser.ConfigParser()
         self.config.read('config.ini')
@@ -171,7 +153,6 @@ class GenericUNetNetwork(nn.Module):
         self.input_channels = input_channels
         self.input_height = input_height
         self.input_width = input_width
-        self.use_gn = use_gn
         
         self.encoder = nn.ModuleList()
         self.decoder = nn.ModuleList()
@@ -179,7 +160,6 @@ class GenericUNetNetwork(nn.Module):
 
         # Encder Building:
         self._build_encoder(parsed_layers)
-        
         if encoder_only:
             self.decoder = nn.Identity() # Set decoder to identity function.
         else:
@@ -227,6 +207,8 @@ class GenericUNetNetwork(nn.Module):
             elif isinstance(o, list):
                 output_shapes.append([item.shape for item in o])
         return output_shapes
+
+
 
 
     def _build_encoder(self, parsed_layers, verbose=False):
@@ -300,8 +282,9 @@ class GenericUNetNetwork(nn.Module):
             self.total_params (int): The total number of parameters in the model, 
                                      updated to include the decoder's parameters.
         """
-        self.decoder = UNetDecoder(self.encoder_shapes, self.num_classes, output_shape=(self.input_height, self.input_width), use_gn=self.use_gn)
-        # Update the total parameter count with the decoder's parameters.
+        output_shape = (self.input_height, self.input_width)
+        self.decoder = UNetDecoder(self.encoder_shapes, self.num_classes, output_shape)
+        #self.decoder = UNetDecoder(self.encoder_shapes, self.num_classes)
         self.total_params += sum(p.numel() for p in self.decoder.parameters())
         if verbose:    
             print(f"{'U-Net Decoder Built Successfully!':^100}")

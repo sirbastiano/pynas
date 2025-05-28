@@ -3,22 +3,43 @@ import numpy as np
 import pickle
 from copy import deepcopy
 import tqdm, os
-import logging 
-import datetime
+import json
 
 from ..blocks.heads import MultiInputClassifier
 from .individual import Individual 
 from .generic_unet import GenericUNetNetwork
 from ..opt.evo import single_point_crossover, gene_mutation
 from .generic_lightning_module import GenericLightningSegmentationNetwork, GenericLightningNetwork
-from ..train.my_early_stopping import TrainEarlyStopping
-from ..train.viz import plot_best_metrics, plot_population_metrics
+
+import logging 
 
 import torch
 import torch.nn as nn
 import pytorch_lightning as pl
+import torch.multiprocessing as mp
+from pytorch_lightning.callbacks import EarlyStopping
+
 
 from IPython.display import clear_output
+
+
+# Update config_path to use the directory of the current file
+config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
+
+#mp.set_start_method('fork', force=True)
+import torch.multiprocessing as mp
+
+try:
+    mp.set_start_method('spawn', force=True)
+except RuntimeError:
+    pass
+
+def update_config_path(config_path, model_path):
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+    config['model_filepath'] = model_path
+    with open(config_path, 'w') as f:
+        json.dump(config, f)
 
 
 class Population:
@@ -52,24 +73,20 @@ class Population:
         self.max_layers = max_layers
         self.max_parameters = max_parameters
         
-        # Private attribute for controlling if using groupNorm
-        self._use_group_norm = False
-        
         # State tracking
         self.generation = 0
         self.population = []  # Initialize empty population
         self.df = None  # Will hold population stats as DataFrame
         
         # File storage
-        datetime_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.save_directory = os.path.join(save_directory, f"models_traced_{datetime_str}") if save_directory else f"./models_traced_{datetime_str}"
+        self.save_directory = save_directory or "./models_traced"
         # Create directories if they don't exist
         os.makedirs(os.path.join(self.save_directory, "src"), exist_ok=True)
         os.makedirs(os.path.join(self.save_directory, "backups"), exist_ok=True)
         
         # Hardware
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.logger = self.setup_logger(log_file=f'{self.save_directory}/population.log')
+        self.logger = self.setup_logger()
         
         self.logger.info(f"Initialized population with {n_individuals} individuals, "
                          f"max_layers={max_layers}, max_parameters={max_parameters}, "
@@ -90,11 +107,12 @@ class Population:
         Returns:
             logging.Logger: Configured logger instance.
         """
+
         # Ensure the directory for the log file exists
         log_dir = os.path.dirname(log_file)
         if log_dir and not os.path.exists(log_dir):
             os.makedirs(log_dir, exist_ok=True)
-
+            
         if os.path.exists(log_file):
             base, ext = os.path.splitext(log_file)
             timestamp = pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')
@@ -229,7 +247,7 @@ class Population:
 
     def _checkpoint(self):
         """
-        Save the current population state to disk, including dataframes and serialized population.
+        Save the current population state to disk, including dataframes and serialized models.
         
         This implementation includes:
         - Validation of population state before saving
@@ -524,7 +542,6 @@ class Population:
         if not valid_individuals:
             self.logger.warning("No valid individuals with fitness values found!")
             return []
-        
         sorted_pop = self._sort_population()
         # Ensure we don't request more models than are available
         k_best = min(k_best, len(sorted_pop))
@@ -555,7 +572,7 @@ class Population:
         """
         new_population = []
         self.generation += 1
-        topModels = self.elite_models(k_best=k_best)
+        self.topModels = self.elite_models(k_best=k_best)
 
 
         # 2. Create the mating pool based on the cutoff from the sorted population
@@ -603,8 +620,9 @@ class Population:
         
         
         # 4. Add the best individuals from the previous generation
-        new_population.extend(topModels)
+        new_population.extend(self.topModels)
        
+
         assert len(new_population) == self.n_individuals, f"Population size is {len(new_population)}, expected {self.n_individuals}"
         self.population = new_population
         self._checkpoint()
@@ -689,6 +707,7 @@ class Population:
             else:
                 shape_without_batch = tuple(output.shape[1:])
                 shapes.append(shape_without_batch)
+            self.logger.debug(f"Shape tracer output: {shapes}")
             return shapes
         
         self.task = task
@@ -700,7 +719,6 @@ class Population:
                     input_width=self.dm.input_shape[2], 
                     num_classes=self.dm.num_classes,
                     encoder_only=False,
-                    use_gn=self._use_group_norm,
             )
             valid = True
         elif task == "classification": 
@@ -712,7 +730,7 @@ class Population:
                     encoder_only=True,
             )
             valid = True
-            # Building the classifier with the feature only of the Unet encoder (we dont build decoder)
+                
             head = MultiInputClassifier(shape_tracer(self, encoder.to(self.device)), num_classes=self.dm.num_classes)
             head = head.to(self.device)
             model = nn.Sequential(encoder, head)
@@ -773,13 +791,6 @@ class Population:
         Returns:
             None
         """
-        try:
-            assert self.generation is not None, "Generation number is not set."
-            assert self.df is not None, "DataFrame is not initialized."
-        except AssertionError as e:
-            self.logger.error(f"Error during DataFrame saving: {e}")
-        # log:
-        self.logger.info(f"Saving DataFrame for generation {self.generation}")
         path = f'{self.save_directory}/src/df_population_{self.generation}.pkl'
         try:
             self.df.to_pickle(path)
@@ -789,7 +800,7 @@ class Population:
     
     
     def load_dataframe(self, generation):
-        path = f'{self.save_directory}/src/df_population_{generation}.pkl'
+        path = f'./models_traced/src/df_population_{generation}.pkl'
         try:
             df = pd.read_pickle(path)
             return df
@@ -799,7 +810,7 @@ class Population:
     
     
     def save_population(self):
-        path = f'{self.save_directory}/src/population_{self.generation}.pkl'
+        path = f'./models_traced/src/population_{self.generation}.pkl'
         try:
             with open(path, 'wb') as f:
                 pickle.dump(self.population, f)
@@ -809,7 +820,7 @@ class Population:
     
     
     def load_population(self, generation):
-        path = f'{self.save_directory}/src/population_{generation}.pkl'
+        path = f'./models_traced/src/population_{generation}.pkl'
         try:
             with open(path, 'rb') as f:
                 population = pickle.load(f)
@@ -817,7 +828,6 @@ class Population:
         except Exception as e:
             self.logger.error(f"Error loading population from {path}: {e}")
             return None
-    
 
     def train_individual(self, idx, task, epochs=20, lr=1e-3, batch_size=None):
         """
@@ -831,14 +841,6 @@ class Population:
         Returns:
             None
         """
-        # Create the early stopping callback
-        early_stopping = TrainEarlyStopping(
-            monitor='val_loss',  # metric to monitor
-            patience=3,          # number of epochs with no improvement after which training will be stopped
-            verbose=True,        # print a message when early stopping occurs
-            mode='min',          # 'min' for metrics that decrease (like loss), 'max' for metrics that increase
-            min_delta=0.001      # minimum change to qualify as improvement
-        )
         individual = self.population[idx]
         
         
@@ -857,25 +859,79 @@ class Population:
             )
         else:
             raise ValueError(f"Task {task} not supported.")
+
+
+        early_stop_callback = EarlyStopping(
+                            monitor="val_loss",     # or "val_iou" or any metric you're logging
+                            mode="min",             # "min" if loss, "max" if accuracy or IoU
+                            patience=3,             # number of epochs with no improvement
+                            verbose=False)
+
         
         # Create a PyTorch Lightning trainer
         trainer = pl.Trainer(
-            callbacks=[early_stopping],
-            max_epochs=epochs,
-            accelerator="gpu" if torch.cuda.is_available() else "cpu"
-        )
+                            #strategy="ddp_notebook",
+                            accelerator="gpu",
+                            devices=1,
+                            max_epochs=epochs,
+                            callbacks=[early_stop_callback]   
+                            )
         # Set the batch size if specified
         if batch_size is not None:
             self.dm.batch_size = batch_size
         # Train the lightning model
+        print("Strategy in use:", trainer.strategy)
         trainer.fit(LM, self.dm)
+        
+        
         results = trainer.test(LM, self.dm)
-        #
-        # API call to get the test results
-        #
-        individual._prompt_fitness(results[0], task=task)
-        self._checkpoint()        
+        self.results = results
+        
+        # ===== Save model =====
+        self.idx = idx  # required for save_model() paths
+        self.LM = LM
+        self.save_model(LM)
 
+        # ===== Test model ===== TODO: Implement a separate test method
+        self.logger.info(f"[Generation {self.generation} | Individual {idx}] Training completed. Evaluating model...")
+        try:
+            #  ===== Extract metrics
+            accuracy = np.float32(results["accuracy"])
+            latency = np.float32(results["latency"])
+        
+            # ===== Update individual metrics and fitness
+            individual.iou = accuracy
+            individual.metric = accuracy
+            individual.fps = latency
+            individual._prompt_fitness()
+        
+        except Exception as e:
+            self.logger.error(f"[Generation {self.generation} | Individual {idx}] API call failed: {e}")
+            
+            # Mark as failed
+            individual.iou = None
+            individual.metric = None
+            individual.fps = None
+            individual.fitness = None
+            individual.failed = True  # Optional: flag to identify failed evaluations
+
+        # ===== Ensure DataFrame is aligned with population before updating =====
+        if self.df is None or idx not in self.df.index:
+            print(f"[INFO] DataFrame missing or index {idx} not found. Regenerating DataFrame.")
+            self._update_df()
+
+        # ===== Update DataFrame regardless of success or failure =====
+        self.df.loc[idx, 'Fitness'] = individual.fitness
+        self.df.loc[idx, 'Metric'] = individual.iou
+        self.df.loc[idx, 'FPS'] = individual.fps
+        
+        self.save_dataframe()
+        print('updated the df')
+        self.save_population()
+        print('saved population')
+        self._checkpoint()
+        print('checkpointed')
+        ###### new code ends here
 
     def train_generation(self, task='classification', lr=0.001, epochs=4, batch_size=32):
         """
@@ -897,39 +953,30 @@ class Population:
 
             print(f"Training individual {idx}/{len(self)}")
             self.train_individual(idx=idx, task=task, lr=lr, epochs=epochs, batch_size=batch_size)
-            clear_output(wait=True)
-    
-    
-    def _plot_metrics(self):
-        """Generates and saves plots of the population metrics.
-        
-        This method creates two types of visualizations:
-            1. Population-wide metrics showing statistics across all individuals
-            2. Metrics of the best performing individual(s)
-        
-        All plots are saved to the 'src' subdirectory within the configured save
-        directory. The current generation number is used to label/organize the plots.
-        
-        Returns:
-            None
-        """
-        plot_population_metrics(os.path.join(self.save_directory, "src"), self.generation)
-        plot_best_metrics(os.path.join(self.save_directory, "src"), self.generation)
-        
-        
+            #clear_output(wait=True)
+
     def save_model(self, LM,
                    save_torchscript=True, 
                    ts_save_path=None,
                    save_standard=True, 
-                   std_save_path=None):
-        # Use generation attribute from the Population object.
+                   std_save_path=None,
+                   save_myriad=True,  # <-- add this
+                  openvino_save_path=None):
         gen = self.generation
         
         if ts_save_path is None:
             ts_save_path = f"models_traced/generation_{gen}/model_and_architecture_{self.idx}.pt"
+            self.ts_save_path = ts_save_path
         if std_save_path is None:
             std_save_path = f"models_traced/generation_{gen}/model_{self.idx}.pth"
-        
+            self.std_save_path = std_save_path
+        if openvino_save_path is None:
+            openvino_save_path = f"models_traced/generation_{gen}/openvino_model_{self.idx}"
+
+
+        # Ensure results directory exists
+        os.makedirs(f"models_traced/generation_{gen}", exist_ok=True)
+
         # Save the results to a text file.
         with open(f"models_traced/generation_{gen}/results_model_{self.idx}.txt", "w") as f:
             f.write("Test Results:\n")
@@ -959,6 +1006,103 @@ class Population:
             torch.save(save_dict, std_save_path)
             print(f"Standard model saved at {std_save_path}")
 
+        '''
+        if save_myriad:
+            print("[INFO] Entering Myriad export subprocess")
+
+            import subprocess
+            import tempfile
+            import shutil
+            import os
+
+            # Save model as temporary ONNX
+            temp_onnx_path = os.path.join("/tmp", f"temp_model_{self.idx}.onnx")
+            dummy_input = torch.randn(*input_shape).to("cpu")
+            torch.onnx.export(LM.model.cpu(), dummy_input, temp_onnx_path, opset_version=11)
+
+            # Output OpenVINO model directory
+            output_dir = os.path.abspath(f"{openvino_save_path}")
+            os.makedirs(output_dir, exist_ok=True)
+
+            try:
+                result = subprocess.run(
+                    [
+                        "mo",  # Model Optimizer CLI
+                        "--input_model", temp_onnx_path,
+                        "--output_dir", output_dir
+                        #"--data_type", "FP16"
+                    ],
+                    env={**os.environ, "OPENVINO_CONF_IGNORE": "YES"},
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
+                print("[Myriad X] OpenVINO model converted successfully.")
+                print(result.stdout)
+
+            except subprocess.CalledProcessError as e:
+                print("[ERROR] Myriad export failed via subprocess:")
+                print(e.stderr)
+                self.logger.error(f"Myriad export failed: {e.stderr}")
+
+            finally:
+                if os.path.exists(temp_onnx_path):
+                    os.remove(temp_onnx_path)
+        '''
+        if save_myriad:
+            print("[INFO] Entering Myriad export subprocess")
+
+            import subprocess
+            import tempfile
+            import shutil
+            import os
+
+            # Save model as temporary ONNX
+            temp_onnx_path = os.path.join("/tmp", f"temp_model_{self.idx}.onnx")
+            dummy_input = torch.randn(*input_shape).to("cpu")
+            torch.onnx.export(LM.model.cpu(), dummy_input, temp_onnx_path, opset_version=11)
+
+            # Output OpenVINO model directory
+            output_dir = os.path.abspath(f"{openvino_save_path}")
+            os.makedirs(output_dir, exist_ok=True)
+
+            try:
+                result = subprocess.run(
+                    [
+                        "mo",  # Model Optimizer CLI
+                        "--input_model", temp_onnx_path,
+                        "--output_dir", output_dir
+                        #"--data_type", "FP16"
+                    ],
+                    env={**os.environ, "OPENVINO_CONF_IGNORE": "YES"},
+                    check=True,
+                    capture_output=True,
+                    text=True
+                )
+                print("[Myriad X] OpenVINO model converted successfully.")
+                print(result.stdout)
+
+                # After successful export, update the config file to point to the correct OpenVINO XML path
+                xml_path = os.path.join(output_dir, f"temp_model_{self.idx}.xml")
+                from pynas.core.population import update_config_path  # Ensure absolute import if needed
+                update_config_path(config_path, xml_path)
+
+            except subprocess.CalledProcessError as e:
+                print("[ERROR] Myriad export failed via subprocess:")
+                print(e.stderr)
+                self.logger.error(f"Myriad export failed: {e.stderr}")
+
+            finally:
+                if os.path.exists(temp_onnx_path):
+                    os.remove(temp_onnx_path)
+
+
+
+
+
+
+
+
 
     def __getitem__(self, index):
         """
@@ -983,4 +1127,4 @@ class Population:
         Returns:
             int: The number of individuals in the population.
         """
-        return len(self.population)  
+        return len(self.population)

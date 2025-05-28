@@ -6,12 +6,15 @@ import pytorch_lightning as pl
 
 from pynas.core.population import Population
 from datasets.RawClassifier.loader import RawClassifierDataModule
+from datasets.RawVessels.loader import RawVesselsDataModule
 import argparse
 
 # Define dataset module
-root_dir = '/Data_large/marine/PythonProjects/OtherProjects/lpl-PyNas/data/RawClassifier'
-dm = RawClassifierDataModule(root_dir, batch_size=4, num_workers=2, transform=None)
+# root_dir = '/Data_large/marine/PythonProjects/OtherProjects/lpl-PyNas/data/RawClassifier'
+# dm = RawVesselsDataModule(root_dir, batch_size=4, num_workers=2, transform=None)
 
+root_dir = '/Data_large/marine/PythonProjects/OtherProjects/lpl-PyNas/data/TASI/DataSAR_real_refined'
+dm = RawVesselsDataModule(root_dir, batch_size=4, num_workers=2, transform=None)
 pd.set_option('display.max_colwidth', None)
 
 # Argument parser

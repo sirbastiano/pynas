@@ -3,8 +3,7 @@ from ..train import myFit
 from copy import deepcopy
 
 
-
-
+evaluator = myFit.FitnessEvaluator()
 
 class Individual:
     """
@@ -18,6 +17,8 @@ class Individual:
         parsed_layers (list): Parsed layers of the architecture code.
         fitness (float): The fitness score of the individual.
         iou (float or None): The Intersection over Union metric.
+        metric (float or None): Currently stores IoU (Intersection over Union).
+
         fps (float or None): The Frames Per Second metric.
         model_size (float or None): The size of the model.
         model (object or None): The trained model associated with the individual.
@@ -65,17 +66,19 @@ class Individual:
 
 
     # Implement the logic to prompt the fitnes
-    def _prompt_fitness(self, results, task):
-        fps = results['fps']
-        metric = results['metric']
-        self.fps, self.metric = fps, metric
-        self.results = results
-        # Init the fitness evaluator
-        evaluator = myFit.FitnessEvaluator(task=task)
-        self.fitness = evaluator.weighted_sum_exponential(fps, metric)
+    def _prompt_fitness(self):
+        # fps = results['fps']
+        #metric = results['test_mcc']
+        # metric = results['test_iou']
+        # self.fps, self.metric = fps, metric
+        # self.results = results
+
+        self.fitness = evaluator.weighted_sum_exponential(self.fps, self.iou)
+
+        print("IoU:", self.iou)
+        print("FPS:", self.fps)
+        print("Fitness:", self.fitness)
         return self.fitness
-    
-    
 
     def architecture2chromosome(self, input_architecture):
         """
