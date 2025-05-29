@@ -28,7 +28,9 @@ dependencies = [
   "tifffile",
   "plotly",
   "scikit-image",
-  "ipykernel"
+  "ipykernel",
+  "torchvision>=0.22.0",
+  "scikit-learn>=1.6.1"
 ]
 classifiers = [
   "Development Status :: 3 - Alpha",
