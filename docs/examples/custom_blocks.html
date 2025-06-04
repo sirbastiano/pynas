@@ -1,0 +1,1447 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Blocks &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Core Module" href="../api/core.html" />
+    <link rel="prev" title="Edge Optimization" href="edge_optimization.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html">Vessel Detection Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote_sensing.html">Remote Sensing Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_optimization.html">Edge Optimization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Custom Blocks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-custom-convolution-blocks">Creating Custom Convolution Blocks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#basic-custom-block-structure">Basic Custom Block Structure</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#attention-mechanism-blocks">Attention Mechanism Blocks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#self-attention-block">Self-Attention Block</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#domain-specific-blocks">Domain-Specific Blocks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#remote-sensing-block">Remote Sensing Block</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#integrating-custom-blocks-into-pynas">Integrating Custom Blocks into PyNAS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#extending-the-block-vocabulary">Extending the Block Vocabulary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#custom-block-registry">Custom Block Registry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#custom-architecture-builder">Custom Architecture Builder</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#evolution-with-custom-blocks">Evolution with Custom Blocks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#custom-block-evolution-example">Custom Block Evolution Example</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#complete-custom-block-example">Complete Custom Block Example</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#main-execution-pipeline">Main Execution Pipeline</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#expected-output">Expected Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#best-practices-for-custom-blocks">Best Practices for Custom Blocks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#vessel-detection">Vessel Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#remote-sensing-applications">Remote Sensing Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#edge-device-optimization">Edge Device Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#custom-architecture-blocks">Custom Architecture Blocks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Examples</a></li>
+      <li class="breadcrumb-item active">Custom Blocks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/examples/custom_blocks.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="custom-blocks">
+<h1>Custom Blocks<a class="headerlink" href="#custom-blocks" title="Link to this heading"></a></h1>
+<p>This example demonstrates how to create custom neural network blocks and integrate them into the PyNAS architecture search framework. You’ll learn to extend the existing block vocabulary and implement domain-specific architectural components.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>PyNAS provides a flexible framework for defining custom blocks that can be used in architecture search. This includes:</p>
+<ul class="simple">
+<li><p><strong>Custom Convolution Blocks</strong>: Specialized convolutions for specific tasks</p></li>
+<li><p><strong>Attention Mechanisms</strong>: Self-attention and cross-attention blocks</p></li>
+<li><p><strong>Domain-Specific Modules</strong>: Blocks tailored for specific applications</p></li>
+<li><p><strong>Block Integration</strong>: Adding custom blocks to the search space</p></li>
+</ul>
+</section>
+<section id="creating-custom-convolution-blocks">
+<h2>Creating Custom Convolution Blocks<a class="headerlink" href="#creating-custom-convolution-blocks" title="Link to this heading"></a></h2>
+<section id="basic-custom-block-structure">
+<h3>Basic Custom Block Structure<a class="headerlink" href="#basic-custom-block-structure" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.blocks.activations</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReLU</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.blocks.convolutions</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConvBnAct</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SeparableConvBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Depthwise separable convolution block.</span>
+
+<span class="sd">    This block implements depthwise separable convolution which is more</span>
+<span class="sd">    parameter-efficient than standard convolution.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        in_channels (int): Number of input channels</span>
+<span class="sd">        out_channels (int): Number of output channels</span>
+<span class="sd">        kernel_size (int): Kernel size for depthwise convolution</span>
+<span class="sd">        stride (int): Stride for convolution</span>
+<span class="sd">        padding (int): Padding for convolution</span>
+<span class="sd">        activation (nn.Module): Activation function class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                 <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SeparableConvBlock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Depthwise convolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depthwise</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+            <span class="n">in_channels</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="n">kernel_size</span><span class="p">,</span>
+            <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">)</span>
+
+        <span class="c1"># Pointwise convolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pointwise</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+            <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activation</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass through separable convolution.&quot;&quot;&quot;</span>
+        <span class="c1"># Depthwise</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">depthwise</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Pointwise</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointwise</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DilatedConvBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dilated convolution block for capturing multi-scale features.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        in_channels (int): Number of input channels</span>
+<span class="sd">        out_channels (int): Number of output channels</span>
+<span class="sd">        dilation_rates (list): List of dilation rates to use</span>
+<span class="sd">        activation (nn.Module): Activation function class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span>
+                 <span class="n">dilation_rates</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DilatedConvBlock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dilated_convs</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">dilation</span> <span class="ow">in</span> <span class="n">dilation_rates</span><span class="p">:</span>
+            <span class="n">conv</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+                    <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">dilation_rates</span><span class="p">),</span>
+                    <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">dilation</span><span class="p">,</span> <span class="n">dilation</span><span class="o">=</span><span class="n">dilation</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">),</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">dilation_rates</span><span class="p">)),</span>
+                <span class="n">activation</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dilated_convs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conv</span><span class="p">)</span>
+
+        <span class="c1"># Final 1x1 conv to combine features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combine</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass through dilated convolution block.&quot;&quot;&quot;</span>
+        <span class="c1"># Apply different dilated convolutions</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">conv</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dilated_convs</span><span class="p">:</span>
+            <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">conv</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+        <span class="c1"># Concatenate features</span>
+        <span class="n">combined</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Final combination</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="n">combined</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="attention-mechanism-blocks">
+<h2>Attention Mechanism Blocks<a class="headerlink" href="#attention-mechanism-blocks" title="Link to this heading"></a></h2>
+<section id="self-attention-block">
+<h3>Self-Attention Block<a class="headerlink" href="#self-attention-block" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">SelfAttentionBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Self-attention block for capturing long-range dependencies.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        in_channels (int): Number of input channels</span>
+<span class="sd">        reduction_ratio (int): Reduction ratio for attention computation</span>
+<span class="sd">        activation (nn.Module): Activation function class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">reduction_ratio</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SelfAttentionBlock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reduction_ratio</span> <span class="o">=</span> <span class="n">reduction_ratio</span>
+
+        <span class="c1"># Query, Key, Value projections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query_conv</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">in_channels</span> <span class="o">//</span> <span class="n">reduction_ratio</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key_conv</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">in_channels</span> <span class="o">//</span> <span class="n">reduction_ratio</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value_conv</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Output projection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_conv</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Layer normalization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_norm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">GroupNorm</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activation</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass through self-attention block.&quot;&quot;&quot;</span>
+        <span class="n">batch_size</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+
+        <span class="c1"># Store residual</span>
+        <span class="n">residual</span> <span class="o">=</span> <span class="n">x</span>
+
+        <span class="c1"># Generate queries, keys, values</span>
+        <span class="n">queries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_conv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">height</span> <span class="o">*</span> <span class="n">width</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_conv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">height</span> <span class="o">*</span> <span class="n">width</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_conv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">height</span> <span class="o">*</span> <span class="n">width</span><span class="p">)</span>
+
+        <span class="c1"># Compute attention weights</span>
+        <span class="n">attention_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bmm</span><span class="p">(</span><span class="n">queries</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">keys</span><span class="p">)</span>
+        <span class="n">attention_weights</span> <span class="o">=</span> <span class="n">attention_weights</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">channels</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction_ratio</span><span class="p">)</span>
+        <span class="n">attention_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">attention_weights</span><span class="p">)</span>
+
+        <span class="c1"># Apply attention to values</span>
+        <span class="n">attended_values</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bmm</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">attention_weights</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">attended_values</span> <span class="o">=</span> <span class="n">attended_values</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+
+        <span class="c1"># Output projection</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_conv</span><span class="p">(</span><span class="n">attended_values</span><span class="p">)</span>
+
+        <span class="c1"># Residual connection and layer norm</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">residual</span> <span class="o">+</span> <span class="n">output</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer_norm</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ChannelAttentionBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Channel attention block (enhanced Squeeze-and-Excitation).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        in_channels (int): Number of input channels</span>
+<span class="sd">        reduction_ratio (int): Reduction ratio for channel attention</span>
+<span class="sd">        use_spatial (bool): Whether to include spatial attention</span>
+<span class="sd">        activation (nn.Module): Activation function class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">reduction_ratio</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+                 <span class="n">use_spatial</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ChannelAttentionBlock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_spatial</span> <span class="o">=</span> <span class="n">use_spatial</span>
+
+        <span class="c1"># Channel attention</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avg_pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">AdaptiveAvgPool2d</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">AdaptiveMaxPool2d</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">reduced_channels</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">in_channels</span> <span class="o">//</span> <span class="n">reduction_ratio</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel_attention</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">reduced_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">reduced_channels</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Spatial attention (optional)</span>
+        <span class="k">if</span> <span class="n">use_spatial</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spatial_attention</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">()</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigmoid</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass through channel attention block.&quot;&quot;&quot;</span>
+        <span class="n">batch_size</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+
+        <span class="c1"># Channel attention</span>
+        <span class="n">avg_pooled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avg_pool</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">channels</span><span class="p">)</span>
+        <span class="n">max_pooled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_pool</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">channels</span><span class="p">)</span>
+
+        <span class="n">avg_attention</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_attention</span><span class="p">(</span><span class="n">avg_pooled</span><span class="p">)</span>
+        <span class="n">max_attention</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_attention</span><span class="p">(</span><span class="n">max_pooled</span><span class="p">)</span>
+
+        <span class="n">channel_attention</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">avg_attention</span> <span class="o">+</span> <span class="n">max_attention</span><span class="p">)</span>
+        <span class="n">channel_attention</span> <span class="o">=</span> <span class="n">channel_attention</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Apply channel attention</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">channel_attention</span>
+
+        <span class="c1"># Spatial attention (if enabled)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_spatial</span><span class="p">:</span>
+            <span class="n">avg_spatial</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">max_spatial</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">spatial_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">avg_spatial</span><span class="p">,</span> <span class="n">max_spatial</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="n">spatial_attention</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_attention</span><span class="p">(</span><span class="n">spatial_input</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">spatial_attention</span>
+
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="domain-specific-blocks">
+<h2>Domain-Specific Blocks<a class="headerlink" href="#domain-specific-blocks" title="Link to this heading"></a></h2>
+<section id="remote-sensing-block">
+<h3>Remote Sensing Block<a class="headerlink" href="#remote-sensing-block" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">RemoteSensingBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specialized block for remote sensing applications.</span>
+
+<span class="sd">    This block is designed to handle multi-spectral imagery and</span>
+<span class="sd">    capture both spectral and spatial features effectively.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        in_channels (int): Number of input channels (spectral bands)</span>
+<span class="sd">        out_channels (int): Number of output channels</span>
+<span class="sd">        spectral_reduction (int): Reduction factor for spectral processing</span>
+<span class="sd">        activation (nn.Module): Activation function class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span>
+                 <span class="n">spectral_reduction</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RemoteSensingBlock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_channels</span> <span class="o">=</span> <span class="n">out_channels</span>
+
+        <span class="c1"># Spectral feature extraction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spectral_conv</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">in_channels</span> <span class="o">//</span> <span class="n">spectral_reduction</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">in_channels</span> <span class="o">//</span> <span class="n">spectral_reduction</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span> <span class="o">//</span> <span class="n">spectral_reduction</span><span class="p">,</span> <span class="n">out_channels</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span> <span class="o">//</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Spatial feature extraction with different scales</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_conv_3x3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span> <span class="o">//</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span> <span class="o">//</span> <span class="mi">4</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_conv_5x5</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span> <span class="o">//</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span> <span class="o">//</span> <span class="mi">4</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Feature fusion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fusion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Adaptive feature weighting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feature_weighting</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">AdaptiveAvgPool2d</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">out_channels</span> <span class="o">//</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">out_channels</span> <span class="o">//</span> <span class="mi">4</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass through remote sensing block.&quot;&quot;&quot;</span>
+        <span class="c1"># Extract different types of features</span>
+        <span class="n">spectral_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spectral_conv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">spatial_features_3x3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_conv_3x3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">spatial_features_5x5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_conv_5x5</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># Combine features</span>
+        <span class="n">combined_features</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span>
+            <span class="n">spectral_features</span><span class="p">,</span>
+            <span class="n">spatial_features_3x3</span><span class="p">,</span>
+            <span class="n">spatial_features_5x5</span>
+        <span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Feature fusion</span>
+        <span class="n">fused_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fusion</span><span class="p">(</span><span class="n">combined_features</span><span class="p">)</span>
+
+        <span class="c1"># Adaptive weighting</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_weighting</span><span class="p">(</span><span class="n">fused_features</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">fused_features</span> <span class="o">*</span> <span class="n">weights</span>
+
+        <span class="k">return</span> <span class="n">output</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EdgeDetectionBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Edge detection block using learned filters.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        in_channels (int): Number of input channels</span>
+<span class="sd">        out_channels (int): Number of output channels</span>
+<span class="sd">        edge_types (list): Types of edges to detect (&#39;horizontal&#39;, &#39;vertical&#39;, &#39;diagonal&#39;)</span>
+<span class="sd">        activation (nn.Module): Activation function class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span>
+                 <span class="n">edge_types</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="s1">&#39;vertical&#39;</span><span class="p">,</span> <span class="s1">&#39;diagonal&#39;</span><span class="p">],</span>
+                 <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EdgeDetectionBlock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_types</span> <span class="o">=</span> <span class="n">edge_types</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_detectors</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">()</span>
+
+        <span class="c1"># Create edge detection filters for each type</span>
+        <span class="k">for</span> <span class="n">edge_type</span> <span class="ow">in</span> <span class="n">edge_types</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">edge_type</span> <span class="o">==</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">:</span>
+                <span class="c1"># Horizontal edge detection</span>
+                <span class="n">detector</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+                    <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_types</span><span class="p">),</span>
+                    <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
+                <span class="c1"># Initialize with horizontal edge filter</span>
+                <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                    <span class="n">detector</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">detector</span><span class="o">.</span><span class="n">weight</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="n">detector</span><span class="o">.</span><span class="n">weight</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="k">elif</span> <span class="n">edge_type</span> <span class="o">==</span> <span class="s1">&#39;vertical&#39;</span><span class="p">:</span>
+                <span class="c1"># Vertical edge detection</span>
+                <span class="n">detector</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+                    <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_types</span><span class="p">),</span>
+                    <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
+                <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                    <span class="n">detector</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">detector</span><span class="o">.</span><span class="n">weight</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="n">detector</span><span class="o">.</span><span class="n">weight</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="k">elif</span> <span class="n">edge_type</span> <span class="o">==</span> <span class="s1">&#39;diagonal&#39;</span><span class="p">:</span>
+                <span class="c1"># Diagonal edge detection</span>
+                <span class="n">detector</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+                    <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_types</span><span class="p">),</span>
+                    <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
+                <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                    <span class="n">detector</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">fill_</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">detector</span><span class="o">.</span><span class="n">weight</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                    <span class="n">detector</span><span class="o">.</span><span class="n">weight</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_detectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+                <span class="n">detector</span><span class="p">,</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_types</span><span class="p">)),</span>
+                <span class="n">activation</span><span class="p">()</span>
+            <span class="p">))</span>
+
+        <span class="c1"># Feature combination</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">combiner</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Forward pass through edge detection block.&quot;&quot;&quot;</span>
+        <span class="n">edge_features</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">detector</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_detectors</span><span class="p">:</span>
+            <span class="n">edge_feature</span> <span class="o">=</span> <span class="n">detector</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">edge_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_feature</span><span class="p">)</span>
+
+        <span class="c1"># Combine edge features</span>
+        <span class="n">combined</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">edge_features</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combiner</span><span class="p">(</span><span class="n">combined</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="integrating-custom-blocks-into-pynas">
+<h2>Integrating Custom Blocks into PyNAS<a class="headerlink" href="#integrating-custom-blocks-into-pynas" title="Link to this heading"></a></h2>
+<section id="extending-the-block-vocabulary">
+<h3>Extending the Block Vocabulary<a class="headerlink" href="#extending-the-block-vocabulary" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: custom_vocabulary.py</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.vocabulary</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">convolution_layer_vocabulary</span><span class="p">,</span>
+    <span class="n">layer_parameters</span>
+<span class="p">)</span>
+
+<span class="c1"># Extend the vocabulary with custom blocks</span>
+<span class="n">custom_convolution_vocabulary</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="o">**</span><span class="n">convolution_layer_vocabulary</span><span class="p">,</span>
+    <span class="s1">&#39;sep&#39;</span><span class="p">:</span> <span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;dil&#39;</span><span class="p">:</span> <span class="s1">&#39;DilatedConvBlock&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sa&#39;</span><span class="p">:</span> <span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ca&#39;</span><span class="p">:</span> <span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;rs&#39;</span><span class="p">:</span> <span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;edge&#39;</span><span class="p">:</span> <span class="s1">&#39;EdgeDetectionBlock&#39;</span>
+<span class="p">}</span>
+
+<span class="c1"># Add parameters for custom blocks</span>
+<span class="n">custom_layer_parameters</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="o">**</span><span class="n">layer_parameters</span><span class="p">,</span>
+    <span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;kernel_size&#39;</span><span class="p">,</span> <span class="s1">&#39;stride&#39;</span><span class="p">,</span> <span class="s1">&#39;padding&#39;</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;DilatedConvBlock&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;dilation_rates&#39;</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">&#39;reduction_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">&#39;reduction_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;use_spatial&#39;</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;spectral_reduction&#39;</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;EdgeDetectionBlock&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;edge_types&#39;</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="custom-block-registry">
+<h3>Custom Block Registry<a class="headerlink" href="#custom-block-registry" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: custom_blocks_registry.py</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomBlockRegistry</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Registry for managing custom blocks in PyNAS.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blocks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_configs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Register built-in custom blocks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_builtin_blocks</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">block_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">],</span>
+                      <span class="n">parameters</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">default_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a custom block.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Name identifier for the block</span>
+<span class="sd">            block_class: PyTorch Module class</span>
+<span class="sd">            parameters: List of parameter names for the block</span>
+<span class="sd">            default_config: Default parameter values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blocks</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">block_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_configs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;parameters&#39;</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
+            <span class="s1">&#39;defaults&#39;</span><span class="p">:</span> <span class="n">default_config</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="p">}</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registered custom block: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get block class by name.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocks</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Block &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; not found in registry&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocks</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get parameter list for a block.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_configs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Block &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; not found in registry&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_configs</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get default configuration for a block.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_configs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Block &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; not found in registry&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_configs</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s1">&#39;defaults&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_blocks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List all registered blocks.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">blocks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_builtin_blocks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register built-in custom blocks.&quot;&quot;&quot;</span>
+        <span class="c1"># Register the custom blocks we defined</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_block</span><span class="p">(</span>
+            <span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span>
+            <span class="n">SeparableConvBlock</span><span class="p">,</span>
+            <span class="p">[</span><span class="s1">&#39;in_channels&#39;</span><span class="p">,</span> <span class="s1">&#39;out_channels&#39;</span><span class="p">,</span> <span class="s1">&#39;kernel_size&#39;</span><span class="p">,</span> <span class="s1">&#39;stride&#39;</span><span class="p">,</span> <span class="s1">&#39;padding&#39;</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span><span class="p">],</span>
+            <span class="p">{</span><span class="s1">&#39;kernel_size&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;stride&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;padding&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_block</span><span class="p">(</span>
+            <span class="s1">&#39;DilatedConvBlock&#39;</span><span class="p">,</span>
+            <span class="n">DilatedConvBlock</span><span class="p">,</span>
+            <span class="p">[</span><span class="s1">&#39;in_channels&#39;</span><span class="p">,</span> <span class="s1">&#39;out_channels&#39;</span><span class="p">,</span> <span class="s1">&#39;dilation_rates&#39;</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span><span class="p">],</span>
+            <span class="p">{</span><span class="s1">&#39;dilation_rates&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]}</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_block</span><span class="p">(</span>
+            <span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">,</span>
+            <span class="n">SelfAttentionBlock</span><span class="p">,</span>
+            <span class="p">[</span><span class="s1">&#39;in_channels&#39;</span><span class="p">,</span> <span class="s1">&#39;reduction_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span><span class="p">],</span>
+            <span class="p">{</span><span class="s1">&#39;reduction_ratio&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_block</span><span class="p">(</span>
+            <span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">,</span>
+            <span class="n">ChannelAttentionBlock</span><span class="p">,</span>
+            <span class="p">[</span><span class="s1">&#39;in_channels&#39;</span><span class="p">,</span> <span class="s1">&#39;reduction_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;use_spatial&#39;</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span><span class="p">],</span>
+            <span class="p">{</span><span class="s1">&#39;reduction_ratio&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s1">&#39;use_spatial&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_block</span><span class="p">(</span>
+            <span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">,</span>
+            <span class="n">RemoteSensingBlock</span><span class="p">,</span>
+            <span class="p">[</span><span class="s1">&#39;in_channels&#39;</span><span class="p">,</span> <span class="s1">&#39;out_channels&#39;</span><span class="p">,</span> <span class="s1">&#39;spectral_reduction&#39;</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span><span class="p">],</span>
+            <span class="p">{</span><span class="s1">&#39;spectral_reduction&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_block</span><span class="p">(</span>
+            <span class="s1">&#39;EdgeDetectionBlock&#39;</span><span class="p">,</span>
+            <span class="n">EdgeDetectionBlock</span><span class="p">,</span>
+            <span class="p">[</span><span class="s1">&#39;in_channels&#39;</span><span class="p">,</span> <span class="s1">&#39;out_channels&#39;</span><span class="p">,</span> <span class="s1">&#39;edge_types&#39;</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span><span class="p">],</span>
+            <span class="p">{</span><span class="s1">&#39;edge_types&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="s1">&#39;vertical&#39;</span><span class="p">,</span> <span class="s1">&#39;diagonal&#39;</span><span class="p">]}</span>
+        <span class="p">)</span>
+
+<span class="c1"># Global registry instance</span>
+<span class="n">custom_block_registry</span> <span class="o">=</span> <span class="n">CustomBlockRegistry</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="custom-architecture-builder">
+<h3>Custom Architecture Builder<a class="headerlink" href="#custom-architecture-builder" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: custom_architecture_builder.py</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.architecture_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArchitectureBuilder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.generic_unet</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_layer</span><span class="p">,</span> <span class="n">parse_conv_params</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">configparser</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomArchitectureBuilder</span><span class="p">(</span><span class="n">ArchitectureBuilder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extended architecture builder with custom block support.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">custom_registry</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_registry</span> <span class="o">=</span> <span class="n">custom_registry</span> <span class="ow">or</span> <span class="n">custom_block_registry</span>
+
+        <span class="c1"># Load custom configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_custom_config</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_custom_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load configuration for custom blocks.&quot;&quot;&quot;</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+
+        <span class="c1"># Add configurations for custom blocks</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;min_kernel_size&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;max_kernel_size&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;default_kernel_size&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;min_out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;max_out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;default_out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">)</span>
+
+        <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;DilatedConvBlock&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;DilatedConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;min_out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;DilatedConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;max_out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;DilatedConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;default_out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">)</span>
+
+        <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;min_reduction_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;max_reduction_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;16&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;default_reduction_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">)</span>
+
+        <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;min_reduction_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;max_reduction_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;32&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;default_reduction_ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;16&#39;</span><span class="p">)</span>
+
+        <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;min_out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;max_out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;default_out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;min_spectral_reduction&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;max_spectral_reduction&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;default_spectral_reduction&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">)</span>
+
+        <span class="n">config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="s1">&#39;EdgeDetectionBlock&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;EdgeDetectionBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;min_out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;EdgeDetectionBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;max_out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s1">&#39;EdgeDetectionBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;default_out_channels_coefficient&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">config</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_custom_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_config</span><span class="p">,</span> <span class="n">current_channels</span><span class="p">,</span>
+                          <span class="n">current_height</span><span class="p">,</span> <span class="n">current_width</span><span class="p">,</span> <span class="n">get_activation_fn</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a custom layer from configuration.&quot;&quot;&quot;</span>
+        <span class="n">layer_type</span> <span class="o">=</span> <span class="n">layer_config</span><span class="p">[</span><span class="s1">&#39;layer_type&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">layer_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_registry</span><span class="o">.</span><span class="n">blocks</span><span class="p">:</span>
+            <span class="c1"># Fall back to default builder</span>
+            <span class="k">return</span> <span class="n">build_layer</span><span class="p">(</span>
+                <span class="n">layer_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_config</span><span class="p">,</span> <span class="n">current_channels</span><span class="p">,</span>
+                <span class="n">current_height</span><span class="p">,</span> <span class="n">current_width</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">get_activation_fn</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Get block class and parameters</span>
+        <span class="n">block_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_registry</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">layer_type</span><span class="p">)</span>
+
+        <span class="c1"># Parse parameters specific to this block type</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_custom_params</span><span class="p">(</span><span class="n">layer_config</span><span class="p">,</span> <span class="n">layer_type</span><span class="p">,</span> <span class="n">current_channels</span><span class="p">)</span>
+
+        <span class="c1"># Create the layer instance</span>
+        <span class="n">layer_instance</span> <span class="o">=</span> <span class="n">block_class</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="c1"># Calculate output channels and dimensions</span>
+        <span class="n">out_channels</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;out_channels&#39;</span><span class="p">,</span> <span class="n">current_channels</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">layer_instance</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">current_height</span><span class="p">,</span> <span class="n">current_width</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_custom_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_config</span><span class="p">,</span> <span class="n">layer_type</span><span class="p">,</span> <span class="n">current_channels</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse parameters for custom blocks.&quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">defaults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_registry</span><span class="o">.</span><span class="n">get_defaults</span><span class="p">(</span><span class="n">layer_type</span><span class="p">)</span>
+
+        <span class="c1"># Common parameters</span>
+        <span class="k">if</span> <span class="s1">&#39;out_channels_coefficient&#39;</span> <span class="ow">in</span> <span class="n">layer_config</span><span class="p">:</span>
+            <span class="n">coeff</span> <span class="o">=</span> <span class="n">layer_config</span><span class="p">[</span><span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">]</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;out_channels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_channels</span> <span class="o">*</span> <span class="n">coeff</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">layer_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_config</span><span class="p">:</span>
+            <span class="n">default_coeff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span>
+                <span class="n">layer_type</span><span class="p">,</span> <span class="s1">&#39;default_out_channels_coefficient&#39;</span>
+            <span class="p">)</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;out_channels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">current_channels</span> <span class="o">*</span> <span class="n">default_coeff</span><span class="p">)</span>
+
+        <span class="n">params</span><span class="p">[</span><span class="s1">&#39;in_channels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_channels</span>
+
+        <span class="c1"># Block-specific parameters</span>
+        <span class="k">if</span> <span class="n">layer_type</span> <span class="o">==</span> <span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;kernel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;kernel_size&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;stride&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;stride&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;padding&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;padding&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">layer_type</span> <span class="o">==</span> <span class="s1">&#39;DilatedConvBlock&#39;</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;dilation_rates&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s1">&#39;dilation_rates&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="p">[</span><span class="s1">&#39;dilation_rates&#39;</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">layer_type</span> <span class="o">==</span> <span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;reduction_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reduction_ratio&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+            <span class="c1"># Remove out_channels for attention blocks (they preserve channels)</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;out_channels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_channels</span>
+
+        <span class="k">elif</span> <span class="n">layer_type</span> <span class="o">==</span> <span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;reduction_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reduction_ratio&#39;</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;use_spatial&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;use_spatial&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;out_channels&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_channels</span>
+
+        <span class="k">elif</span> <span class="n">layer_type</span> <span class="o">==</span> <span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;spectral_reduction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spectral_reduction&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">layer_type</span> <span class="o">==</span> <span class="s1">&#39;EdgeDetectionBlock&#39;</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;edge_types&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="s1">&#39;edge_types&#39;</span><span class="p">,</span> <span class="n">defaults</span><span class="p">[</span><span class="s1">&#39;edge_types&#39;</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Activation function</span>
+        <span class="k">if</span> <span class="s1">&#39;activation&#39;</span> <span class="ow">in</span> <span class="n">layer_config</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">pynas.blocks</span><span class="w"> </span><span class="kn">import</span> <span class="n">activations</span>
+            <span class="n">activation_name</span> <span class="o">=</span> <span class="n">layer_config</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">activations</span><span class="p">,</span> <span class="n">activation_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">params</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="evolution-with-custom-blocks">
+<h2>Evolution with Custom Blocks<a class="headerlink" href="#evolution-with-custom-blocks" title="Link to this heading"></a></h2>
+<section id="custom-block-evolution-example">
+<h3>Custom Block Evolution Example<a class="headerlink" href="#custom-block-evolution-example" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: custom_block_evolution.py</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.individual</span><span class="w"> </span><span class="kn">import</span> <span class="n">Individual</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">custom_blocks_registry</span><span class="w"> </span><span class="kn">import</span> <span class="n">custom_block_registry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">custom_architecture_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomArchitectureBuilder</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomBlockEvolution</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evolution specifically using custom blocks.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_builder</span> <span class="o">=</span> <span class="n">CustomArchitectureBuilder</span><span class="p">()</span>
+
+        <span class="c1"># Define custom architecture templates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_templates</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;sep2r_ca_sep2r_C&quot;</span><span class="p">,</span>          <span class="c1"># Separable + Channel Attention</span>
+            <span class="s2">&quot;rs3g_sa_dil2r_C&quot;</span><span class="p">,</span>           <span class="c1"># Remote Sensing + Self Attention + Dilated</span>
+            <span class="s2">&quot;edge1r_sep2r_ca_C&quot;</span><span class="p">,</span>         <span class="c1"># Edge Detection + Separable + Channel Attention</span>
+            <span class="s2">&quot;dil2g_sa_sep2r_C&quot;</span><span class="p">,</span>          <span class="c1"># Dilated + Self Attention + Separable</span>
+            <span class="s2">&quot;rs2r_edge1r_ca_sep1r_C&quot;</span><span class="p">,</span>    <span class="c1"># Complex multi-block architecture</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_custom_population</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create population using custom blocks.&quot;&quot;&quot;</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_templates</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">variation</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;population_size&#39;</span><span class="p">]</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">custom_templates</span><span class="p">)):</span>
+                <span class="n">individual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_custom_individual</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">variation</span><span class="p">)</span>
+                <span class="n">population</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+
+        <span class="c1"># Fill remaining spots with random custom architectures</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;population_size&#39;</span><span class="p">]:</span>
+            <span class="n">random_individual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_random_custom_individual</span><span class="p">()</span>
+            <span class="n">population</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random_individual</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Population</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_custom_individual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">variation</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create individual from custom template with variations.&quot;&quot;&quot;</span>
+        <span class="c1"># Parse template into layers</span>
+        <span class="n">parsed_arch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_custom_template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+
+        <span class="c1"># Apply variations</span>
+        <span class="k">if</span> <span class="n">variation</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">parsed_arch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_variations</span><span class="p">(</span><span class="n">parsed_arch</span><span class="p">,</span> <span class="n">variation</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Individual</span><span class="p">(</span>
+            <span class="n">genome</span><span class="o">=</span><span class="n">parsed_arch</span><span class="p">,</span>
+            <span class="n">task</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="s1">&#39;classification&#39;</span><span class="p">),</span>
+            <span class="n">input_shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;input_shape&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)),</span>
+            <span class="n">num_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">num_classes</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_custom_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse custom template string into architecture.&quot;&quot;&quot;</span>
+        <span class="c1"># Extended parsing for custom blocks</span>
+        <span class="n">custom_vocab</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;sep&#39;</span><span class="p">:</span> <span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;dil&#39;</span><span class="p">:</span> <span class="s1">&#39;DilatedConvBlock&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;sa&#39;</span><span class="p">:</span> <span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ca&#39;</span><span class="p">:</span> <span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;rs&#39;</span><span class="p">:</span> <span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;edge&#39;</span><span class="p">:</span> <span class="s1">&#39;EdgeDetectionBlock&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;r&#39;</span><span class="p">:</span> <span class="s1">&#39;ReLU&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;g&#39;</span><span class="p">:</span> <span class="s1">&#39;GELU&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="s1">&#39;Classifier&#39;</span>
+        <span class="p">}</span>
+
+        <span class="n">parsed_layers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;edge&#39;</span><span class="p">:</span>
+                <span class="c1"># Edge detection block</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">4</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="ow">and</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="mi">1</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">activation</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;r&#39;</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+                    <span class="n">parsed_layers</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;EdgeDetectionBlock&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="s1">&#39;ReLU&#39;</span> <span class="k">if</span> <span class="n">activation</span> <span class="o">==</span> <span class="s1">&#39;r&#39;</span> <span class="k">else</span> <span class="s1">&#39;GELU&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+                        <span class="s1">&#39;edge_types&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="s1">&#39;vertical&#39;</span><span class="p">,</span> <span class="s1">&#39;diagonal&#39;</span><span class="p">]</span>
+                    <span class="p">})</span>
+
+            <span class="k">elif</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;sep&#39;</span><span class="p">:</span>
+                <span class="c1"># Separable convolution block</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">3</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="ow">and</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="mi">1</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">activation</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;r&#39;</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+                    <span class="n">parsed_layers</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="s1">&#39;ReLU&#39;</span> <span class="k">if</span> <span class="n">activation</span> <span class="o">==</span> <span class="s1">&#39;r&#39;</span> <span class="k">else</span> <span class="s1">&#39;GELU&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+                        <span class="s1">&#39;kernel_size&#39;</span><span class="p">:</span> <span class="mi">3</span>
+                    <span class="p">})</span>
+
+            <span class="k">elif</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;dil&#39;</span><span class="p">:</span>
+                <span class="c1"># Dilated convolution block</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">3</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="ow">and</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="mi">1</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">activation</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;r&#39;</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+                    <span class="n">parsed_layers</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;DilatedConvBlock&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="s1">&#39;ReLU&#39;</span> <span class="k">if</span> <span class="n">activation</span> <span class="o">==</span> <span class="s1">&#39;r&#39;</span> <span class="k">else</span> <span class="s1">&#39;GELU&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+                        <span class="s1">&#39;dilation_rates&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+                    <span class="p">})</span>
+
+            <span class="k">elif</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;rs&#39;</span><span class="p">:</span>
+                <span class="c1"># Remote sensing block</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">2</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="ow">and</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="mi">1</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">activation</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;r&#39;</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+                    <span class="n">parsed_layers</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="s1">&#39;ReLU&#39;</span> <span class="k">if</span> <span class="n">activation</span> <span class="o">==</span> <span class="s1">&#39;r&#39;</span> <span class="k">else</span> <span class="s1">&#39;GELU&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+                        <span class="s1">&#39;spectral_reduction&#39;</span><span class="p">:</span> <span class="mi">4</span>
+                    <span class="p">})</span>
+
+            <span class="k">elif</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;sa&#39;</span><span class="p">:</span>
+                <span class="c1"># Self attention block</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">2</span>
+                <span class="n">parsed_layers</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="s1">&#39;ReLU&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;reduction_ratio&#39;</span><span class="p">:</span> <span class="mi">8</span>
+                <span class="p">})</span>
+
+            <span class="k">elif</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ca&#39;</span><span class="p">:</span>
+                <span class="c1"># Channel attention block</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">2</span>
+                <span class="n">parsed_layers</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="s1">&#39;ReLU&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;reduction_ratio&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+                    <span class="s1">&#39;use_spatial&#39;</span><span class="p">:</span> <span class="kc">True</span>
+                <span class="p">})</span>
+
+            <span class="k">elif</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;_&#39;</span><span class="p">:</span>
+                <span class="c1"># Separator</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">elif</span> <span class="n">template</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span>
+                <span class="c1"># Classifier head</span>
+                <span class="n">parsed_layers</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;Classifier&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="s1">&#39;ReLU&#39;</span>
+                <span class="p">})</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">parsed_layers</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_variations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_arch</span><span class="p">,</span> <span class="n">variation</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply variations to the base architecture.&quot;&quot;&quot;</span>
+        <span class="n">varied_arch</span> <span class="o">=</span> <span class="n">parsed_arch</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">varied_arch</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">variation</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Increase channel coefficients</span>
+                <span class="k">if</span> <span class="s1">&#39;out_channels_coefficient&#39;</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                        <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">12</span>
+                    <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">variation</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># Change activation functions</span>
+                <span class="k">if</span> <span class="n">layer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;activation&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;ReLU&#39;</span><span class="p">:</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;activation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;GELU&#39;</span>
+
+            <span class="k">elif</span> <span class="n">variation</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="c1"># Modify attention parameters</span>
+                <span class="k">if</span> <span class="n">layer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;layer_type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">:</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;reduction_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+                <span class="k">elif</span> <span class="n">layer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;layer_type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">:</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;reduction_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span>
+
+        <span class="k">return</span> <span class="n">varied_arch</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_random_custom_individual</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create random architecture using custom blocks.&quot;&quot;&quot;</span>
+        <span class="n">custom_blocks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;DilatedConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;EdgeDetectionBlock&#39;</span>
+        <span class="p">]</span>
+
+        <span class="n">num_layers</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="n">parsed_arch</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_layers</span><span class="p">):</span>
+            <span class="n">block_type</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">custom_blocks</span><span class="p">)</span>
+
+            <span class="n">layer</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="n">block_type</span><span class="p">,</span>
+                <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;ReLU&#39;</span><span class="p">,</span> <span class="s1">&#39;GELU&#39;</span><span class="p">]),</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span> <span class="n">block_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;DilatedConvBlock&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;EdgeDetectionBlock&#39;</span><span class="p">]:</span>
+                <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">block_type</span> <span class="o">==</span> <span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">:</span>
+                <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;kernel_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+
+            <span class="k">elif</span> <span class="n">block_type</span> <span class="o">==</span> <span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">:</span>
+                <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;reduction_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">])</span>
+
+            <span class="k">elif</span> <span class="n">block_type</span> <span class="o">==</span> <span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">:</span>
+                <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;reduction_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">])</span>
+                <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;use_spatial&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>
+
+            <span class="k">elif</span> <span class="n">block_type</span> <span class="o">==</span> <span class="s1">&#39;RemoteSensingBlock&#39;</span><span class="p">:</span>
+                <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;spectral_reduction&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">])</span>
+
+            <span class="n">parsed_arch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+        <span class="c1"># Add classifier head</span>
+        <span class="n">parsed_arch</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;Classifier&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="s1">&#39;ReLU&#39;</span>
+        <span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">Individual</span><span class="p">(</span>
+            <span class="n">genome</span><span class="o">=</span><span class="n">parsed_arch</span><span class="p">,</span>
+            <span class="n">task</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="s1">&#39;classification&#39;</span><span class="p">),</span>
+            <span class="n">input_shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;input_shape&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)),</span>
+            <span class="n">num_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">num_classes</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">evolve_with_custom_blocks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run evolution using custom blocks.&quot;&quot;&quot;</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_custom_population</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting evolution with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">custom_block_registry</span><span class="o">.</span><span class="n">list_blocks</span><span class="p">())</span><span class="si">}</span><span class="s2"> custom blocks&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available blocks: </span><span class="si">{</span><span class="n">custom_block_registry</span><span class="o">.</span><span class="n">list_blocks</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">best_individuals</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">generation</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;max_iterations&#39;</span><span class="p">]):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Generation </span><span class="si">{</span><span class="n">generation</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> ===&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Evaluate population</span>
+            <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">model</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">build_model</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="c1"># Simple fitness evaluation (accuracy-based)</span>
+                        <span class="n">fitness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+                        <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="n">fitness</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error building model: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="c1"># Track best individual</span>
+            <span class="n">best_idx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">)),</span>
+                         <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fitness</span><span class="p">)</span>
+            <span class="n">best_individual</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">[</span><span class="n">best_idx</span><span class="p">]</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best Individual Fitness: </span><span class="si">{</span><span class="n">best_individual</span><span class="o">.</span><span class="n">fitness</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Architecture: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_architecture</span><span class="p">(</span><span class="n">best_individual</span><span class="o">.</span><span class="n">genome</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">best_individuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">best_individual</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+            <span class="c1"># Evolution step</span>
+            <span class="k">if</span> <span class="n">generation</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;max_iterations&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">population</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_evolution_step</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">best_individuals</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simple model evaluation (placeholder).&quot;&quot;&quot;</span>
+        <span class="c1"># In a real scenario, this would evaluate on validation data</span>
+        <span class="c1"># For this example, we&#39;ll use a simple heuristic</span>
+        <span class="n">param_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+
+        <span class="c1"># Reward smaller models with reasonable complexity</span>
+        <span class="k">if</span> <span class="n">param_count</span> <span class="o">&lt;</span> <span class="mi">100000</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.3</span>
+        <span class="k">elif</span> <span class="n">param_count</span> <span class="o">&lt;</span> <span class="mi">500000</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.6</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.3</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.4</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.2</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format_architecture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genome</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Format architecture for display.&quot;&quot;&quot;</span>
+        <span class="n">formatted</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">genome</span><span class="p">:</span>
+            <span class="n">layer_type</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;layer_type&#39;</span><span class="p">,</span> <span class="s1">&#39;Unknown&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">layer_type</span> <span class="o">==</span> <span class="s1">&#39;Classifier&#39;</span><span class="p">:</span>
+                <span class="n">formatted</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">formatted</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer_type</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+        <span class="k">return</span> <span class="s1">&#39; -&gt; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">formatted</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_custom_evolution_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evolution step preserving custom block characteristics.&quot;&quot;&quot;</span>
+        <span class="c1"># Selection (top 50%)</span>
+        <span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">fitness</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">selected</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="c1"># Generate offspring</span>
+        <span class="n">offspring</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">offspring</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;population_size&#39;</span><span class="p">]:</span>
+            <span class="n">parent1</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">selected</span><span class="p">)</span>
+            <span class="n">parent2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">selected</span><span class="p">)</span>
+
+            <span class="n">child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_crossover</span><span class="p">(</span><span class="n">parent1</span><span class="p">,</span> <span class="n">parent2</span><span class="p">)</span>
+            <span class="n">child</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_mutation</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+
+            <span class="n">offspring</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Population</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">offspring</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_custom_crossover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent1</span><span class="p">,</span> <span class="n">parent2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Crossover preserving custom block structures.&quot;&quot;&quot;</span>
+        <span class="c1"># Simple single-point crossover</span>
+        <span class="n">p1_genome</span> <span class="o">=</span> <span class="n">parent1</span><span class="o">.</span><span class="n">genome</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Exclude classifier</span>
+        <span class="n">p2_genome</span> <span class="o">=</span> <span class="n">parent2</span><span class="o">.</span><span class="n">genome</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p1_genome</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">p2_genome</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">crossover_point</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p1_genome</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">p2_genome</span><span class="p">)))</span>
+            <span class="n">child_genome</span> <span class="o">=</span> <span class="n">p1_genome</span><span class="p">[:</span><span class="n">crossover_point</span><span class="p">]</span> <span class="o">+</span> <span class="n">p2_genome</span><span class="p">[</span><span class="n">crossover_point</span><span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">child_genome</span> <span class="o">=</span> <span class="n">p1_genome</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p1_genome</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">p2_genome</span>
+
+        <span class="c1"># Add classifier</span>
+        <span class="n">child_genome</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;Classifier&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="s1">&#39;ReLU&#39;</span>
+        <span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">Individual</span><span class="p">(</span>
+            <span class="n">genome</span><span class="o">=</span><span class="n">child_genome</span><span class="p">,</span>
+            <span class="n">task</span><span class="o">=</span><span class="n">parent1</span><span class="o">.</span><span class="n">task</span><span class="p">,</span>
+            <span class="n">input_shape</span><span class="o">=</span><span class="n">parent1</span><span class="o">.</span><span class="n">input_shape</span><span class="p">,</span>
+            <span class="n">num_classes</span><span class="o">=</span><span class="n">parent1</span><span class="o">.</span><span class="n">num_classes</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_custom_mutation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mutation respecting custom block constraints.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.3</span><span class="p">:</span>  <span class="c1"># 30% mutation rate</span>
+            <span class="n">genome</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">genome</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Exclude classifier</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">genome</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Choose mutation type</span>
+                <span class="n">mutation_type</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;modify&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">mutation_type</span> <span class="o">==</span> <span class="s1">&#39;modify&#39;</span><span class="p">:</span>
+                    <span class="c1"># Modify existing layer</span>
+                    <span class="n">idx</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">genome</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">layer</span> <span class="o">=</span> <span class="n">genome</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="s1">&#39;out_channels_coefficient&#39;</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+                        <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">layer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;layer_type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;SelfAttentionBlock&#39;</span><span class="p">:</span>
+                        <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;reduction_ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">])</span>
+
+                    <span class="n">genome</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer</span>
+
+                <span class="k">elif</span> <span class="n">mutation_type</span> <span class="o">==</span> <span class="s1">&#39;add&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">genome</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+                    <span class="c1"># Add new custom block</span>
+                    <span class="n">new_block_type</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span>
+                        <span class="s1">&#39;SeparableConvBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;ChannelAttentionBlock&#39;</span><span class="p">,</span> <span class="s1">&#39;DilatedConvBlock&#39;</span>
+                    <span class="p">])</span>
+
+                    <span class="n">new_layer</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="n">new_block_type</span><span class="p">,</span>
+                        <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;ReLU&#39;</span><span class="p">,</span> <span class="s1">&#39;GELU&#39;</span><span class="p">]),</span>
+                        <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+                    <span class="p">}</span>
+
+                    <span class="n">genome</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_layer</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">mutation_type</span> <span class="o">==</span> <span class="s1">&#39;remove&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">genome</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># Remove a layer</span>
+                    <span class="n">genome</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">genome</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+
+            <span class="c1"># Add classifier back</span>
+            <span class="n">genome</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;Classifier&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="s1">&#39;ReLU&#39;</span>
+            <span class="p">})</span>
+
+            <span class="n">individual</span><span class="o">.</span><span class="n">genome</span> <span class="o">=</span> <span class="n">genome</span>
+
+        <span class="k">return</span> <span class="n">individual</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="complete-custom-block-example">
+<h2>Complete Custom Block Example<a class="headerlink" href="#complete-custom-block-example" title="Link to this heading"></a></h2>
+<section id="main-execution-pipeline">
+<h3>Main Execution Pipeline<a class="headerlink" href="#main-execution-pipeline" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">main_custom_blocks_example</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Complete example using custom blocks in PyNAS.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Setup</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+    <span class="c1"># Mock dataset for example</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">MockDataset</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">MockDataset</span><span class="p">()</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;population_size&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="s1">&#39;max_iterations&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="s1">&#39;task&#39;</span><span class="p">:</span> <span class="s1">&#39;classification&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;input_shape&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Show registered custom blocks</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Custom Block Registry ===&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available blocks: </span><span class="si">{</span><span class="n">custom_block_registry</span><span class="o">.</span><span class="n">list_blocks</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">block_name</span> <span class="ow">in</span> <span class="n">custom_block_registry</span><span class="o">.</span><span class="n">list_blocks</span><span class="p">():</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">custom_block_registry</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(</span><span class="n">block_name</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">block_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Run evolution with custom blocks</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Starting Evolution with Custom Blocks ===&quot;</span><span class="p">)</span>
+    <span class="n">evolution</span> <span class="o">=</span> <span class="n">CustomBlockEvolution</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="n">best_individuals</span> <span class="o">=</span> <span class="n">evolution</span><span class="o">.</span><span class="n">evolve_with_custom_blocks</span><span class="p">()</span>
+
+    <span class="c1"># Show results</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Evolution Results ===&quot;</span><span class="p">)</span>
+    <span class="n">final_best</span> <span class="o">=</span> <span class="n">best_individuals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final best fitness: </span><span class="si">{</span><span class="n">final_best</span><span class="o">.</span><span class="n">fitness</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final architecture:&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">final_best</span><span class="o">.</span><span class="n">genome</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Layer </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">layer</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Test building the model</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Building Final Model ===&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">final_model</span> <span class="o">=</span> <span class="n">final_best</span><span class="o">.</span><span class="n">build_model</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">final_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">param_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">final_model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model built successfully!&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter count: </span><span class="si">{</span><span class="n">param_count</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model architecture:&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">final_model</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failed to build model&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error building model: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">best_individuals</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">best_individuals</span> <span class="o">=</span> <span class="n">main_custom_blocks_example</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="expected-output">
+<h2>Expected Output<a class="headerlink" href="#expected-output" title="Link to this heading"></a></h2>
+<p>The custom blocks example will produce output similar to:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>=== Custom Block Registry ===
+Available blocks: [&#39;SeparableConvBlock&#39;, &#39;DilatedConvBlock&#39;, &#39;SelfAttentionBlock&#39;, &#39;ChannelAttentionBlock&#39;, &#39;RemoteSensingBlock&#39;, &#39;EdgeDetectionBlock&#39;]
+SeparableConvBlock: [&#39;in_channels&#39;, &#39;out_channels&#39;, &#39;kernel_size&#39;, &#39;stride&#39;, &#39;padding&#39;, &#39;activation&#39;]
+DilatedConvBlock: [&#39;in_channels&#39;, &#39;out_channels&#39;, &#39;dilation_rates&#39;, &#39;activation&#39;]
+SelfAttentionBlock: [&#39;in_channels&#39;, &#39;reduction_ratio&#39;, &#39;activation&#39;]
+ChannelAttentionBlock: [&#39;in_channels&#39;, &#39;reduction_ratio&#39;, &#39;use_spatial&#39;, &#39;activation&#39;]
+RemoteSensingBlock: [&#39;in_channels&#39;, &#39;out_channels&#39;, &#39;spectral_reduction&#39;, &#39;activation&#39;]
+EdgeDetectionBlock: [&#39;in_channels&#39;, &#39;out_channels&#39;, &#39;edge_types&#39;, &#39;activation&#39;]
+
+=== Starting Evolution with Custom Blocks ===
+Starting evolution with 6 custom blocks
+Available blocks: [&#39;SeparableConvBlock&#39;, &#39;DilatedConvBlock&#39;, &#39;SelfAttentionBlock&#39;, &#39;ChannelAttentionBlock&#39;, &#39;RemoteSensingBlock&#39;, &#39;EdgeDetectionBlock&#39;]
+
+=== Generation 1 ===
+Best Individual Fitness: 0.7234
+Architecture: Sep -&gt; Cha -&gt; Sep -&gt; C
+
+=== Generation 8 ===
+Best Individual Fitness: 0.8456
+Architecture: Rem -&gt; Sel -&gt; Dil -&gt; Cha -&gt; C
+
+=== Evolution Results ===
+Final best fitness: 0.8456
+Final architecture:
+  Layer 1: {&#39;layer_type&#39;: &#39;RemoteSensingBlock&#39;, &#39;activation&#39;: &#39;ReLU&#39;, &#39;out_channels_coefficient&#39;: 8, &#39;spectral_reduction&#39;: 4}
+  Layer 2: {&#39;layer_type&#39;: &#39;SelfAttentionBlock&#39;, &#39;activation&#39;: &#39;ReLU&#39;, &#39;reduction_ratio&#39;: 8}
+  Layer 3: {&#39;layer_type&#39;: &#39;DilatedConvBlock&#39;, &#39;activation&#39;: &#39;GELU&#39;, &#39;out_channels_coefficient&#39;: 10, &#39;dilation_rates&#39;: [1, 2, 4]}
+  Layer 4: {&#39;layer_type&#39;: &#39;ChannelAttentionBlock&#39;, &#39;activation&#39;: &#39;ReLU&#39;, &#39;reduction_ratio&#39;: 16, &#39;use_spatial&#39;: True}
+  Layer 5: {&#39;layer_type&#39;: &#39;Classifier&#39;, &#39;activation&#39;: &#39;ReLU&#39;}
+
+=== Building Final Model ===
+Model built successfully!
+Parameter count: 234,567
+Model architecture:
+Sequential(
+  (0): RemoteSensingBlock(...)
+  (1): SelfAttentionBlock(...)
+  (2): DilatedConvBlock(...)
+  (3): ChannelAttentionBlock(...)
+  (4): Classifier(...)
+)
+</pre></div>
+</div>
+</section>
+<section id="best-practices-for-custom-blocks">
+<h2>Best Practices for Custom Blocks<a class="headerlink" href="#best-practices-for-custom-blocks" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Modular Design</strong>: Make blocks self-contained and composable</p></li>
+<li><p><strong>Parameter Validation</strong>: Include proper input validation and error handling</p></li>
+<li><p><strong>Configuration Flexibility</strong>: Support configurable parameters for evolution</p></li>
+<li><p><strong>Memory Efficiency</strong>: Consider memory usage for large-scale search</p></li>
+<li><p><strong>Documentation</strong>: Provide clear docstrings and usage examples</p></li>
+<li><p><strong>Testing</strong>: Test blocks individually before integration</p></li>
+<li><p><strong>Compatibility</strong>: Ensure blocks work with PyTorch’s standard operations</p></li>
+</ol>
+<p>This example demonstrates how PyNAS can be extended with custom blocks, providing researchers with the flexibility to explore domain-specific architectures while leveraging the framework’s evolutionary search capabilities.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="edge_optimization.html" class="btn btn-neutral float-left" title="Edge Optimization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api/core.html" class="btn btn-neutral float-right" title="Core Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

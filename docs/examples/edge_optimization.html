@@ -1,0 +1,1140 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edge Optimization &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Custom Blocks" href="custom_blocks.html" />
+    <link rel="prev" title="Remote Sensing Applications" href="remote_sensing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html">Vessel Detection Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote_sensing.html">Remote Sensing Applications</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Edge Optimization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-edge-optimized-evolution">Setting Up Edge-Optimized Evolution</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuration-for-edge-optimization">Configuration for Edge Optimization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#custom-fitness-function-for-edge-optimization">Custom Fitness Function for Edge Optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mobile-optimized-architecture-search">Mobile-Optimized Architecture Search</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#evolution-setup-for-mobile-devices">Evolution Setup for Mobile Devices</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#quantization-and-pruning-integration">Quantization and Pruning Integration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#post-training-optimization">Post-Training Optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#performance-profiling-and-analysis">Performance Profiling and Analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#edge-performance-metrics">Edge Performance Metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#complete-edge-optimization-example">Complete Edge Optimization Example</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#main-execution-pipeline">Main Execution Pipeline</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#expected-output">Expected Output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-takeaways">Key Takeaways</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="custom_blocks.html">Custom Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#vessel-detection">Vessel Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#remote-sensing-applications">Remote Sensing Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#edge-device-optimization">Edge Device Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#custom-architecture-blocks">Custom Architecture Blocks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Examples</a></li>
+      <li class="breadcrumb-item active">Edge Optimization</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/examples/edge_optimization.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="edge-optimization">
+<h1>Edge Optimization<a class="headerlink" href="#edge-optimization" title="Link to this heading"></a></h1>
+<p>This example demonstrates how to use PyNAS for optimizing neural network architectures specifically for edge devices, focusing on parameter count, inference speed, and memory usage while maintaining acceptable accuracy.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Edge deployment requires careful consideration of:</p>
+<ul class="simple">
+<li><p><strong>Model Size</strong>: Limited storage and memory on edge devices</p></li>
+<li><p><strong>Inference Speed</strong>: Real-time processing requirements</p></li>
+<li><p><strong>Power Consumption</strong>: Battery-powered devices need efficient models</p></li>
+<li><p><strong>Accuracy Trade-offs</strong>: Balancing performance with efficiency</p></li>
+</ul>
+<p>In this example, we’ll evolve architectures optimized for mobile deployment scenarios.</p>
+</section>
+<section id="setting-up-edge-optimized-evolution">
+<h2>Setting Up Edge-Optimized Evolution<a class="headerlink" href="#setting-up-edge-optimized-evolution" title="Link to this heading"></a></h2>
+<section id="configuration-for-edge-optimization">
+<h3>Configuration for Edge Optimization<a class="headerlink" href="#configuration-for-edge-optimization" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.individual</span><span class="w"> </span><span class="kn">import</span> <span class="n">Individual</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.architecture_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArchitectureBuilder</span>
+
+<span class="c1"># Edge-optimized configuration</span>
+<span class="n">edge_config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;population_size&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="s1">&#39;max_iterations&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s1">&#39;max_parameters&#39;</span><span class="p">:</span> <span class="mi">500_000</span><span class="p">,</span>  <span class="c1"># Strict parameter limit</span>
+    <span class="s1">&#39;target_latency_ms&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>    <span class="c1"># Target inference time</span>
+    <span class="s1">&#39;min_accuracy&#39;</span><span class="p">:</span> <span class="mf">0.85</span><span class="p">,</span>       <span class="c1"># Minimum acceptable accuracy</span>
+    <span class="s1">&#39;architecture_constraints&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;max_layers&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="s1">&#39;preferred_blocks&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;MBConv&#39;</span><span class="p">,</span> <span class="s1">&#39;ConvBnAct&#39;</span><span class="p">],</span>  <span class="c1"># Mobile-friendly blocks</span>
+        <span class="s1">&#39;avoid_blocks&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;DenseNetBlock&#39;</span><span class="p">],</span>  <span class="c1"># Memory-intensive blocks</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="custom-fitness-function-for-edge-optimization">
+<h3>Custom Fitness Function for Edge Optimization<a class="headerlink" href="#custom-fitness-function-for-edge-optimization" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">psutil</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EdgeFitnessEvaluator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Multi-objective fitness evaluator for edge optimization.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span> <span class="n">target_device</span><span class="o">=</span><span class="s1">&#39;mobile&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize edge fitness evaluator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dataloader: PyTorch DataLoader for evaluation</span>
+<span class="sd">            device: Device for evaluation (&#39;cpu&#39; for edge simulation)</span>
+<span class="sd">            target_device: Target deployment device type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataloader</span> <span class="o">=</span> <span class="n">dataloader</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_device</span> <span class="o">=</span> <span class="n">target_device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+            <span class="s1">&#39;parameters&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
+            <span class="s1">&#39;latency&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
+            <span class="s1">&#39;memory&#39;</span><span class="p">:</span> <span class="mf">0.1</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Comprehensive evaluation for edge deployment.&quot;&quot;&quot;</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+        <span class="c1"># Accuracy evaluation</span>
+        <span class="n">accuracy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_accuracy</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+        <span class="c1"># Parameter count</span>
+        <span class="n">param_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+
+        <span class="c1"># Latency measurement</span>
+        <span class="n">latency</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_measure_latency</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+        <span class="c1"># Memory usage</span>
+        <span class="n">memory_usage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_measure_memory</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+        <span class="c1"># Multi-objective fitness calculation</span>
+        <span class="n">fitness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_fitness</span><span class="p">(</span>
+            <span class="n">accuracy</span><span class="p">,</span> <span class="n">param_count</span><span class="p">,</span> <span class="n">latency</span><span class="p">,</span> <span class="n">memory_usage</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;fitness&#39;</span><span class="p">:</span> <span class="n">fitness</span><span class="p">,</span>
+            <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="n">accuracy</span><span class="p">,</span>
+            <span class="s1">&#39;parameters&#39;</span><span class="p">:</span> <span class="n">param_count</span><span class="p">,</span>
+            <span class="s1">&#39;latency_ms&#39;</span><span class="p">:</span> <span class="n">latency</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+            <span class="s1">&#39;memory_mb&#39;</span><span class="p">:</span> <span class="n">memory_usage</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">),</span>
+            <span class="s1">&#39;pareto_metrics&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="n">accuracy</span><span class="p">,</span>
+                <span class="s1">&#39;efficiency&#39;</span><span class="p">:</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">param_count</span> <span class="o">+</span> <span class="n">latency</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate_accuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate model accuracy on validation set.&quot;&quot;&quot;</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataloader</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">batch_idx</span> <span class="o">&gt;=</span> <span class="mi">50</span><span class="p">:</span>  <span class="c1"># Quick evaluation for speed</span>
+                    <span class="k">break</span>
+
+                <span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">),</span> <span class="n">targets</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+                <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">predicted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">total</span> <span class="o">+=</span> <span class="n">targets</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">correct</span> <span class="o">+=</span> <span class="p">(</span><span class="n">predicted</span> <span class="o">==</span> <span class="n">targets</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">correct</span> <span class="o">/</span> <span class="n">total</span> <span class="k">if</span> <span class="n">total</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_measure_latency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">num_runs</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Measure average inference latency.&quot;&quot;&quot;</span>
+        <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="c1"># Warmup</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">dummy_input</span><span class="p">)</span>
+
+        <span class="c1"># Actual measurement</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="s1">&#39;cpu&#39;</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_runs</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">_</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">dummy_input</span><span class="p">)</span>
+
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">!=</span> <span class="s1">&#39;cpu&#39;</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_runs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_measure_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Measure model memory footprint.&quot;&quot;&quot;</span>
+        <span class="c1"># Calculate model size in bytes</span>
+        <span class="n">param_size</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">element_size</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="n">buffer_size</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">*</span> <span class="n">b</span><span class="o">.</span><span class="n">element_size</span><span class="p">()</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">buffers</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">param_size</span> <span class="o">+</span> <span class="n">buffer_size</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_fitness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">,</span> <span class="n">param_count</span><span class="p">,</span> <span class="n">latency</span><span class="p">,</span> <span class="n">memory</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate multi-objective fitness score.&quot;&quot;&quot;</span>
+        <span class="c1"># Normalize metrics (lower is better for efficiency metrics)</span>
+        <span class="n">norm_accuracy</span> <span class="o">=</span> <span class="n">accuracy</span>  <span class="c1"># Higher is better</span>
+        <span class="n">norm_params</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">param_count</span> <span class="o">/</span> <span class="mi">1000000</span><span class="p">)</span>  <span class="c1"># Normalize by 1M params</span>
+        <span class="n">norm_latency</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">latency</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>  <span class="c1"># Convert to ms</span>
+        <span class="n">norm_memory</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">memory</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">))</span>  <span class="c1"># Convert to MB</span>
+
+        <span class="c1"># Weighted combination</span>
+        <span class="n">fitness</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">norm_accuracy</span> <span class="o">+</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">norm_params</span> <span class="o">+</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="s1">&#39;latency&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">norm_latency</span> <span class="o">+</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="s1">&#39;memory&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">norm_memory</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fitness</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mobile-optimized-architecture-search">
+<h2>Mobile-Optimized Architecture Search<a class="headerlink" href="#mobile-optimized-architecture-search" title="Link to this heading"></a></h2>
+<section id="evolution-setup-for-mobile-devices">
+<h3>Evolution Setup for Mobile Devices<a class="headerlink" href="#evolution-setup-for-mobile-devices" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.generic_unet</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenericUNetNetwork</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.blocks.activations</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReLU</span><span class="p">,</span> <span class="n">GELU</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MobileArchitectureEvolution</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evolution specifically targeting mobile deployment.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitness_evaluator</span> <span class="o">=</span> <span class="n">EdgeFitnessEvaluator</span><span class="p">(</span>
+            <span class="n">dataloader</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">val_dataloader</span><span class="p">(),</span>
+            <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">,</span>  <span class="c1"># Simulate edge device</span>
+            <span class="n">target_device</span><span class="o">=</span><span class="s1">&#39;mobile&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_mobile_population</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create initial population optimized for mobile devices.&quot;&quot;&quot;</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Mobile-friendly architecture templates</span>
+        <span class="n">mobile_templates</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;m2r_a_m2r_a_m2r_C&quot;</span><span class="p">,</span>  <span class="c1"># MobileNet-inspired</span>
+            <span class="s2">&quot;c2r_M_c2r_M_c2r_C&quot;</span><span class="p">,</span>  <span class="c1"># Efficient CNN</span>
+            <span class="s2">&quot;m3g_a_c2r_M_c1r_C&quot;</span><span class="p">,</span>  <span class="c1"># Hybrid approach</span>
+            <span class="s2">&quot;c1r_m2r_a_c1r_C&quot;</span><span class="p">,</span>    <span class="c1"># Minimal design</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">mobile_templates</span><span class="p">:</span>
+            <span class="c1"># Create multiple variations of each template</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;population_size&#39;</span><span class="p">]</span> <span class="o">//</span> <span class="nb">len</span><span class="p">(</span><span class="n">mobile_templates</span><span class="p">)):</span>
+                <span class="n">individual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_individual_from_template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+                <span class="n">population</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Population</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_individual_from_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create individual from architecture template.&quot;&quot;&quot;</span>
+        <span class="n">builder</span> <span class="o">=</span> <span class="n">ArchitectureBuilder</span><span class="p">()</span>
+
+        <span class="c1"># Parse template and create architecture</span>
+        <span class="n">parsed_arch</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">parse_architecture_string</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+
+        <span class="c1"># Add mobile-specific constraints</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">parsed_arch</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;MBConv&#39;</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;layer_type&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+                <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;expansion_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Lower expansion for efficiency</span>
+            <span class="k">elif</span> <span class="s1">&#39;ConvBnAct&#39;</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;layer_type&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+                <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># Moderate channels</span>
+
+        <span class="k">return</span> <span class="n">Individual</span><span class="p">(</span>
+            <span class="n">genome</span><span class="o">=</span><span class="n">parsed_arch</span><span class="p">,</span>
+            <span class="n">task</span><span class="o">=</span><span class="s1">&#39;classification&#39;</span><span class="p">,</span>
+            <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">),</span>
+            <span class="n">num_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">num_classes</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">evolve_mobile_architecture</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run evolution with mobile-specific objectives.&quot;&quot;&quot;</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_mobile_population</span><span class="p">()</span>
+
+        <span class="n">best_individuals</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pareto_front</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">generation</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;max_iterations&#39;</span><span class="p">]):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Generation </span><span class="si">{</span><span class="n">generation</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> ===&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Evaluate population</span>
+            <span class="n">fitness_results</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">:</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">build_model</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitness_evaluator</span><span class="o">.</span><span class="n">evaluate_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+                    <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;fitness&#39;</span><span class="p">]</span>
+                    <span class="n">fitness_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="mf">0.0</span>
+                    <span class="n">fitness_results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s1">&#39;fitness&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;accuracy&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                        <span class="s1">&#39;parameters&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">),</span> <span class="s1">&#39;latency_ms&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+                    <span class="p">})</span>
+
+            <span class="c1"># Track best individual</span>
+            <span class="n">best_idx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">)),</span>
+                         <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">fitness</span><span class="p">)</span>
+            <span class="n">best_individual</span> <span class="o">=</span> <span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">[</span><span class="n">best_idx</span><span class="p">]</span>
+            <span class="n">best_results</span> <span class="o">=</span> <span class="n">fitness_results</span><span class="p">[</span><span class="n">best_idx</span><span class="p">]</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best Individual - Fitness: </span><span class="si">{</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;fitness&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Accuracy: </span><span class="si">{</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Parameters: </span><span class="si">{</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Latency: </span><span class="si">{</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;latency_ms&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Memory: </span><span class="si">{</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;memory_mb&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB&quot;</span><span class="p">)</span>
+
+            <span class="n">best_individuals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">best_individual</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">best_results</span><span class="p">))</span>
+
+            <span class="c1"># Update Pareto front</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_pareto_front</span><span class="p">(</span><span class="n">pareto_front</span><span class="p">,</span> <span class="n">fitness_results</span><span class="p">,</span> <span class="n">population</span><span class="p">)</span>
+
+            <span class="c1"># Evolution step with mobile-specific constraints</span>
+            <span class="k">if</span> <span class="n">generation</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;max_iterations&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">population</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mobile_evolution_step</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">fitness_results</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">best_individuals</span><span class="p">,</span> <span class="n">pareto_front</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_pareto_front</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pareto_front</span><span class="p">,</span> <span class="n">fitness_results</span><span class="p">,</span> <span class="n">population</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update Pareto front for multi-objective optimization.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">individual</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">,</span> <span class="n">fitness_results</span><span class="p">)):</span>
+            <span class="c1"># Check if this individual dominates any in current front</span>
+            <span class="n">dominated</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">dominates_any</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">(</span><span class="n">front_ind</span><span class="p">,</span> <span class="n">front_res</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pareto_front</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dominates</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">front_res</span><span class="p">):</span>
+                    <span class="n">dominated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                    <span class="n">dominates_any</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dominates</span><span class="p">(</span><span class="n">front_res</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+                    <span class="k">break</span>  <span class="c1"># This individual is dominated</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Not dominated by any in front</span>
+                <span class="c1"># Remove dominated individuals</span>
+                <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">dominated</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                    <span class="k">del</span> <span class="n">pareto_front</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+                <span class="c1"># Add this individual to front</span>
+                <span class="n">pareto_front</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">individual</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">results</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dominates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results1</span><span class="p">,</span> <span class="n">results2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if results1 dominates results2 (Pareto dominance).&quot;&quot;&quot;</span>
+        <span class="n">better_accuracy</span> <span class="o">=</span> <span class="n">results1</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">results2</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span>
+        <span class="n">better_efficiency</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">results1</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">results2</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span> <span class="ow">and</span>
+            <span class="n">results1</span><span class="p">[</span><span class="s1">&#39;latency_ms&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">results2</span><span class="p">[</span><span class="s1">&#39;latency_ms&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">at_least_one_better</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">results1</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">results2</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span> <span class="ow">or</span>
+            <span class="n">results1</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">results2</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span> <span class="ow">or</span>
+            <span class="n">results1</span><span class="p">[</span><span class="s1">&#39;latency_ms&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">results2</span><span class="p">[</span><span class="s1">&#39;latency_ms&#39;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">better_accuracy</span> <span class="ow">and</span> <span class="n">better_efficiency</span> <span class="ow">and</span> <span class="n">at_least_one_better</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mobile_evolution_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">fitness_results</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Custom evolution step for mobile optimization.&quot;&quot;&quot;</span>
+        <span class="c1"># Selection: prefer efficient models</span>
+        <span class="n">selected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_efficiency_based_selection</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">fitness_results</span><span class="p">)</span>
+
+        <span class="c1"># Crossover with mobile-friendly bias</span>
+        <span class="n">offspring</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mobile_crossover</span><span class="p">(</span><span class="n">selected</span><span class="p">)</span>
+
+        <span class="c1"># Mutation with efficiency constraints</span>
+        <span class="n">mutated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_efficiency_mutation</span><span class="p">(</span><span class="n">offspring</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Population</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">mutated</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_efficiency_based_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">fitness_results</span><span class="p">,</span> <span class="n">select_ratio</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Selection favoring efficient architectures.&quot;&quot;&quot;</span>
+        <span class="c1"># Sort by efficiency score (combination of accuracy and efficiency)</span>
+        <span class="n">efficiency_scores</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">results</span> <span class="ow">in</span> <span class="n">fitness_results</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">):</span>
+                <span class="n">efficiency_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">efficiency_score</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">results</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span>  <span class="c1"># Weight accuracy higher</span>
+                    <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100000</span><span class="p">))</span> <span class="o">+</span>
+                    <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;latency_ms&#39;</span><span class="p">]))</span>
+                <span class="p">)</span> <span class="o">/</span> <span class="mf">4.0</span>
+                <span class="n">efficiency_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">efficiency_score</span><span class="p">)</span>
+
+        <span class="c1"># Select top performers</span>
+        <span class="n">num_select</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">)</span> <span class="o">*</span> <span class="n">select_ratio</span><span class="p">)</span>
+        <span class="n">selected_indices</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">efficiency_scores</span><span class="p">)),</span>
+            <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">efficiency_scores</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+            <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)[:</span><span class="n">num_select</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">population</span><span class="o">.</span><span class="n">individuals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">selected_indices</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mobile_crossover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Crossover operation preserving mobile-friendly characteristics.&quot;&quot;&quot;</span>
+        <span class="n">offspring</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">offspring</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;population_size&#39;</span><span class="p">]:</span>
+            <span class="n">parent1</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">selected</span><span class="p">)</span>
+            <span class="n">parent2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">selected</span><span class="p">)</span>
+
+            <span class="n">child1</span><span class="p">,</span> <span class="n">child2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_efficient_crossover</span><span class="p">(</span><span class="n">parent1</span><span class="p">,</span> <span class="n">parent2</span><span class="p">)</span>
+            <span class="n">offspring</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">child1</span><span class="p">,</span> <span class="n">child2</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">offspring</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;population_size&#39;</span><span class="p">]]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_efficient_crossover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent1</span><span class="p">,</span> <span class="n">parent2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Crossover that maintains efficiency characteristics.&quot;&quot;&quot;</span>
+        <span class="c1"># Prefer shorter, more efficient architectures</span>
+        <span class="n">genome1</span> <span class="o">=</span> <span class="n">parent1</span><span class="o">.</span><span class="n">genome</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parent1</span><span class="o">.</span><span class="n">genome</span><span class="p">),</span> <span class="mi">6</span><span class="p">)]</span>  <span class="c1"># Limit depth</span>
+        <span class="n">genome2</span> <span class="o">=</span> <span class="n">parent2</span><span class="o">.</span><span class="n">genome</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parent2</span><span class="o">.</span><span class="n">genome</span><span class="p">),</span> <span class="mi">6</span><span class="p">)]</span>
+
+        <span class="c1"># Single-point crossover with bias toward mobile blocks</span>
+        <span class="n">crossover_point</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">genome1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">genome2</span><span class="p">))</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="n">child1_genome</span> <span class="o">=</span> <span class="n">genome1</span><span class="p">[:</span><span class="n">crossover_point</span><span class="p">]</span> <span class="o">+</span> <span class="n">genome2</span><span class="p">[</span><span class="n">crossover_point</span><span class="p">:]</span>
+        <span class="n">child2_genome</span> <span class="o">=</span> <span class="n">genome2</span><span class="p">[:</span><span class="n">crossover_point</span><span class="p">]</span> <span class="o">+</span> <span class="n">genome1</span><span class="p">[</span><span class="n">crossover_point</span><span class="p">:]</span>
+
+        <span class="c1"># Apply mobile-friendly constraints</span>
+        <span class="n">child1_genome</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_mobile_constraints</span><span class="p">(</span><span class="n">child1_genome</span><span class="p">)</span>
+        <span class="n">child2_genome</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_mobile_constraints</span><span class="p">(</span><span class="n">child2_genome</span><span class="p">)</span>
+
+        <span class="n">child1</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">(</span>
+            <span class="n">genome</span><span class="o">=</span><span class="n">child1_genome</span><span class="p">,</span>
+            <span class="n">task</span><span class="o">=</span><span class="n">parent1</span><span class="o">.</span><span class="n">task</span><span class="p">,</span>
+            <span class="n">input_shape</span><span class="o">=</span><span class="n">parent1</span><span class="o">.</span><span class="n">input_shape</span><span class="p">,</span>
+            <span class="n">num_classes</span><span class="o">=</span><span class="n">parent1</span><span class="o">.</span><span class="n">num_classes</span>
+        <span class="p">)</span>
+
+        <span class="n">child2</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">(</span>
+            <span class="n">genome</span><span class="o">=</span><span class="n">child2_genome</span><span class="p">,</span>
+            <span class="n">task</span><span class="o">=</span><span class="n">parent2</span><span class="o">.</span><span class="n">task</span><span class="p">,</span>
+            <span class="n">input_shape</span><span class="o">=</span><span class="n">parent2</span><span class="o">.</span><span class="n">input_shape</span><span class="p">,</span>
+            <span class="n">num_classes</span><span class="o">=</span><span class="n">parent2</span><span class="o">.</span><span class="n">num_classes</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">child1</span><span class="p">,</span> <span class="n">child2</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_mobile_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genome</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply constraints for mobile deployment.&quot;&quot;&quot;</span>
+        <span class="n">constrained_genome</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">genome</span><span class="p">:</span>
+            <span class="c1"># Prefer mobile-friendly blocks</span>
+            <span class="k">if</span> <span class="n">layer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;layer_type&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;DenseNetBlock&#39;</span><span class="p">:</span>
+                <span class="c1"># Replace with MBConv</span>
+                <span class="n">layer</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="s1">&#39;MBConv&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;expansion_factor&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+                    <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="n">layer</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;activation&#39;</span><span class="p">,</span> <span class="s1">&#39;ReLU&#39;</span><span class="p">)</span>
+                <span class="p">}</span>
+
+            <span class="c1"># Limit channel expansion</span>
+            <span class="k">if</span> <span class="s1">&#39;out_channels_coefficient&#39;</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+                <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">],</span> <span class="mi">8</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Limit expansion factors</span>
+            <span class="k">if</span> <span class="s1">&#39;expansion_factor&#39;</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+                <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;expansion_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">layer</span><span class="p">[</span><span class="s1">&#39;expansion_factor&#39;</span><span class="p">],</span> <span class="mi">4</span><span class="p">)</span>
+
+            <span class="n">constrained_genome</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">constrained_genome</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_efficiency_mutation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offspring</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mutation that maintains efficiency.&quot;&quot;&quot;</span>
+        <span class="n">mutated</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">offspring</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.3</span><span class="p">:</span>  <span class="c1"># 30% mutation rate</span>
+                <span class="n">mutated_individual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mobile_mutate</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+                <span class="n">mutated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mutated_individual</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mutated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mutated</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mobile_mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mobile-specific mutation operations.&quot;&quot;&quot;</span>
+        <span class="n">genome</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">genome</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">genome</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">mutation_type</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;modify&#39;</span><span class="p">,</span> <span class="s1">&#39;add_efficient&#39;</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">mutation_type</span> <span class="o">==</span> <span class="s1">&#39;modify&#39;</span><span class="p">:</span>
+                <span class="c1"># Modify existing layer to be more efficient</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">genome</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">layer</span> <span class="o">=</span> <span class="n">genome</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+                <span class="c1"># Make modifications toward efficiency</span>
+                <span class="k">if</span> <span class="s1">&#39;out_channels_coefficient&#39;</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+                        <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span>
+                    <span class="p">)</span>
+
+                <span class="n">genome</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">layer</span>
+
+            <span class="k">elif</span> <span class="n">mutation_type</span> <span class="o">==</span> <span class="s1">&#39;add_efficient&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">genome</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+                <span class="c1"># Add efficient layer</span>
+                <span class="n">efficient_layer</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;MBConv&#39;</span><span class="p">,</span> <span class="s1">&#39;ConvBnAct&#39;</span><span class="p">]),</span>
+                    <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="s1">&#39;ReLU&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+                <span class="p">}</span>
+
+                <span class="k">if</span> <span class="n">efficient_layer</span><span class="p">[</span><span class="s1">&#39;layer_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;MBConv&#39;</span><span class="p">:</span>
+                    <span class="n">efficient_layer</span><span class="p">[</span><span class="s1">&#39;expansion_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+
+                <span class="n">genome</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">efficient_layer</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">mutation_type</span> <span class="o">==</span> <span class="s1">&#39;remove&#39;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">genome</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># Remove a layer to reduce complexity</span>
+                <span class="n">genome</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">genome</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">Individual</span><span class="p">(</span>
+            <span class="n">genome</span><span class="o">=</span><span class="n">genome</span><span class="p">,</span>
+            <span class="n">task</span><span class="o">=</span><span class="n">individual</span><span class="o">.</span><span class="n">task</span><span class="p">,</span>
+            <span class="n">input_shape</span><span class="o">=</span><span class="n">individual</span><span class="o">.</span><span class="n">input_shape</span><span class="p">,</span>
+            <span class="n">num_classes</span><span class="o">=</span><span class="n">individual</span><span class="o">.</span><span class="n">num_classes</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="quantization-and-pruning-integration">
+<h2>Quantization and Pruning Integration<a class="headerlink" href="#quantization-and-pruning-integration" title="Link to this heading"></a></h2>
+<section id="post-training-optimization">
+<h3>Post-Training Optimization<a class="headerlink" href="#post-training-optimization" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch.quantization</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">quant</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.nn.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">prune</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EdgeOptimizationPipeline</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Complete pipeline for edge deployment optimization.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">calibration_loader</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibration_loader</span> <span class="o">=</span> <span class="n">calibration_loader</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">optimize_for_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimization_config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply multiple optimization techniques.&quot;&quot;&quot;</span>
+        <span class="n">optimized_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
+
+        <span class="c1"># 1. Structured pruning</span>
+        <span class="k">if</span> <span class="n">optimization_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pruning&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;enabled&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">optimized_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_structured_pruning</span><span class="p">(</span>
+                <span class="n">optimized_model</span><span class="p">,</span>
+                <span class="n">optimization_config</span><span class="p">[</span><span class="s1">&#39;pruning&#39;</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="c1"># 2. Quantization</span>
+        <span class="k">if</span> <span class="n">optimization_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;quantization&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;enabled&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">optimized_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_quantization</span><span class="p">(</span>
+                <span class="n">optimized_model</span><span class="p">,</span>
+                <span class="n">optimization_config</span><span class="p">[</span><span class="s1">&#39;quantization&#39;</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="c1"># 3. Knowledge distillation (if teacher model provided)</span>
+        <span class="k">if</span> <span class="n">optimization_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;distillation&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;teacher_model&#39;</span><span class="p">):</span>
+            <span class="n">optimized_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_knowledge_distillation</span><span class="p">(</span>
+                <span class="n">optimized_model</span><span class="p">,</span>
+                <span class="n">optimization_config</span><span class="p">[</span><span class="s1">&#39;distillation&#39;</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">optimized_model</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_structured_pruning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">pruning_config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply structured pruning to reduce model size.&quot;&quot;&quot;</span>
+        <span class="n">pruning_ratio</span> <span class="o">=</span> <span class="n">pruning_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ratio&#39;</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+
+        <span class="c1"># Apply channel-wise pruning to convolution layers</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">named_modules</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="s1">&#39;conv&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                    <span class="c1"># Prune channels</span>
+                    <span class="n">prune</span><span class="o">.</span><span class="n">ln_structured</span><span class="p">(</span>
+                        <span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">pruning_ratio</span><span class="p">,</span>
+                        <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span>  <span class="c1"># Prune output channels</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Prune neurons</span>
+                    <span class="n">prune</span><span class="o">.</span><span class="n">l1_unstructured</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">pruning_ratio</span><span class="p">)</span>
+
+        <span class="c1"># Make pruning permanent</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">named_modules</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">)):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">prune</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">pass</span>  <span class="c1"># No pruning applied to this module</span>
+
+        <span class="k">return</span> <span class="n">model</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_quantization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">quantization_config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply quantization for reduced precision.&quot;&quot;&quot;</span>
+        <span class="n">quantization_type</span> <span class="o">=</span> <span class="n">quantization_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;dynamic&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">quantization_type</span> <span class="o">==</span> <span class="s1">&#39;dynamic&#39;</span><span class="p">:</span>
+            <span class="c1"># Dynamic quantization (good for CPU inference)</span>
+            <span class="n">quantized_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">quantize_dynamic</span><span class="p">(</span>
+                <span class="n">model</span><span class="p">,</span> <span class="p">{</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">},</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">qint8</span>
+            <span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">quantization_type</span> <span class="o">==</span> <span class="s1">&#39;static&#39;</span><span class="p">:</span>
+            <span class="c1"># Static quantization (requires calibration)</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+            <span class="c1"># Prepare model for quantization</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">qconfig</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">get_default_qconfig</span><span class="p">(</span><span class="s1">&#39;fbgemm&#39;</span><span class="p">)</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># Calibrate with sample data</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calibration_loader</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">batch_idx</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">:</span>  <span class="c1"># Limited calibration</span>
+                        <span class="k">break</span>
+                    <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+            <span class="c1"># Convert to quantized model</span>
+            <span class="n">quantized_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">quantized_model</span> <span class="o">=</span> <span class="n">model</span>
+
+        <span class="k">return</span> <span class="n">quantized_model</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_knowledge_distillation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">student_model</span><span class="p">,</span> <span class="n">distillation_config</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply knowledge distillation for better small model performance.&quot;&quot;&quot;</span>
+        <span class="n">teacher_model</span> <span class="o">=</span> <span class="n">distillation_config</span><span class="p">[</span><span class="s1">&#39;teacher_model&#39;</span><span class="p">]</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="n">distillation_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;temperature&#39;</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">distillation_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)</span>
+
+        <span class="c1"># Knowledge distillation training loop would go here</span>
+        <span class="c1"># This is a simplified version</span>
+        <span class="n">teacher_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="n">student_model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+        <span class="n">criterion_kd</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">KLDivLoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s1">&#39;batchmean&#39;</span><span class="p">)</span>
+        <span class="n">criterion_ce</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">student_model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">distillation_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;epochs&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calibration_loader</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">batch_idx</span> <span class="o">&gt;=</span> <span class="mi">20</span><span class="p">:</span>  <span class="c1"># Limited training</span>
+                    <span class="k">break</span>
+
+                <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+                <span class="c1"># Student predictions</span>
+                <span class="n">student_outputs</span> <span class="o">=</span> <span class="n">student_model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+                <span class="c1"># Teacher predictions</span>
+                <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                    <span class="n">teacher_outputs</span> <span class="o">=</span> <span class="n">teacher_model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+                <span class="c1"># Distillation loss</span>
+                <span class="n">loss_kd</span> <span class="o">=</span> <span class="n">criterion_kd</span><span class="p">(</span>
+                    <span class="n">F</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">student_outputs</span> <span class="o">/</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                    <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">teacher_outputs</span> <span class="o">/</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">temperature</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+                <span class="c1"># Standard classification loss</span>
+                <span class="n">loss_ce</span> <span class="o">=</span> <span class="n">criterion_ce</span><span class="p">(</span><span class="n">student_outputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+
+                <span class="c1"># Combined loss</span>
+                <span class="n">loss</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">loss_kd</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">loss_ce</span>
+
+                <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+                <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">student_model</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="performance-profiling-and-analysis">
+<h2>Performance Profiling and Analysis<a class="headerlink" href="#performance-profiling-and-analysis" title="Link to this heading"></a></h2>
+<section id="edge-performance-metrics">
+<h3>Edge Performance Metrics<a class="headerlink" href="#edge-performance-metrics" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.profiler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.mobile_optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">optimize_for_mobile</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EdgePerformanceProfiler</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Comprehensive profiling for edge deployment.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">sample_input</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_input</span> <span class="o">=</span> <span class="n">sample_input</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">profile_comprehensive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Complete performance profiling suite.&quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Basic metrics</span>
+        <span class="n">results</span><span class="p">[</span><span class="s1">&#39;model_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_size</span><span class="p">()</span>
+        <span class="n">results</span><span class="p">[</span><span class="s1">&#39;parameter_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter_count</span><span class="p">()</span>
+        <span class="n">results</span><span class="p">[</span><span class="s1">&#39;flops&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimate_flops</span><span class="p">()</span>
+
+        <span class="c1"># Inference timing</span>
+        <span class="n">results</span><span class="p">[</span><span class="s1">&#39;cpu_latency&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measure_cpu_latency</span><span class="p">()</span>
+        <span class="n">results</span><span class="p">[</span><span class="s1">&#39;memory_usage&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measure_memory_usage</span><span class="p">()</span>
+
+        <span class="c1"># Mobile optimization potential</span>
+        <span class="n">results</span><span class="p">[</span><span class="s1">&#39;mobile_optimized&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_mobile_optimization</span><span class="p">()</span>
+
+        <span class="c1"># Detailed profiling</span>
+        <span class="n">results</span><span class="p">[</span><span class="s1">&#39;operation_breakdown&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profile_operations</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">results</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_model_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate model size in MB.&quot;&quot;&quot;</span>
+        <span class="n">param_size</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">element_size</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="n">buffer_size</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">*</span> <span class="n">b</span><span class="o">.</span><span class="n">element_size</span><span class="p">()</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">buffers</span><span class="p">())</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">param_size</span> <span class="o">+</span> <span class="n">buffer_size</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_parameter_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get total trainable parameters.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">estimate_flops</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimate FLOPs for the model.&quot;&quot;&quot;</span>
+        <span class="c1"># Simplified FLOP counting for common layers</span>
+        <span class="n">total_flops</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">flop_count_hook</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
+            <span class="k">nonlocal</span> <span class="n">total_flops</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">):</span>
+                <span class="c1"># FLOPs = output_elements * (kernel_size^2 * input_channels + bias)</span>
+                <span class="n">output_elements</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span>
+                <span class="n">kernel_flops</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">module</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">module</span><span class="o">.</span><span class="n">in_channels</span>
+                <span class="n">total_flops</span> <span class="o">+=</span> <span class="n">output_elements</span> <span class="o">*</span> <span class="n">kernel_flops</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">):</span>
+                <span class="n">total_flops</span> <span class="o">+=</span> <span class="n">output</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">*</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">hooks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">modules</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">)):</span>
+                <span class="n">hook</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">register_forward_hook</span><span class="p">(</span><span class="n">flop_count_hook</span><span class="p">)</span>
+                <span class="n">hooks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hook</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_input</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks</span><span class="p">:</span>
+            <span class="n">hook</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">total_flops</span> <span class="o">/</span> <span class="mf">1e9</span>  <span class="c1"># Return in GFLOPs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">measure_cpu_latency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_runs</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Measure CPU inference latency.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+        <span class="c1"># Warmup</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_input</span><span class="p">)</span>
+
+        <span class="c1"># Measurement</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_runs</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_input</span><span class="p">)</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_runs</span> <span class="o">*</span> <span class="mi">1000</span>  <span class="c1"># ms</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">measure_memory_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Measure peak memory usage during inference.&quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">tracemalloc</span>
+
+        <span class="n">tracemalloc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_input</span><span class="p">)</span>
+
+        <span class="n">current</span><span class="p">,</span> <span class="n">peak</span> <span class="o">=</span> <span class="n">tracemalloc</span><span class="o">.</span><span class="n">get_traced_memory</span><span class="p">()</span>
+        <span class="n">tracemalloc</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">peak</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>  <span class="c1"># MB</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_mobile_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Test PyTorch Mobile optimization compatibility.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Test mobile optimization</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+            <span class="n">scripted_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">script</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+            <span class="n">mobile_model</span> <span class="o">=</span> <span class="n">optimize_for_mobile</span><span class="p">(</span><span class="n">scripted_model</span><span class="p">)</span>
+
+            <span class="c1"># Test inference</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">original_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_input</span><span class="p">)</span>
+                <span class="n">mobile_output</span> <span class="o">=</span> <span class="n">mobile_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_input</span><span class="p">)</span>
+
+            <span class="c1"># Check output similarity</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">original_output</span> <span class="o">-</span> <span class="n">mobile_output</span><span class="p">))</span>
+
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;compatible&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;output_difference&#39;</span><span class="p">:</span> <span class="n">diff</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+                <span class="s1">&#39;size_reduction&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_size_reduction</span><span class="p">(</span><span class="n">scripted_model</span><span class="p">,</span> <span class="n">mobile_model</span><span class="p">)</span>
+            <span class="p">}</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;compatible&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">profile_operations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Detailed operation-level profiling.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">profiler</span><span class="o">.</span><span class="n">profile</span><span class="p">(</span>
+            <span class="n">activities</span><span class="o">=</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">profiler</span><span class="o">.</span><span class="n">ProfilerActivity</span><span class="o">.</span><span class="n">CPU</span><span class="p">],</span>
+            <span class="n">record_shapes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">with_stack</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">prof</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_input</span><span class="p">)</span>
+
+        <span class="c1"># Extract key metrics</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">prof</span><span class="o">.</span><span class="n">key_averages</span><span class="p">()</span>
+        <span class="n">operation_breakdown</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">self_cpu_time_total</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">operation_breakdown</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;cpu_time_ms&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">self_cpu_time_total</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">,</span>
+                    <span class="s1">&#39;cpu_percentage&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">self_cpu_time_total</span> <span class="o">/</span> <span class="n">prof</span><span class="o">.</span><span class="n">profiler</span><span class="o">.</span><span class="n">self_cpu_time_total</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+                    <span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="n">event</span><span class="o">.</span><span class="n">count</span>
+                <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">operation_breakdown</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="complete-edge-optimization-example">
+<h2>Complete Edge Optimization Example<a class="headerlink" href="#complete-edge-optimization-example" title="Link to this heading"></a></h2>
+<section id="main-execution-pipeline">
+<h3>Main Execution Pipeline<a class="headerlink" href="#main-execution-pipeline" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main_edge_optimization</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Complete edge optimization pipeline example.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Set random seeds for reproducibility</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+    <span class="c1"># Load dataset (example with CIFAR-10)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">torchvision</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">transforms</span>
+
+    <span class="n">transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
+        <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+        <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+    <span class="p">])</span>
+
+    <span class="c1"># Small dataset for quick evolution</span>
+    <span class="n">train_dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span>
+        <span class="n">root</span><span class="o">=</span><span class="s1">&#39;./data&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span>
+    <span class="p">)</span>
+    <span class="n">val_dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span>
+        <span class="n">root</span><span class="o">=</span><span class="s1">&#39;./data&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Create data loaders</span>
+    <span class="n">train_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">val_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># Mock dataset class for compatibility</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">DatasetWrapper</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span> <span class="o">=</span> <span class="n">train_loader</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">val_loader</span> <span class="o">=</span> <span class="n">val_loader</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_classes</span> <span class="o">=</span> <span class="mi">10</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">train_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_loader</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">val_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">val_loader</span>
+
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">DatasetWrapper</span><span class="p">(</span><span class="n">train_loader</span><span class="p">,</span> <span class="n">val_loader</span><span class="p">)</span>
+
+    <span class="c1"># Configuration for edge optimization</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;population_size&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="s1">&#39;max_iterations&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="s1">&#39;max_parameters&#39;</span><span class="p">:</span> <span class="mi">300_000</span><span class="p">,</span>
+        <span class="s1">&#39;target_latency_ms&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="s1">&#39;min_accuracy&#39;</span><span class="p">:</span> <span class="mf">0.80</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Run mobile architecture evolution</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting Mobile Architecture Evolution...&quot;</span><span class="p">)</span>
+    <span class="n">evolution</span> <span class="o">=</span> <span class="n">MobileArchitectureEvolution</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="n">best_individuals</span><span class="p">,</span> <span class="n">pareto_front</span> <span class="o">=</span> <span class="n">evolution</span><span class="o">.</span><span class="n">evolve_mobile_architecture</span><span class="p">()</span>
+
+    <span class="c1"># Get the best performing model</span>
+    <span class="n">best_individual</span><span class="p">,</span> <span class="n">best_results</span> <span class="o">=</span> <span class="n">best_individuals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">best_model</span> <span class="o">=</span> <span class="n">best_individual</span><span class="o">.</span><span class="n">build_model</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Best Model Results ===&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fitness: </span><span class="si">{</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;fitness&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accuracy: </span><span class="si">{</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameters: </span><span class="si">{</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Latency: </span><span class="si">{</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;latency_ms&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Memory: </span><span class="si">{</span><span class="n">best_results</span><span class="p">[</span><span class="s1">&#39;memory_mb&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Apply additional optimizations</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Applying Post-Training Optimizations ===&quot;</span><span class="p">)</span>
+
+    <span class="n">optimization_config</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;pruning&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;ratio&#39;</span><span class="p">:</span> <span class="mf">0.3</span>
+        <span class="p">},</span>
+        <span class="s1">&#39;quantization&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;enabled&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;dynamic&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">EdgeOptimizationPipeline</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">val_loader</span><span class="p">)</span>
+    <span class="n">optimized_model</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">optimize_for_edge</span><span class="p">(</span><span class="n">optimization_config</span><span class="p">)</span>
+
+    <span class="c1"># Profile final model</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Performance Profiling ===&quot;</span><span class="p">)</span>
+    <span class="n">sample_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
+    <span class="n">profiler</span> <span class="o">=</span> <span class="n">EdgePerformanceProfiler</span><span class="p">(</span><span class="n">optimized_model</span><span class="p">,</span> <span class="n">sample_input</span><span class="p">)</span>
+    <span class="n">profile_results</span> <span class="o">=</span> <span class="n">profiler</span><span class="o">.</span><span class="n">profile_comprehensive</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model Size: </span><span class="si">{</span><span class="n">profile_results</span><span class="p">[</span><span class="s1">&#39;model_size&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameters: </span><span class="si">{</span><span class="n">profile_results</span><span class="p">[</span><span class="s1">&#39;parameter_count&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FLOPs: </span><span class="si">{</span><span class="n">profile_results</span><span class="p">[</span><span class="s1">&#39;flops&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> G&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CPU Latency: </span><span class="si">{</span><span class="n">profile_results</span><span class="p">[</span><span class="s1">&#39;cpu_latency&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Memory Usage: </span><span class="si">{</span><span class="n">profile_results</span><span class="p">[</span><span class="s1">&#39;memory_usage&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">profile_results</span><span class="p">[</span><span class="s1">&#39;mobile_optimized&#39;</span><span class="p">][</span><span class="s1">&#39;compatible&#39;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mobile Compatible: ✓&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Size Reduction: </span><span class="si">{</span><span class="n">profile_results</span><span class="p">[</span><span class="s1">&#39;mobile_optimized&#39;</span><span class="p">][</span><span class="s1">&#39;size_reduction&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mobile Compatible: ✗&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Display Pareto front</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Pareto Front (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pareto_front</span><span class="p">)</span><span class="si">}</span><span class="s2"> solutions) ===&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">individual</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pareto_front</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Solution </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: Acc=</span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;Params=</span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">, Latency=</span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="s1">&#39;latency_ms&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">optimized_model</span><span class="p">,</span> <span class="n">profile_results</span><span class="p">,</span> <span class="n">pareto_front</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">optimized_model</span><span class="p">,</span> <span class="n">profile_results</span><span class="p">,</span> <span class="n">pareto_front</span> <span class="o">=</span> <span class="n">main_edge_optimization</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="expected-output">
+<h2>Expected Output<a class="headerlink" href="#expected-output" title="Link to this heading"></a></h2>
+<p>The edge optimization example will produce output similar to:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Starting Mobile Architecture Evolution...
+
+=== Generation 1 ===
+Best Individual - Fitness: 0.7245
+  Accuracy: 0.8234
+  Parameters: 187,452
+  Latency: 23.45 ms
+  Memory: 12.34 MB
+
+=== Generation 10 ===
+Best Individual - Fitness: 0.8567
+  Accuracy: 0.8923
+  Parameters: 143,234
+  Latency: 18.67 ms
+  Memory: 9.87 MB
+
+=== Best Model Results ===
+Fitness: 0.8567
+Accuracy: 0.8923
+Parameters: 143,234
+Latency: 18.67 ms
+Memory: 9.87 MB
+
+=== Applying Post-Training Optimizations ===
+
+=== Performance Profiling ===
+Model Size: 0.58 MB
+Parameters: 98,765
+FLOPs: 0.45 G
+CPU Latency: 12.34 ms
+Memory Usage: 7.23 MB
+Mobile Compatible: ✓
+Size Reduction: 23.4%
+
+=== Pareto Front (8 solutions) ===
+Solution 1: Acc=0.892, Params=143,234, Latency=18.7ms
+Solution 2: Acc=0.876, Params=98,567, Latency=15.2ms
+Solution 3: Acc=0.834, Params=67,234, Latency=11.8ms
+...
+</pre></div>
+</div>
+</section>
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Multi-objective Optimization</strong>: Edge deployment requires balancing accuracy, efficiency, and resource constraints</p></li>
+<li><p><strong>Architecture Constraints</strong>: Mobile-friendly blocks (MBConv, efficient convolutions) are preferred</p></li>
+<li><p><strong>Post-training Optimization</strong>: Quantization and pruning can significantly reduce model size and latency</p></li>
+<li><p><strong>Pareto Optimization</strong>: Multiple solutions along the accuracy-efficiency trade-off curve</p></li>
+<li><p><strong>Real-world Metrics</strong>: Actual latency and memory measurements are crucial for deployment decisions</p></li>
+</ol>
+<p>This example demonstrates how PyNAS can be used to discover architectures specifically optimized for edge deployment, considering the unique constraints and requirements of mobile and embedded devices.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="remote_sensing.html" class="btn btn-neutral float-left" title="Remote Sensing Applications" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="custom_blocks.html" class="btn btn-neutral float-right" title="Custom Blocks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

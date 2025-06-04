@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pynas.core.individual &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pynas.core.individual</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pynas.core.individual</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">architecture_builder</span> <span class="k">as</span> <span class="n">builder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..train</span><span class="w"> </span><span class="kn">import</span> <span class="n">myFit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+
+
+<span class="n">evaluator</span> <span class="o">=</span> <span class="n">myFit</span><span class="o">.</span><span class="n">FitnessEvaluator</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Individual">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.individual.Individual">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Individual</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The `Individual` class represents an individual entity in the genetic algorithm or evolutionary computation context. </span>
+<span class="sd">    It encapsulates the architecture, chromosome, and associated properties such as fitness, IOU (Intersection over Union), </span>
+<span class="sd">    FPS (Frames Per Second), and model size. The class provides methods for converting between architecture and chromosome </span>
+<span class="sd">    representations, resetting properties, and creating deep copies of the individual.</span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        architecture (str): The architecture code representing the individual&#39;s structure.</span>
+<span class="sd">        chromosome (list): A list representation of the architecture code.</span>
+<span class="sd">        parsed_layers (list): Parsed layers of the architecture code.</span>
+<span class="sd">        fitness (float): The fitness score of the individual.</span>
+<span class="sd">        iou (float or None): The Intersection over Union metric.</span>
+<span class="sd">        metric (float or None): Currently stores IoU (Intersection over Union).</span>
+
+<span class="sd">        fps (float or None): The Frames Per Second metric.</span>
+<span class="sd">        model_size (float or None): The size of the model.</span>
+<span class="sd">        model (object or None): The trained model associated with the individual.</span>
+<span class="sd">    Methods:</span>
+<span class="sd">        __init__(max_layers, min_layers=3):</span>
+<span class="sd">            Initializes an individual with a random architecture and its corresponding chromosome.</span>
+<span class="sd">        __str__():</span>
+<span class="sd">            Returns a string representation of the individual.</span>
+<span class="sd">        _reparse_layers():</span>
+<span class="sd">            Reparses the layers of the architecture based on the chromosome.</span>
+<span class="sd">        reset():</span>
+<span class="sd">        architecture2chromosome(input_architecture):</span>
+<span class="sd">            Converts an architecture code into a chromosome list.</span>
+<span class="sd">        chromosome2architecture(input_chromosome):</span>
+<span class="sd">            Converts a chromosome list back into an architecture code.</span>
+<span class="sd">        copy():</span>
+<span class="sd">            Creates a deep copy of the individual, including its properties and model.</span>
+<span class="sd">        set_trained_model(model):</span>
+<span class="sd">            Sets the trained model for the individual.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Individual.__init__">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.individual.Individual.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_layers</span><span class="p">,</span> <span class="n">min_layers</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">architecture</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">generate_random_architecture_code</span><span class="p">(</span><span class="n">max_layers</span><span class="o">=</span><span class="n">max_layers</span><span class="p">,</span> <span class="n">min_layers</span><span class="o">=</span><span class="n">min_layers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">architecture2chromosome</span><span class="p">(</span><span class="n">input_architecture</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">architecture</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed_layers</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">parse_architecture_code</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">architecture</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Individual.__str__">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.individual.Individual.__str__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;Individual: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">architecture</span><span class="si">}</span><span class="s1">&#39;</span></div>
+
+    
+    
+<div class="viewcode-block" id="Individual._reparse_layers">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.individual.Individual._reparse_layers">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reparse_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parsed_layers</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">parse_architecture_code</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome2architecture</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="Individual.reset">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.individual.Individual.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resets the individual&#39;s fitness, IOU, FPS, and model size.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fps</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_size</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+    <span class="c1"># Implement the logic to prompt the fitnes</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prompt_fitness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># fps = results[&#39;fps&#39;]</span>
+        <span class="c1">#metric = results[&#39;test_mcc&#39;]</span>
+        <span class="c1"># metric = results[&#39;test_iou&#39;]</span>
+        <span class="c1"># self.fps, self.metric = fps, metric</span>
+        <span class="c1"># self.results = results</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">weighted_sum_exponential</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iou</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;IoU:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iou</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;FPS:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fitness:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span>
+
+<div class="viewcode-block" id="Individual.architecture2chromosome">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.individual.Individual.architecture2chromosome">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">architecture2chromosome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_architecture</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts an architecture code into a chromosome list by splitting</span>
+<span class="sd">        the architecture code using &#39;E&#39;. This method also handles the case where</span>
+<span class="sd">        the architecture ends with &#39;EE&#39;, avoiding an empty string at the end of the list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Split the architecture code on &#39;E&#39;</span>
+        <span class="n">chromosome</span> <span class="o">=</span> <span class="n">input_architecture</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">)</span>
+        <span class="c1"># Remove the last two empty elements if the architecture ends with &#39;EE&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chromosome</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">chromosome</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">chromosome</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">chromosome</span> <span class="o">=</span> <span class="n">chromosome</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">chromosome</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">chromosome</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="c1"># If it only ends with a single &#39;E&#39;, just remove the last empty element</span>
+            <span class="n">chromosome</span> <span class="o">=</span> <span class="n">chromosome</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">chromosome</span></div>
+
+
+
+<div class="viewcode-block" id="Individual.chromosome2architecture">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.individual.Individual.chromosome2architecture">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">chromosome2architecture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_chromosome</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts the chromosome list back into an architecture code by joining</span>
+<span class="sd">        the list items with &#39;E&#39; and ensuring the architecture ends with &#39;EE&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">architecture_code</span> <span class="o">=</span> <span class="s1">&#39;E&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_chromosome</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;EE&#39;</span>
+        <span class="k">return</span> <span class="n">architecture_code</span></div>
+
+
+
+<div class="viewcode-block" id="Individual.copy">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.individual.Individual.copy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a deep copy of the current individual, including architecture,</span>
+<span class="sd">        chromosome, and fitness.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_individual</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">(</span><span class="n">max_layers</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span><span class="p">))</span>
+        <span class="n">new_individual</span><span class="o">.</span><span class="n">architecture</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">architecture</span><span class="p">)</span>
+        <span class="n">new_individual</span><span class="o">.</span><span class="n">chromosome</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span><span class="p">)</span>
+        <span class="n">new_individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitness</span>
+        <span class="n">new_individual</span><span class="o">.</span><span class="n">iou</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">iou</span>
+        <span class="n">new_individual</span><span class="o">.</span><span class="n">fps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fps</span>
+        <span class="n">new_individual</span><span class="o">.</span><span class="n">model_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_size</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_individual</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>  <span class="c1"># Copy the entire model</span>
+
+        <span class="k">return</span> <span class="n">new_individual</span>    </div>
+
+
+    
+<div class="viewcode-block" id="Individual.set_trained_model">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.individual.Individual.set_trained_model">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_trained_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the trained model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span></div>
+</div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

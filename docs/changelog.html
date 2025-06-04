@@ -1,0 +1,468 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Changelog &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Contributing to PyNAS" href="contributing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#unreleased">[Unreleased]</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#added">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#changed">Changed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">[0.2.0] - 2024-01-15</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Changed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fixed">Fixed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">[0.1.1] - 2023-12-10</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Fixed</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">[0.1.0] - 2023-12-01</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#supported-architectures">Supported Architectures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimization-algorithms">Optimization Algorithms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#training-features">Training Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#block-library">Block Library</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#development-tools">Development Tools</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#known-issues">Known Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#migration-guide">Migration Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#from-0-1-x-to-0-2-x">From 0.1.x to 0.2.x</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#deprecation-warnings">Deprecation Warnings</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v0-3-0-planned">v0.3.0 (Planned)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v0-4-0-planned">v0.4.0 (Planned)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#breaking-changes">Breaking Changes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#v0-2-0">v0.2.0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#v0-1-1">v0.1.1</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#upcoming-features">Upcoming Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id8">v0.3.0 (Planned)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">v0.4.0 (Planned)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#support">Support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#authors-and-acknowledgments">Authors and Acknowledgments</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Changelog</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/changelog.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
+<p>All notable changes to PyNAS will be documented in this file.</p>
+<p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
+and this project adheres to <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<section id="unreleased">
+<h2>[Unreleased]<a class="headerlink" href="#unreleased" title="Link to this heading"></a></h2>
+<section id="added">
+<h3>Added<a class="headerlink" href="#added" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Comprehensive Sphinx documentation with API reference, tutorials, and examples</p></li>
+<li><p>Edge deployment optimization examples</p></li>
+<li><p>Custom block creation guides</p></li>
+<li><p>Advanced configuration tutorials</p></li>
+</ul>
+</section>
+<section id="changed">
+<h3>Changed<a class="headerlink" href="#changed" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Enhanced documentation structure and organization</p></li>
+</ul>
+</section>
+</section>
+<section id="id1">
+<h2>[0.2.0] - 2024-01-15<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="id2">
+<h3>Added<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Multi-objective optimization support</p></li>
+<li><p>Custom fitness function capabilities</p></li>
+<li><p>Edge device optimization features</p></li>
+<li><p>Quantization and pruning utilities</p></li>
+<li><p>Advanced architecture search strategies</p></li>
+<li><p>Performance profiling tools</p></li>
+<li><p>Batch processing capabilities</p></li>
+<li><p>Model export functionality</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>Changed<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Improved population evolution algorithms</p></li>
+<li><p>Enhanced architecture builder flexibility</p></li>
+<li><p>Optimized memory usage during evolution</p></li>
+<li><p>Better error handling and logging</p></li>
+</ul>
+</section>
+<section id="fixed">
+<h3>Fixed<a class="headerlink" href="#fixed" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Memory leaks during long evolution runs</p></li>
+<li><p>Convergence issues with small populations</p></li>
+<li><p>Architecture validation edge cases</p></li>
+</ul>
+</section>
+</section>
+<section id="id4">
+<h2>[0.1.1] - 2023-12-10<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<section id="id5">
+<h3>Fixed<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Package installation issues</p></li>
+<li><p>Import path corrections</p></li>
+<li><p>Documentation typos</p></li>
+<li><p>Example code compatibility</p></li>
+</ul>
+</section>
+</section>
+<section id="id6">
+<h2>[0.1.0] - 2023-12-01<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="id7">
+<h3>Added<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Initial release of PyNAS</p></li>
+<li><p>Core population-based neural architecture search</p></li>
+<li><p>Individual architecture representation</p></li>
+<li><p>Architecture builder with U-Net support</p></li>
+<li><p>Basic optimization algorithms (Grey Wolf, Particle Swarm)</p></li>
+<li><p>Training utilities and metrics</p></li>
+<li><p>Comprehensive block library:</p>
+<ul>
+<li><p>Standard convolution blocks</p></li>
+<li><p>Separable convolution variants</p></li>
+<li><p>Attention mechanisms</p></li>
+<li><p>Residual connections</p></li>
+<li><p>Various activation functions</p></li>
+<li><p>Pooling operations</p></li>
+<li><p>Classification and segmentation heads</p></li>
+</ul>
+</li>
+<li><p>Lightning integration for training</p></li>
+<li><p>Configuration management</p></li>
+<li><p>Basic examples and tutorials</p></li>
+</ul>
+</section>
+<section id="features">
+<h3>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Genetic algorithm-based architecture search</p></li>
+<li><p>Configurable search spaces</p></li>
+<li><p>Multi-GPU training support</p></li>
+<li><p>Flexible fitness function definition</p></li>
+<li><p>Architecture visualization tools</p></li>
+<li><p>Export capabilities for deployment</p></li>
+</ul>
+</section>
+<section id="supported-architectures">
+<h3>Supported Architectures<a class="headerlink" href="#supported-architectures" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>U-Net variants for segmentation</p></li>
+<li><p>Custom CNN architectures</p></li>
+<li><p>Encoder-decoder networks</p></li>
+<li><p>Multi-scale architectures</p></li>
+</ul>
+</section>
+<section id="optimization-algorithms">
+<h3>Optimization Algorithms<a class="headerlink" href="#optimization-algorithms" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Grey Wolf Optimizer (GWO)</p></li>
+<li><p>Particle Swarm Optimization (PSO)</p></li>
+<li><p>Custom optimizer interface</p></li>
+</ul>
+</section>
+<section id="training-features">
+<h3>Training Features<a class="headerlink" href="#training-features" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>PyTorch Lightning integration</p></li>
+<li><p>Multiple loss functions</p></li>
+<li><p>Comprehensive metrics</p></li>
+<li><p>Early stopping</p></li>
+<li><p>Learning rate scheduling</p></li>
+<li><p>Mixed precision training</p></li>
+</ul>
+</section>
+<section id="block-library">
+<h3>Block Library<a class="headerlink" href="#block-library" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Convolution blocks (2D/3D)</p></li>
+<li><p>Separable convolutions</p></li>
+<li><p>Depthwise separable convolutions</p></li>
+<li><p>Dilated convolutions</p></li>
+<li><p>Attention blocks</p></li>
+<li><p>Squeeze-and-excitation</p></li>
+<li><p>Residual connections</p></li>
+<li><p>Skip connections</p></li>
+<li><p>Activation functions</p></li>
+<li><p>Normalization layers</p></li>
+<li><p>Pooling operations</p></li>
+<li><p>Dropout variants</p></li>
+</ul>
+</section>
+<section id="development-tools">
+<h3>Development Tools<a class="headerlink" href="#development-tools" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Comprehensive test suite</p></li>
+<li><p>Type hints throughout</p></li>
+<li><p>Documentation with Sphinx</p></li>
+<li><p>CI/CD pipeline</p></li>
+<li><p>Code quality tools</p></li>
+</ul>
+</section>
+<section id="known-issues">
+<h3>Known Issues<a class="headerlink" href="#known-issues" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Large memory requirements for complex search spaces</p></li>
+<li><p>Limited support for transformer architectures</p></li>
+<li><p>GPU memory optimization needed for very large populations</p></li>
+</ul>
+</section>
+</section>
+<section id="migration-guide">
+<h2>Migration Guide<a class="headerlink" href="#migration-guide" title="Link to this heading"></a></h2>
+<section id="from-0-1-x-to-0-2-x">
+<h3>From 0.1.x to 0.2.x<a class="headerlink" href="#from-0-1-x-to-0-2-x" title="Link to this heading"></a></h3>
+<p><strong>Configuration Changes</strong></p>
+<p>The configuration format has been updated to support multi-objective optimization:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Old format (0.1.x)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;fitness_function&#39;</span><span class="p">:</span> <span class="s1">&#39;accuracy&#39;</span>
+<span class="p">}</span>
+
+<span class="c1"># New format (0.2.x)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;fitness_functions&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">,</span> <span class="s1">&#39;model_size&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;optimization_strategy&#39;</span><span class="p">:</span> <span class="s1">&#39;pareto&#39;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>API Changes</strong></p>
+<p>Population initialization now requires explicit configuration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Old format (0.1.x)</span>
+<span class="n">population</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="c1"># New format (0.2.x)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">PopulationConfig</span><span class="p">(</span><span class="n">population_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">population</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Import Changes</strong></p>
+<p>Some modules have been reorganized:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Old imports (0.1.x)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">metrics</span>
+
+<span class="c1"># New imports (0.2.x)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.train.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="deprecation-warnings">
+<h2>Deprecation Warnings<a class="headerlink" href="#deprecation-warnings" title="Link to this heading"></a></h2>
+<p>The following features are deprecated and will be removed in future versions:</p>
+<section id="v0-3-0-planned">
+<h3>v0.3.0 (Planned)<a class="headerlink" href="#v0-3-0-planned" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pynas.utils.legacy_metrics</span></code> - Use <code class="docutils literal notranslate"><span class="pre">pynas.train.metrics</span></code> instead</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Population.evolve()</span></code> without config - Use <code class="docutils literal notranslate"><span class="pre">Population.evolve(config)</span></code></p></li>
+</ul>
+</section>
+<section id="v0-4-0-planned">
+<h3>v0.4.0 (Planned)<a class="headerlink" href="#v0-4-0-planned" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Direct fitness function strings - Use <code class="docutils literal notranslate"><span class="pre">FitnessFunction</span></code> objects</p></li>
+<li><p>Old configuration dictionary format - Use configuration classes</p></li>
+</ul>
+</section>
+</section>
+<section id="breaking-changes">
+<h2>Breaking Changes<a class="headerlink" href="#breaking-changes" title="Link to this heading"></a></h2>
+<section id="v0-2-0">
+<h3>v0.2.0<a class="headerlink" href="#v0-2-0" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Configuration format changed from dictionaries to structured classes</p></li>
+<li><p>Population initialization requires explicit configuration</p></li>
+<li><p>Some utility functions moved to different modules</p></li>
+</ul>
+</section>
+<section id="v0-1-1">
+<h3>v0.1.1<a class="headerlink" href="#v0-1-1" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Import paths updated for consistency</p></li>
+<li><p>Some example configurations changed</p></li>
+</ul>
+</section>
+</section>
+<section id="upcoming-features">
+<h2>Upcoming Features<a class="headerlink" href="#upcoming-features" title="Link to this heading"></a></h2>
+<section id="id8">
+<h3>v0.3.0 (Planned)<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Transformer architecture support</p></li>
+<li><p>Automated hyperparameter optimization</p></li>
+<li><p>Distributed evolution across multiple nodes</p></li>
+<li><p>Advanced visualization tools</p></li>
+<li><p>Model compression techniques</p></li>
+<li><p>ONNX export support</p></li>
+</ul>
+</section>
+<section id="id9">
+<h3>v0.4.0 (Planned)<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Neural architecture morphing</p></li>
+<li><p>Progressive search strategies</p></li>
+<li><p>Reinforcement learning integration</p></li>
+<li><p>Cloud deployment tools</p></li>
+<li><p>Performance benchmarking suite</p></li>
+</ul>
+</section>
+</section>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h2>
+<p>See <a class="reference external" href="contributing.html">Contributing Guide</a> for information on how to contribute to PyNAS.</p>
+</section>
+<section id="support">
+<h2>Support<a class="headerlink" href="#support" title="Link to this heading"></a></h2>
+<p>For support and questions:</p>
+<ul class="simple">
+<li><p>Check the <a class="reference external" href="index.html">documentation</a></p></li>
+<li><p>Search <a class="reference external" href="https://github.com/esa-philab/PyNAS/issues">existing issues</a></p></li>
+<li><p>Create a <a class="reference external" href="https://github.com/esa-philab/PyNAS/issues/new">new issue</a></p></li>
+</ul>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading"></a></h2>
+<p>This project is licensed under the MIT License. See the LICENSE file for details.</p>
+</section>
+<section id="authors-and-acknowledgments">
+<h2>Authors and Acknowledgments<a class="headerlink" href="#authors-and-acknowledgments" title="Link to this heading"></a></h2>
+<p>PyNAS is developed by:</p>
+<ul class="simple">
+<li><p><strong>ESA Φ-lab</strong> - European Space Agency</p></li>
+<li><p><strong>Little Place Lab</strong> - Research and development</p></li>
+</ul>
+<p>Special thanks to contributors and the open-source community for their support and contributions.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="contributing.html" class="btn btn-neutral float-left" title="Contributing to PyNAS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

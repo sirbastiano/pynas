@@ -1,0 +1,1270 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pynas.core.population &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pynas.core.population</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pynas.core.population</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tqdm</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..blocks.heads</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiInputClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.individual</span><span class="w"> </span><span class="kn">import</span> <span class="n">Individual</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.generic_unet</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenericUNetNetwork</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..opt.evo</span><span class="w"> </span><span class="kn">import</span> <span class="n">single_point_crossover</span><span class="p">,</span> <span class="n">gene_mutation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.generic_lightning_module</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenericLightningSegmentationNetwork</span><span class="p">,</span> <span class="n">GenericLightningNetwork</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span> 
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytorch_lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytorch_lightning.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">EarlyStopping</span>
+
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">clear_output</span>
+
+
+<span class="c1"># Update config_path to use the directory of the current file</span>
+<span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
+
+<span class="c1">#mp.set_start_method(&#39;fork&#39;, force=True)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">mp</span><span class="o">.</span><span class="n">set_start_method</span><span class="p">(</span><span class="s1">&#39;spawn&#39;</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<div class="viewcode-block" id="update_config_path">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.update_config_path">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_config_path</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="n">model_path</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;model_filepath&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_path</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Population">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Population</span><span class="p">:</span>
+<div class="viewcode-block" id="Population.__init__">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_individuals</span><span class="p">,</span> <span class="n">max_layers</span><span class="p">,</span> <span class="n">dm</span><span class="p">,</span> <span class="n">max_parameters</span><span class="o">=</span><span class="mi">100_000</span><span class="p">,</span> <span class="n">save_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a new population for the evolutionary neural architecture search.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            n_individuals (int): Number of individuals in the population</span>
+<span class="sd">            max_layers (int): Maximum number of layers in an individual&#39;s architecture</span>
+<span class="sd">            dm (object): Data module for model creation and evaluation</span>
+<span class="sd">            max_parameters (int, optional): Maximum number of parameters allowed in a model. Defaults to 100,000.</span>
+<span class="sd">            save_directory (str, optional): Directory to save models and checkpoints. Defaults to &quot;./models_traced&quot;.</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If input parameters are invalid (negative values, none data module)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Validate input parameters</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n_individuals</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">n_individuals</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n_individuals must be a positive integer, got </span><span class="si">{</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_layers</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">max_layers</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;max_layers must be a positive integer, got </span><span class="si">{</span><span class="n">max_layers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Data module (dm) cannot be None&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_parameters</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">max_parameters</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;max_parameters must be a positive integer, got </span><span class="si">{</span><span class="n">max_parameters</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Data and model parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dm</span> <span class="o">=</span> <span class="n">dm</span>  <span class="c1"># Data module for model creation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span> <span class="o">=</span> <span class="n">n_individuals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_layers</span> <span class="o">=</span> <span class="n">max_layers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_parameters</span> <span class="o">=</span> <span class="n">max_parameters</span>
+        
+        <span class="c1"># State tracking</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generation</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Initialize empty population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Will hold population stats as DataFrame</span>
+        
+        <span class="c1"># File storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_directory</span> <span class="o">=</span> <span class="n">save_directory</span> <span class="ow">or</span> <span class="s2">&quot;./models_traced&quot;</span>
+        <span class="c1"># Create directories if they don&#39;t exist</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_directory</span><span class="p">,</span> <span class="s2">&quot;src&quot;</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_directory</span><span class="p">,</span> <span class="s2">&quot;backups&quot;</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        
+        <span class="c1"># Hardware</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_logger</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initialized population with </span><span class="si">{</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2"> individuals, &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;max_layers=</span><span class="si">{</span><span class="n">max_layers</span><span class="si">}</span><span class="s2">, max_parameters=</span><span class="si">{</span><span class="n">max_parameters</span><span class="si">}</span><span class="s2">, &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;device=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+        
+    
+<div class="viewcode-block" id="Population.setup_logger">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.setup_logger">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_logger</span><span class="p">(</span><span class="n">log_file</span><span class="o">=</span><span class="s1">&#39;./logs/population.log&#39;</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up a logger for the population module.</span>
+
+<span class="sd">        If the log file already exists, create a new one by appending a timestamp to the filename.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            log_file (str): Path to the log file.</span>
+<span class="sd">            log_level (int): Logging level (e.g., logging.DEBUG, logging.INFO).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            logging.Logger: Configured logger instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Ensure the directory for the log file exists</span>
+        <span class="n">log_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">log_dir</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">log_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">log_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">log_file</span><span class="p">):</span>
+            <span class="n">base</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">_%H%M%S&#39;</span><span class="p">)</span>
+            <span class="n">log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="c1"># Create file handler and set level to debug</span>
+        <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span>
+        <span class="n">file_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
+        <span class="c1"># Create formatter</span>
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># Add formatter to file handler</span>
+        <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="c1"># Add file handler to logger</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">logger</span></div>
+
+    
+        
+<div class="viewcode-block" id="Population.initial_poll">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.initial_poll">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">initial_poll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the initial population of individuals.    </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_population</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoint</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="Population.create_random_individual">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.create_random_individual">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_random_individual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_attempts</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a random individual with a random number of layers.</span>
+<span class="sd">        </span>
+<span class="sd">        This function attempts to create a valid random individual with</span>
+<span class="sd">        proper error handling and retry logic to ensure robustness.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            max_attempts (int): Maximum number of attempts to create a valid individual.</span>
+<span class="sd">                               Defaults to 5.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Individual: A valid random individual.</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If unable to create a valid individual after max_attempts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_attempts</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">individual</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">(</span><span class="n">max_layers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_layers</span><span class="p">)</span>
+                
+                <span class="c1"># Basic validation that the individual was created properly</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">individual</span><span class="p">,</span> <span class="s1">&#39;parsed_layers&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">individual</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created individual has invalid parsed_layers (attempt </span><span class="si">{</span><span class="n">attempt</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_attempts</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                    
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully created random individual with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">)</span><span class="si">}</span><span class="s2"> layers&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">individual</span>
+                
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create random individual (attempt </span><span class="si">{</span><span class="n">attempt</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_attempts</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># If we reach here, all attempts failed</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Failed to create valid random individual after </span><span class="si">{</span><span class="n">max_attempts</span><span class="si">}</span><span class="s2"> attempts&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span></div>
+
+    
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sort_population</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sort the population by fitness in descending order.</span>
+<span class="sd">        </span>
+<span class="sd">        This method:</span>
+<span class="sd">        1. Validates the population exists and is not empty</span>
+<span class="sd">        2. Handles individuals with missing or invalid fitness values</span>
+<span class="sd">        3. Provides comprehensive error handling</span>
+<span class="sd">        4. Logs sorting operations for debugging</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: Sorted population by fitness (descending order)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if population exists and is not empty</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;population&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Cannot sort population: population is empty or not initialized&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Filter out individuals with invalid fitness values</span>
+            <span class="n">valid_individuals</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">invalid_count</span> <span class="o">=</span> <span class="mi">0</span>
+            
+            <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">:</span>
+                <span class="c1"># Check if the individual has a fitness attribute and it&#39;s a valid value</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">individual</span><span class="p">,</span> <span class="s1">&#39;fitness&#39;</span><span class="p">)</span> <span class="ow">and</span> 
+                    <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> 
+                    <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">fitness</span><span class="p">)):</span>
+                    <span class="n">valid_individuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">invalid_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+            <span class="k">if</span> <span class="n">invalid_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">invalid_count</span><span class="si">}</span><span class="s2"> individuals with invalid fitness values&quot;</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_individuals</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No individuals with valid fitness values found!&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span>  <span class="c1"># Return unsorted population as fallback</span>
+            
+            <span class="c1"># Sort the valid individuals</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sorting </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">valid_individuals</span><span class="p">)</span><span class="si">}</span><span class="s2"> individuals by fitness&quot;</span><span class="p">)</span>
+            <span class="n">sorted_population</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">valid_individuals</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ind</span><span class="p">:</span> <span class="n">ind</span><span class="o">.</span><span class="n">fitness</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+            <span class="c1"># Update the population with sorted individuals</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="n">sorted_population</span>
+            
+            <span class="c1"># Log the top fitness values for debugging</span>
+            <span class="k">if</span> <span class="n">sorted_population</span><span class="p">:</span>
+                <span class="n">top_fitness</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind</span><span class="o">.</span><span class="n">fitness</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">sorted_population</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sorted_population</span><span class="p">))]]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Top fitness values after sorting: </span><span class="si">{</span><span class="n">top_fitness</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Checkpoint the sorted population (with error handling)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoint</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error during checkpointing after sorting: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to checkpoint after sorting: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="k">return</span> <span class="n">sorted_population</span>
+            
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population sorting failed with error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population sorting failed with error: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span>  <span class="c1"># Return unsorted population as fallback</span>
+        
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the current population state to disk, including dataframes and serialized models.</span>
+<span class="sd">        </span>
+<span class="sd">        This implementation includes:</span>
+<span class="sd">        - Validation of population state before saving</span>
+<span class="sd">        - Comprehensive error handling for each saving step</span>
+<span class="sd">        - Backup of previous checkpoints</span>
+<span class="sd">        - Detailed logging</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;population&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot checkpoint: population is empty or not initialized&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Create save directory if it doesn&#39;t exist</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+            <span class="c1"># Create backup directory for current generation</span>
+            <span class="n">backup_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_directory</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;backups/gen_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">backup_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+            <span class="c1"># Backup previous files if they exist</span>
+            <span class="k">for</span> <span class="n">file_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;population&quot;</span><span class="p">,</span> <span class="s2">&quot;df_population&quot;</span><span class="p">]:</span>
+                <span class="n">src_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_directory</span><span class="si">}</span><span class="s1">/src/</span><span class="si">{</span><span class="n">file_type</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generation</span><span class="si">}</span><span class="s1">.pkl&#39;</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">src_path</span><span class="p">):</span>
+                    <span class="n">backup_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">backup_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">file_type</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generation</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">.pkl&#39;</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+                        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">backup_path</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Backed up </span><span class="si">{</span><span class="n">src_path</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">backup_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to backup </span><span class="si">{</span><span class="n">src_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Update dataframe with current population stats</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_df</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updated population dataframe&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to update dataframe: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            
+            <span class="c1"># Save population and dataframe</span>
+            <span class="n">save_success</span> <span class="o">=</span> <span class="kc">True</span>
+            
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save_population</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to save population: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">save_success</span> <span class="o">=</span> <span class="kc">False</span>
+                
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save_dataframe</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to save dataframe: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">save_success</span> <span class="o">=</span> <span class="kc">False</span>
+                
+            <span class="k">if</span> <span class="n">save_success</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully checkpointed population at generation </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checkpoint at generation </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generation</span><span class="si">}</span><span class="s2"> was incomplete&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+                
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checkpoint failed with error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    
+    
+<div class="viewcode-block" id="Population.check_individual">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.check_individual">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_individual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate if an individual can be built into a functional model with acceptable parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        This method:</span>
+<span class="sd">        1. Validates the input individual object</span>
+<span class="sd">        2. Attempts to build a model from the individual&#39;s genetic representation</span>
+<span class="sd">        3. Evaluates the model&#39;s parameter count</span>
+<span class="sd">        4. Ensures the model meets size constraints</span>
+<span class="sd">        5. Updates the individual with its model_size</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            individual (Individual): The individual to check</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the individual is valid, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">individual</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot check individual: received None&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+            
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">individual</span><span class="p">,</span> <span class="s1">&#39;parsed_layers&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">individual</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Individual is missing parsed_layers attribute or it&#39;s empty&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Attempt to build the model</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Building model from individual with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">)</span><span class="si">}</span><span class="s2"> layers&quot;</span><span class="p">)</span>
+            <span class="n">model_representation</span><span class="p">,</span> <span class="n">is_valid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model building failed for individual: build_model returned is_valid=False&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+                
+            <span class="c1"># Evaluate the model&#39;s parameter count</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">modelSize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_parameters</span><span class="p">(</span><span class="n">model_representation</span><span class="p">)</span>
+                <span class="n">individual</span><span class="o">.</span><span class="n">model_size</span> <span class="o">=</span> <span class="n">modelSize</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model size: </span><span class="si">{</span><span class="n">modelSize</span><span class="si">}</span><span class="s2"> parameters&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to evaluate model parameters: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            
+            <span class="c1"># Validate the model size</span>
+            <span class="k">if</span> <span class="n">modelSize</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid model size: </span><span class="si">{</span><span class="n">modelSize</span><span class="si">}</span><span class="s2"> (must be positive)&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+                
+            <span class="k">if</span> <span class="n">modelSize</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_parameters</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model too large: </span><span class="si">{</span><span class="n">modelSize</span><span class="si">}</span><span class="s2"> parameters (max: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_parameters</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+                
+            <span class="k">if</span> <span class="n">modelSize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Model size is None&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            
+            <span class="c1"># All checks passed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Individual passed all validation checks, model size: </span><span class="si">{</span><span class="n">modelSize</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+            
+        <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Assertion failed during individual check: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Value error during individual check: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Runtime error during individual check: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected error checking individual: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="Population.create_population">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.create_population">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_attempts</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">timeout_seconds</span><span class="o">=</span><span class="mi">300</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a population of unique, valid individuals.</span>
+<span class="sd">    </span>
+<span class="sd">        This function generates random individuals and checks if they&#39;re valid using check_individual.</span>
+<span class="sd">        It includes comprehensive error handling, duplicate removal, and recovery mechanisms.</span>
+<span class="sd">    </span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            max_attempts (int): Maximum number of attempts to create valid individuals. Default: 200</span>
+<span class="sd">            timeout_seconds (int): Maximum time in seconds before giving up. Default: 300 (5 minutes)</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list of unique, valid individuals.</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If unable to generate a complete population after max_attempts</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">attempts</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">failed_attempts</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">additional_attempts</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Initialize here to avoid UnboundLocalError</span>
+        
+        <span class="c1"># Create progress bar for initial population generation</span>
+        <span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Generating Population&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="p">:</span>
+                <span class="c1"># Check timeout</span>
+                <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span> <span class="o">&gt;</span> <span class="n">timeout_seconds</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population generation timed out after </span><span class="si">{</span><span class="n">timeout_seconds</span><span class="si">}</span><span class="s2"> seconds. &quot;</span>
+                                       <span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2"> individuals.&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
+                    
+                <span class="c1"># Check max attempts</span>
+                <span class="k">if</span> <span class="n">attempts</span> <span class="o">&gt;=</span> <span class="n">max_attempts</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reached maximum attempts (</span><span class="si">{</span><span class="n">max_attempts</span><span class="si">}</span><span class="s2">) for population generation. &quot;</span>
+                                       <span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2"> individuals.&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>
+                    
+                <span class="n">attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+                
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Create a random individual</span>
+                    <span class="n">candidate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_random_individual</span><span class="p">()</span>
+                    
+                    <span class="c1"># Check if the individual is valid</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_individual</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span>
+                        <span class="n">population</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+                        <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Update progress bar</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added individual </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2"> &quot;</span>
+                                         <span class="sa">f</span><span class="s2">&quot;(attempt </span><span class="si">{</span><span class="n">attempts</span><span class="si">}</span><span class="s2">, failed: </span><span class="si">{</span><span class="n">failed_attempts</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">failed_attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">failed_attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create individual on attempt </span><span class="si">{</span><span class="n">attempts</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    
+                <span class="c1"># Periodically log progress</span>
+                <span class="k">if</span> <span class="n">attempts</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population generation: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2"> created &quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;(attempts: </span><span class="si">{</span><span class="n">attempts</span><span class="si">}</span><span class="s2">, failed: </span><span class="si">{</span><span class="n">failed_attempts</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Handle duplicates and ensure we have enough individuals</span>
+        <span class="n">original_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial population created with </span><span class="si">{</span><span class="n">original_count</span><span class="si">}</span><span class="s2"> individuals, removing duplicates...&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># First round of duplicate removal</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_duplicates</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
+        
+        <span class="c1"># If removing duplicates reduced the population, attempt to fill it back up</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population size after duplicate removal: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attempting to generate additional </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span><span class="si">}</span><span class="s2"> unique individuals&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Create a separate progress bar for filling the missing individuals</span>
+            <span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Filling Missing&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+                <span class="n">additional_attempts</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">fill_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                
+                <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="p">:</span>
+                    <span class="c1"># Check timeout and max attempts</span>
+                    <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">fill_start_time</span> <span class="o">&gt;</span> <span class="n">timeout_seconds</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Allow half the original timeout</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Timed out while trying to fill population after duplicate removal&quot;</span><span class="p">)</span>
+                        <span class="k">break</span>
+                        
+                    <span class="k">if</span> <span class="n">additional_attempts</span> <span class="o">&gt;=</span> <span class="n">max_attempts</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Allow half the original max attempts</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Reached maximum attempts while trying to fill population after duplicate removal&quot;</span><span class="p">)</span>
+                        <span class="k">break</span>
+                        
+                    <span class="n">additional_attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+                    
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="c1"># Check current architectures to avoid creating duplicates</span>
+                        <span class="n">existing_archs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="s1">&#39;architecture&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">))</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">population</span><span class="p">)</span>
+                        
+                        <span class="c1"># Create a new individual</span>
+                        <span class="n">candidate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_random_individual</span><span class="p">()</span>
+                        
+                        <span class="c1"># Check if it&#39;s valid and not a duplicate</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_individual</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span>
+                            <span class="n">new_arch</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="s1">&#39;architecture&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">candidate</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">))</span>
+                            <span class="k">if</span> <span class="n">new_arch</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">existing_archs</span><span class="p">:</span>
+                                <span class="n">population</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+                                <span class="n">existing_archs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_arch</span><span class="p">)</span>
+                                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added missing individual </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed while filling population: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Final duplicate check and warning</span>
+        <span class="n">final_unique_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="s1">&#39;architecture&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">))</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">population</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">final_unique_count</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final population still contains duplicates: &quot;</span>
+                              <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">final_unique_count</span><span class="si">}</span><span class="s2"> duplicates detected&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Log final statistics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population generation completed. Created </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2"> individuals &quot;</span>
+                       <span class="sa">f</span><span class="s2">&quot;in </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> seconds &quot;</span>
+                       <span class="sa">f</span><span class="s2">&quot;(attempts: </span><span class="si">{</span><span class="n">attempts</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">additional_attempts</span><span class="si">}</span><span class="s2">, success rate: &quot;</span>
+                       <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">attempts</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">additional_attempts</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># If we couldn&#39;t create enough individuals, log an error</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to create required population size. Created only &quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2"> individuals.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">:</span>  <span class="c1"># Less than 50% of required individuals</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to create a viable population. Only generated &quot;</span>
+                                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">population</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2"> individuals.&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">population</span></div>
+
+
+
+<div class="viewcode-block" id="Population.elite_models">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.elite_models">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">elite_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k_best</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the top k_best elite models from the current population based on fitness.</span>
+
+<span class="sd">        The population is sorted in descending order based on the fitness attribute of each individual.</span>
+<span class="sd">        This function then returns deep copies of the top k_best individuals to ensure that the</span>
+<span class="sd">        original models remain immutable during further operations.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            k_best (int): The number of top-performing individuals to retrieve. Defaults to 1.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: A list containing deep copies of the elite individuals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+            <span class="c1"># Filter out individuals with invalid fitness values</span>
+        <span class="n">valid_individuals</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="s1">&#39;fitness&#39;</span><span class="p">)</span> 
+                            <span class="ow">and</span> <span class="n">ind</span><span class="o">.</span><span class="n">fitness</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> 
+                            <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">fitness</span><span class="p">)]</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_individuals</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No valid individuals with fitness values found!&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">sorted_pop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sort_population</span><span class="p">()</span>
+        <span class="c1"># Ensure we don&#39;t request more models than are available</span>
+        <span class="n">k_best</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">k_best</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sorted_pop</span><span class="p">))</span>
+        <span class="c1"># Create deep copies of the top models</span>
+        <span class="n">topModels</span> <span class="o">=</span> <span class="p">[</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">sorted_pop</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k_best</span><span class="p">)]</span>
+        <span class="c1"># Log the fitness of selected models for debugging</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">topModels</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected elite model for next generation. Idx </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> with fitness: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">fitness</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">topModels</span></div>
+
+
+
+<div class="viewcode-block" id="Population.evolve">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.evolve">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evolve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mating_pool_cutoff</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">mutation_probability</span><span class="o">=</span><span class="mf">0.85</span><span class="p">,</span> <span class="n">k_best</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_random</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a new population ensuring that the total number of individuals equals pop.n_individuals.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            pop                  : List or collection of individuals. Assumed to have attributes: </span>
+<span class="sd">                                .n_individuals and .generation.</span>
+<span class="sd">            mating_pool_cutoff   : Fraction determining the size of the mating pool (top percent of individuals).</span>
+<span class="sd">            mutation_probability : The probability to use during mutation.</span>
+<span class="sd">            k_best               : The number of best individuals from the current population to retain.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            new_population: A list representing the new generation of individuals.</span>
+<span class="sd">            </span>
+<span class="sd">        Note:</span>
+<span class="sd">            Assumes that helper functions single_point_crossover(), mutation(), and create_random_individual() exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_population</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generation</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topModels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elite_models</span><span class="p">(</span><span class="n">k_best</span><span class="o">=</span><span class="n">k_best</span><span class="p">)</span>
+
+
+        <span class="c1"># 2. Create the mating pool based on the cutoff from the sorted population</span>
+        <span class="n">sorted_pop</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">individual</span><span class="p">:</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">mating_pool</span> <span class="o">=</span> <span class="n">sorted_pop</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">mating_pool_cutoff</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="p">))]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">mating_pool</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Mating pool is empty.&quot;</span>
+        
+        <span class="c1"># Generate offspring until reaching the desired population size</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_population</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span> <span class="o">-</span> <span class="n">n_random</span> <span class="o">-</span> <span class="n">k_best</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">parent1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">mating_pool</span><span class="p">)</span>
+                <span class="n">parent2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">mating_pool</span><span class="p">)</span>
+                <span class="k">assert</span> <span class="n">parent1</span><span class="o">.</span><span class="n">parsed_layers</span> <span class="o">!=</span> <span class="n">parent2</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">,</span> <span class="s2">&quot;Parents are the same individual.&quot;</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error selecting parents: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            
+            <span class="c1"># a) Crossover:</span>
+            <span class="n">children</span> <span class="o">=</span> <span class="n">single_point_crossover</span><span class="p">([</span><span class="n">parent1</span><span class="p">,</span> <span class="n">parent2</span><span class="p">])</span>
+            <span class="c1"># b) Mutation:</span>
+            <span class="n">mutated_children</span> <span class="o">=</span> <span class="n">gene_mutation</span><span class="p">(</span><span class="n">children</span><span class="p">,</span> <span class="n">mutation_probability</span><span class="p">)</span>
+            <span class="c1"># c) Random choice of one of the mutated children</span>
+            <span class="k">for</span> <span class="n">kid</span> <span class="ow">in</span> <span class="n">mutated_children</span><span class="p">:</span>
+                <span class="n">kid</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_individual</span><span class="p">(</span><span class="n">kid</span><span class="p">):</span>
+                    <span class="n">new_population</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kid</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+
+        <span class="c1"># 3. Add random individuals to the new population</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_population</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span> <span class="o">-</span> <span class="n">k_best</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">individual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_random_individual</span><span class="p">()</span>
+                <span class="n">model_representation</span><span class="p">,</span> <span class="n">is_valid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">is_valid</span><span class="p">:</span>
+                    <span class="n">individual</span><span class="o">.</span><span class="n">model_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluate_parameters</span><span class="p">(</span><span class="n">model_representation</span><span class="p">))</span>
+                    <span class="k">assert</span> <span class="n">individual</span><span class="o">.</span><span class="n">model_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Model size is </span><span class="si">{</span><span class="n">individual</span><span class="o">.</span><span class="n">model_size</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="k">assert</span> <span class="n">individual</span><span class="o">.</span><span class="n">model_size</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_parameters</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Model size is </span><span class="si">{</span><span class="n">individual</span><span class="o">.</span><span class="n">model_size</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="k">assert</span> <span class="n">individual</span><span class="o">.</span><span class="n">model_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Model size is None&quot;</span>
+                    <span class="n">new_population</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error encountered when evolving population: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+        
+        
+        <span class="c1"># 4. Add the best individuals from the previous generation</span>
+        <span class="n">new_population</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topModels</span><span class="p">)</span>
+       
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_population</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Population size is </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">new_population</span><span class="p">)</span><span class="si">}</span><span class="s2">, expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="n">new_population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoint</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="Population.remove_duplicates">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.remove_duplicates">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove duplicates from the given population by replacing duplicates with newly generated unique individuals.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            population (list): A list of individuals in the population.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: The updated population with duplicates removed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">unique_architectures</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">updated_population</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">population</span><span class="p">:</span>
+            <span class="c1"># Use the &#39;architecture&#39; attribute if available, otherwise fallback to a default representation.</span>
+            <span class="n">arch</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">individual</span><span class="p">,</span> <span class="s1">&#39;architecture&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">arch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># If no architecture attribute, use parsed_layers as unique identifier.</span>
+                <span class="n">arch</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">arch</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">unique_architectures</span><span class="p">:</span>
+                <span class="n">unique_architectures</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
+                <span class="n">updated_population</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Try to generate a unique individual up to 50 times</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+                    <span class="n">new_individual</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">(</span><span class="n">max_layers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_layers</span><span class="p">)</span>
+                    <span class="n">new_arch</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">new_individual</span><span class="p">,</span> <span class="s1">&#39;architecture&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">new_arch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">new_arch</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_individual</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">new_arch</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">unique_architectures</span><span class="p">:</span>
+                        <span class="n">unique_architectures</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_arch</span><span class="p">)</span>
+                        <span class="n">updated_population</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_individual</span><span class="p">)</span>
+                        <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># After 50 attempts, keep the original duplicate as a fallback.</span>
+                    <span class="n">updated_population</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">updated_population</span></div>
+
+        
+    
+<div class="viewcode-block" id="Population.build_model">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.build_model">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed_layers</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s2">&quot;segmentation&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a model based on the provided parsed layers.</span>
+
+<span class="sd">        This function creates an encoder using the parsed layers and constructs a model by combining</span>
+<span class="sd">        the encoder with a head layer via the ModelConstructor. The constructed model is built to</span>
+<span class="sd">        process inputs defined by the data module (dm).</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            parsed_layers: The parsed architecture configuration used by the encoder to build the network.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A PyTorch model constructed with the encoder and head layer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">shape_tracer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoder</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Traces the output shapes of a given encoder model when provided with a dummy input.</span>
+<span class="sd">            Args:</span>
+<span class="sd">                encoder (torch.nn.Module): The encoder model whose output shapes are to be traced.</span>
+<span class="sd">            Returns:</span>
+<span class="sd">                list[tuple]: A list of tuples representing the shapes of the encoder&#39;s outputs </span>
+<span class="sd">                     (excluding the batch dimension). If the encoder outputs a single tensor, </span>
+<span class="sd">                     the list will contain one tuple. If the encoder outputs multiple tensors </span>
+<span class="sd">                     (e.g., a list or tuple of tensors), the list will contain a tuple for each output.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            
+            <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">encoder</span><span class="p">(</span><span class="n">dummy_input</span><span class="p">)</span>
+            <span class="n">shapes</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+                    <span class="n">shape_without_batch</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+                    <span class="n">shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shape_without_batch</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">shape_without_batch</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+                <span class="n">shapes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shape_without_batch</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape tracer output: </span><span class="si">{</span><span class="n">shapes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">shapes</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">task</span>
+        
+        <span class="k">if</span> <span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;segmentation&quot;</span><span class="p">:</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">GenericUNetNetwork</span><span class="p">(</span><span class="n">parsed_layers</span><span class="p">,</span>
+                    <span class="n">input_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                    <span class="n">input_height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> 
+                    <span class="n">input_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> 
+                    <span class="n">num_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span>
+                    <span class="n">encoder_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">valid</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;classification&quot;</span><span class="p">:</span> 
+            <span class="n">encoder</span> <span class="o">=</span> <span class="n">GenericUNetNetwork</span><span class="p">(</span><span class="n">parsed_layers</span><span class="p">,</span>
+                    <span class="n">input_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                    <span class="n">input_height</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> 
+                    <span class="n">input_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> 
+                    <span class="n">num_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span>
+                    <span class="n">encoder_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">valid</span> <span class="o">=</span> <span class="kc">True</span>
+                
+            <span class="n">head</span> <span class="o">=</span> <span class="n">MultiInputClassifier</span><span class="p">(</span><span class="n">shape_tracer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoder</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)),</span> <span class="n">num_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">num_classes</span><span class="p">)</span>
+            <span class="n">head</span> <span class="o">=</span> <span class="n">head</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">encoder</span><span class="p">,</span> <span class="n">head</span><span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">valid</span></div>
+
+    
+    
+<div class="viewcode-block" id="Population.evaluate_parameters">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.evaluate_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the total number of parameters of the given model.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            model (torch.nn.Module): The PyTorch model.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The total number of parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">num_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">num_params</span></div>
+
+    
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a DataFrame from the population.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: A DataFrame containing the population.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Generation&quot;</span><span class="p">,</span> <span class="s2">&quot;Layers&quot;</span><span class="p">,</span> <span class="s2">&quot;Fitness&quot;</span><span class="p">,</span> <span class="s2">&quot;Metric&quot;</span><span class="p">,</span> <span class="s2">&quot;FPS&quot;</span><span class="p">,</span> <span class="s2">&quot;Params&quot;</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">:</span>
+            <span class="n">generation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation</span>
+            <span class="n">parsed_layers</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">parsed_layers</span>
+            <span class="n">metric</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">metric</span>
+            <span class="n">fps</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">fps</span>
+            <span class="n">fitness</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span>
+            <span class="n">model_size</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">model_size</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">generation</span><span class="p">,</span> <span class="n">parsed_layers</span><span class="p">,</span> <span class="n">fitness</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">fps</span><span class="p">,</span> <span class="n">model_size</span><span class="p">])</span>
+        
+        <span class="c1">#df = pd.DataFrame(data, columns=columns).sort_values(by=&quot;Fitness&quot;, ascending=False)</span>
+        <span class="c1">#df.reset_index(drop=True, inplace=True)</span>
+        <span class="c1"># DO NOT SORT OR RESET INDEX — we want df index to match self.population[idx]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span>
+    
+    
+<div class="viewcode-block" id="Population.save_dataframe">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.save_dataframe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the DataFrame containing the population statistics to a pickle file.</span>
+
+<span class="sd">        The DataFrame is saved at a path that includes the current generation number.</span>
+<span class="sd">        In case of an error during saving, the exception details are printed.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_directory</span><span class="si">}</span><span class="s1">/src/df_population_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generation</span><span class="si">}</span><span class="s1">.pkl&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_pickle</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DataFrame saved to </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error saving DataFrame to </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    
+    
+<div class="viewcode-block" id="Population.load_dataframe">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.load_dataframe">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">generation</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;./models_traced/src/df_population_</span><span class="si">{</span><span class="n">generation</span><span class="si">}</span><span class="s1">.pkl&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">df</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading DataFrame from </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+    
+    
+<div class="viewcode-block" id="Population.save_population">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.save_population">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_population</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;./models_traced/src/population_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generation</span><span class="si">}</span><span class="s1">.pkl&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population saved to </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error saving population to </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    
+    
+<div class="viewcode-block" id="Population.load_population">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.load_population">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">generation</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;./models_traced/src/population_</span><span class="si">{</span><span class="n">generation</span><span class="si">}</span><span class="s1">.pkl&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">population</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">population</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading population from </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Population.train_individual">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.train_individual">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_individual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Train the individual using the data module and the specified number of epochs and learning rate.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            individual (Individual): The individual to train.</span>
+<span class="sd">            epochs (int): The number of epochs to train the individual. Defaults to 20.</span>
+<span class="sd">            lr (float): The learning rate to use during training. Defaults to 1e-3.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">individual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        
+        
+        <span class="n">model</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;segmentation&quot;</span><span class="p">:</span>
+            <span class="n">LM</span> <span class="o">=</span> <span class="n">GenericLightningSegmentationNetwork</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                <span class="n">learning_rate</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
+            <span class="p">)</span>
+        
+        <span class="k">elif</span> <span class="n">task</span> <span class="o">==</span> <span class="s2">&quot;classification&quot;</span><span class="p">:</span>
+            <span class="n">LM</span> <span class="o">=</span> <span class="n">GenericLightningNetwork</span><span class="p">(</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                <span class="n">learning_rate</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span>
+                <span class="n">num_classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">num_classes</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task </span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">)</span>
+
+
+        <span class="n">early_stop_callback</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span>
+                            <span class="n">monitor</span><span class="o">=</span><span class="s2">&quot;val_loss&quot;</span><span class="p">,</span>     <span class="c1"># or &quot;val_iou&quot; or any metric you&#39;re logging</span>
+                            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">,</span>             <span class="c1"># &quot;min&quot; if loss, &quot;max&quot; if accuracy or IoU</span>
+                            <span class="n">patience</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>             <span class="c1"># number of epochs with no improvement</span>
+                            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        
+        <span class="c1"># Create a PyTorch Lightning trainer</span>
+        <span class="n">trainer</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span>
+                            <span class="c1">#strategy=&quot;ddp_notebook&quot;,</span>
+                            <span class="n">accelerator</span><span class="o">=</span><span class="s2">&quot;gpu&quot;</span><span class="p">,</span>
+                            <span class="n">devices</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">max_epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+                            <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">early_stop_callback</span><span class="p">]</span>   
+                            <span class="p">)</span>
+        <span class="c1"># Set the batch size if specified</span>
+        <span class="k">if</span> <span class="n">batch_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="c1"># Train the lightning model</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Strategy in use:&quot;</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">strategy</span><span class="p">)</span>
+        <span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">LM</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)</span>
+        
+        
+        <span class="n">results</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">LM</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="n">results</span>
+        
+        <span class="c1"># ===== Save model =====</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span>  <span class="c1"># required for save_model() paths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LM</span> <span class="o">=</span> <span class="n">LM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_model</span><span class="p">(</span><span class="n">LM</span><span class="p">)</span>
+
+        <span class="c1"># ===== Test model ===== TODO: Implement a separate test method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Generation </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generation</span><span class="si">}</span><span class="s2"> | Individual </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">] Training completed. Evaluating model...&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1">#  ===== Extract metrics</span>
+            <span class="n">accuracy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">])</span>
+            <span class="n">latency</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="s2">&quot;latency&quot;</span><span class="p">])</span>
+        
+            <span class="c1"># ===== Update individual metrics and fitness</span>
+            <span class="n">individual</span><span class="o">.</span><span class="n">iou</span> <span class="o">=</span> <span class="n">accuracy</span>
+            <span class="n">individual</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="n">accuracy</span>
+            <span class="n">individual</span><span class="o">.</span><span class="n">fps</span> <span class="o">=</span> <span class="n">latency</span>
+            <span class="n">individual</span><span class="o">.</span><span class="n">_prompt_fitness</span><span class="p">()</span>
+        
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Generation </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generation</span><span class="si">}</span><span class="s2"> | Individual </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">] API call failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Mark as failed</span>
+            <span class="n">individual</span><span class="o">.</span><span class="n">iou</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">individual</span><span class="o">.</span><span class="n">metric</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">individual</span><span class="o">.</span><span class="n">fps</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">individual</span><span class="o">.</span><span class="n">failed</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Optional: flag to identify failed evaluations</span>
+
+        <span class="c1"># ===== Ensure DataFrame is aligned with population before updating =====</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[INFO] DataFrame missing or index </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> not found. Regenerating DataFrame.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_df</span><span class="p">()</span>
+
+        <span class="c1"># ===== Update DataFrame regardless of success or failure =====</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s1">&#39;Fitness&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">fitness</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s1">&#39;Metric&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">iou</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s1">&#39;FPS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">fps</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_dataframe</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;updated the df&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_population</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;saved population&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoint</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;checkpointed&#39;</span><span class="p">)</span></div>
+
+        <span class="c1">###### new code ends here</span>
+
+<div class="viewcode-block" id="Population.train_generation">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.train_generation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;classification&#39;</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Train all individuals in the current generation that have not been trained yet.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            task (str): The task type (&#39;classification&#39; or &#39;segmentation&#39;).</span>
+<span class="sd">            lr (float): Learning rate for training.</span>
+<span class="sd">            epochs (int): Number of epochs for training.</span>
+<span class="sd">            batch_size (int): Batch size for training.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="s1">&#39;Fitness&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s1">&#39;Fitness&#39;</span><span class="p">])</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s1">&#39;Fitness&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping individual </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> as it has already been trained&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training individual </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">train_individual</span><span class="p">(</span><span class="n">idx</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span></div>
+
+            <span class="c1">#clear_output(wait=True)</span>
+
+<div class="viewcode-block" id="Population.save_model">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.save_model">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">LM</span><span class="p">,</span>
+                   <span class="n">save_torchscript</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                   <span class="n">ts_save_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">save_standard</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                   <span class="n">std_save_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">save_myriad</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># &lt;-- add this</span>
+                  <span class="n">openvino_save_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">gen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generation</span>
+        
+        <span class="k">if</span> <span class="n">ts_save_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ts_save_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;models_traced/generation_</span><span class="si">{</span><span class="n">gen</span><span class="si">}</span><span class="s2">/model_and_architecture_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="si">}</span><span class="s2">.pt&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ts_save_path</span> <span class="o">=</span> <span class="n">ts_save_path</span>
+        <span class="k">if</span> <span class="n">std_save_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">std_save_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;models_traced/generation_</span><span class="si">{</span><span class="n">gen</span><span class="si">}</span><span class="s2">/model_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="si">}</span><span class="s2">.pth&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">std_save_path</span> <span class="o">=</span> <span class="n">std_save_path</span>
+        <span class="k">if</span> <span class="n">openvino_save_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">openvino_save_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;models_traced/generation_</span><span class="si">{</span><span class="n">gen</span><span class="si">}</span><span class="s2">/openvino_model_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+        <span class="c1"># Ensure results directory exists</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./models_traced/generation_</span><span class="si">{</span><span class="n">gen</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Save the results to a text file.</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./models_traced/generation_</span><span class="si">{</span><span class="n">gen</span><span class="si">}</span><span class="s2">/results_model_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Test Results:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Prepare dummy input from dm.input_shape</span>
+        <span class="n">input_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dm</span><span class="o">.</span><span class="n">input_shape</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">input_shape</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">LM</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">example_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="o">*</span><span class="n">input_shape</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        
+        <span class="n">LM</span> <span class="o">=</span> <span class="n">LM</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>  <span class="c1"># set the model to evaluation mode</span>
+        
+        <span class="k">if</span> <span class="n">save_torchscript</span><span class="p">:</span>
+            <span class="n">traced_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">LM</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">example_input</span><span class="p">)</span>
+            <span class="n">traced_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ts_save_path</span><span class="p">)</span> <span class="c1"># type: ignore</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scripted (TorchScript) model saved at </span><span class="si">{</span><span class="n">ts_save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">save_standard</span><span class="p">:</span>
+            <span class="c1"># Retrieve architecture code from the individual.</span>
+            <span class="n">arch_code</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">architecture</span>
+            <span class="n">save_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;state_dict&quot;</span><span class="p">:</span> <span class="n">LM</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()}</span>
+            <span class="k">if</span> <span class="n">arch_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">save_dict</span><span class="p">[</span><span class="s2">&quot;architecture_code&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">arch_code</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">save_dict</span><span class="p">,</span> <span class="n">std_save_path</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Standard model saved at </span><span class="si">{</span><span class="n">std_save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        
+        <span class="k">if</span> <span class="n">save_myriad</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[INFO] Entering Myriad export subprocess&quot;</span><span class="p">)</span>
+
+            <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+            <span class="c1"># Save model as temporary ONNX</span>
+            <span class="n">temp_onnx_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;/tmp&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;temp_model_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="si">}</span><span class="s2">.onnx&quot;</span><span class="p">)</span>
+            <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="o">*</span><span class="n">input_shape</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">onnx</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">LM</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">cpu</span><span class="p">(),</span> <span class="n">dummy_input</span><span class="p">,</span> <span class="n">temp_onnx_path</span><span class="p">,</span> <span class="n">opset_version</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span>
+
+            <span class="c1"># Output OpenVINO model directory</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">openvino_save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="s2">&quot;mo&quot;</span><span class="p">,</span>  <span class="c1"># Model Optimizer CLI</span>
+                        <span class="s2">&quot;--input_model&quot;</span><span class="p">,</span> <span class="n">temp_onnx_path</span><span class="p">,</span>
+                        <span class="s2">&quot;--output_dir&quot;</span><span class="p">,</span> <span class="n">output_dir</span>
+                        <span class="c1">#&quot;--data_type&quot;, &quot;FP16&quot;</span>
+                    <span class="p">],</span>
+                    <span class="n">env</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">,</span> <span class="s2">&quot;OPENVINO_CONF_IGNORE&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">},</span>
+                    <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">text</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[Myriad X] OpenVINO model converted successfully.&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+
+                <span class="c1"># After successful export, update the config file to point to the correct OpenVINO XML path</span>
+                <span class="n">xml_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;temp_model_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">idx</span><span class="si">}</span><span class="s2">.xml&quot;</span><span class="p">)</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">update_config_path</span>  <span class="c1"># Ensure absolute import if needed</span>
+                <span class="n">update_config_path</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="n">xml_path</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[ERROR] Myriad export failed via subprocess:&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Myriad export failed: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">temp_onnx_path</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">temp_onnx_path</span><span class="p">)</span></div>
+
+
+
+
+
+
+
+
+
+
+<div class="viewcode-block" id="Population.__getitem__">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.__getitem__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve an individual from the population at the specified index.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            index (int): The index of the individual to retrieve.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object: The individual at the specified index in the population.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="Population.__len__">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.population.Population.__len__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of individuals in the population.</span>
+
+<span class="sd">        This method allows the use of the `len()` function to retrieve</span>
+<span class="sd">        the size of the population.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: The number of individuals in the population.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

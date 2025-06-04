@@ -1,0 +1,453 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pynas.core.architecture_builder &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pynas.core.architecture_builder</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pynas.core.architecture_builder</h1><div class="highlight"><pre>
+<span></span>
+<span class="c1"># architecture_builder.py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">configparser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.vocabulary</span><span class="w"> </span><span class="kn">import</span> <span class="n">convolution_layer_vocabulary</span><span class="p">,</span> <span class="n">layer_parameters</span><span class="p">,</span> <span class="n">parameter_vocabulary</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.vocabulary</span><span class="w"> </span><span class="kn">import</span> <span class="n">activation_functions_vocabulary</span><span class="p">,</span> <span class="n">upsampling_layer_vocabulary</span><span class="p">,</span> <span class="n">pooling_layer_vocabulary</span> 
+
+
+
+<div class="viewcode-block" id="generate_random_architecture_code">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.architecture_builder.generate_random_architecture_code">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_random_architecture_code</span><span class="p">(</span><span class="n">min_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">max_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a random architecture code string consisting of layers and pooling layers.</span>
+<span class="sd">    The function creates a sequence of encoder layers and pooling layers, appending them</span>
+<span class="sd">    to form a string representation of an architecture. Each layer and pooling layer is </span>
+<span class="sd">    separated by an &quot;E&quot;. The architecture ends with an additional &quot;E&quot;.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        min_layers (int): The minimum number of layers to include in the architecture.</span>
+<span class="sd">        max_layers (int): The maximum number of layers to include in the architecture.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: A string representing the randomly generated architecture code.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">architecture_code</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">encoder_layers</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">min_layers</span><span class="p">,</span> <span class="n">max_layers</span><span class="p">)):</span>
+        <span class="n">layer_code</span> <span class="o">=</span> <span class="n">generate_layer_code</span><span class="p">()</span>
+        <span class="n">encoder_layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer_code</span><span class="p">)</span>
+        <span class="n">architecture_code</span> <span class="o">+=</span> <span class="n">layer_code</span> <span class="o">+</span> <span class="s2">&quot;E&quot;</span>
+        
+        <span class="n">pooling_layer_code</span> <span class="o">=</span> <span class="n">generate_pooling_layer_code</span><span class="p">()</span>
+        <span class="c1">#pooling_factors.append(pooling_factor)</span>
+        <span class="n">architecture_code</span> <span class="o">+=</span> <span class="n">pooling_layer_code</span> <span class="o">+</span> <span class="s2">&quot;E&quot;</span>
+    
+    <span class="c1"># Insert ender</span>
+    <span class="n">architecture_code</span> <span class="o">+=</span> <span class="s2">&quot;E&quot;</span>
+    <span class="k">return</span> <span class="n">architecture_code</span></div>
+
+
+
+<div class="viewcode-block" id="generate_layer_code">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.architecture_builder.generate_layer_code">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_layer_code</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a string representation of a neural network layer configuration.</span>
+<span class="sd">    This function randomly selects a layer type from a predefined vocabulary and </span>
+<span class="sd">    generates a corresponding layer code based on its parameters. The parameters </span>
+<span class="sd">    are configured using values from a `config.ini` file. The generated code </span>
+<span class="sd">    includes details such as activation type, kernel size, padding, stride, </span>
+<span class="sd">    dropout rate, and other layer-specific attributes.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: A string representing the configuration of the generated layer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_random_value</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">is_float</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_odd</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">format_str</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper function to get a random value for a parameter.&quot;&quot;&quot;</span>
+        <span class="n">min_val</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;min_</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_float</span> <span class="k">else</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;min_</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">max_val</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;max_</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_float</span> <span class="k">else</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;max_</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_float</span> <span class="k">else</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">is_odd</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">max_val</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">-=</span> <span class="mi">2</span>
+        
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">is_float</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">format_str</span> <span class="o">==</span> <span class="s2">&quot;02d&quot;</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="n">layer_type</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">convolution_layer_vocabulary</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">layer_parameters</span><span class="p">[</span><span class="n">convolution_layer_vocabulary</span><span class="p">[</span><span class="n">layer_type</span><span class="p">]]</span>
+    <span class="n">layer_code</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;L</span><span class="si">{</span><span class="n">layer_type</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;config.ini&#39;</span><span class="p">)</span>
+    <span class="n">section</span> <span class="o">=</span> <span class="n">convolution_layer_vocabulary</span><span class="p">[</span><span class="n">layer_type</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">parameter_vocabulary</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;activation&#39;</span><span class="p">:</span>
+            <span class="n">activation_code</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">])</span>  <span class="c1"># Use only ReLU and GELU for intermediate layers</span>
+            <span class="n">layer_code</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;a</span><span class="si">{</span><span class="n">activation_code</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;dropout_rate&#39;</span><span class="p">:</span>
+            <span class="n">layer_code</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code</span><span class="si">}{</span><span class="n">get_random_value</span><span class="p">(</span><span class="n">param</span><span class="p">,</span><span class="w"> </span><span class="n">section</span><span class="p">,</span><span class="w"> </span><span class="n">is_float</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;kernel_size&#39;</span><span class="p">:</span>
+            <span class="n">layer_code</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code</span><span class="si">}{</span><span class="n">get_random_value</span><span class="p">(</span><span class="n">param</span><span class="p">,</span><span class="w"> </span><span class="n">section</span><span class="p">,</span><span class="w"> </span><span class="n">is_odd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;padding&#39;</span><span class="p">,</span> <span class="s1">&#39;stride&#39;</span><span class="p">,</span> <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">]:</span>
+            <span class="n">format_str</span> <span class="o">=</span> <span class="s2">&quot;02d&quot;</span> <span class="k">if</span> <span class="n">param</span> <span class="o">==</span> <span class="s1">&#39;out_channels_coefficient&#39;</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">layer_code</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code</span><span class="si">}{</span><span class="n">get_random_value</span><span class="p">(</span><span class="n">param</span><span class="p">,</span><span class="w"> </span><span class="n">section</span><span class="p">,</span><span class="w"> </span><span class="n">format_str</span><span class="o">=</span><span class="n">format_str</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">elif</span> <span class="n">param</span> <span class="o">!=</span> <span class="s1">&#39;num_blocks&#39;</span><span class="p">:</span>  <span class="c1"># Skip &#39;num_blocks&#39; as it&#39;s not used</span>
+            <span class="n">layer_code</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code</span><span class="si">}{</span><span class="n">get_random_value</span><span class="p">(</span><span class="n">param</span><span class="p">,</span><span class="w"> </span><span class="n">section</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">layer_code</span> <span class="o">+=</span> <span class="s2">&quot;n1&quot;</span>
+    <span class="k">return</span> <span class="n">layer_code</span></div>
+
+
+<div class="viewcode-block" id="generate_pooling_layer_code">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.architecture_builder.generate_pooling_layer_code">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_pooling_layer_code</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a string representing a pooling layer configuration.</span>
+
+<span class="sd">    The function randomly selects a pooling type from the `pooling_layer_vocabulary` </span>
+<span class="sd">    and combines it with a predefined pooling factor to create a pooling layer code.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: A string representing the pooling layer configuration in the format </span>
+<span class="sd">             &quot;P&lt;pooling_type&gt;&lt;pooling_factor&gt;&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pooling_type</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">pooling_layer_vocabulary</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">pooling_factor</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># Example factor, you can randomize or configure this as needed</span>
+    <span class="n">pooling_code</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;P</span><span class="si">{</span><span class="n">pooling_type</span><span class="si">}{</span><span class="n">pooling_factor</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">pooling_code</span> <span class="c1">#, pooling_factor</span></div>
+
+
+
+<div class="viewcode-block" id="generate_upsampling_layer_code">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.architecture_builder.generate_upsampling_layer_code">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_upsampling_layer_code</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a string representing the configuration of an upsampling layer.</span>
+
+<span class="sd">    This function reads the available upsampling modes from a configuration file</span>
+<span class="sd">    (&#39;config.ini&#39;) under the &#39;Upsample&#39; section and randomly selects one of the modes.</span>
+<span class="sd">    It then combines the scale factor and the selected mode into a formatted string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        scale_factor (int, optional): The scaling factor for the upsampling layer. </span>
+<span class="sd">            Defaults to 2.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: A formatted string representing the upsampling layer configuration </span>
+<span class="sd">        in the format &quot;Uf{scale_factor}m{mode}&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;config.ini&#39;</span><span class="p">)</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Upsample&#39;</span><span class="p">,</span> <span class="s1">&#39;modes&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">modes</span><span class="p">)</span>
+
+    <span class="n">upsampling_code</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Uf</span><span class="si">{</span><span class="n">scale_factor</span><span class="si">}</span><span class="s2">m</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">upsampling_code</span></div>
+
+
+
+<div class="viewcode-block" id="generate_skip_connection_code">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.architecture_builder.generate_skip_connection_code">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_skip_connection_code</span><span class="p">(</span><span class="n">layer_index</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a string representing a skip connection identifier for a given layer index.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        layer_index (int): The index of the layer for which the skip connection identifier is generated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: A string in the format &quot;S{layer_index}&quot; representing the skip connection identifier.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;S</span><span class="si">{</span><span class="n">layer_index</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+
+<div class="viewcode-block" id="parse_architecture_code">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.architecture_builder.parse_architecture_code">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_architecture_code</span><span class="p">(</span><span class="n">architecture_code</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parses a given architecture code string into a list of layer configurations.</span>
+<span class="sd">    The function interprets the architecture code by splitting it into segments,</span>
+<span class="sd">    identifying the type of each segment (e.g., convolution, pooling, upsampling, etc.),</span>
+<span class="sd">    and extracting the associated parameters based on predefined vocabularies and rules.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        architecture_code (str): A string representing the architecture code. Each segment</span>
+<span class="sd">            of the code corresponds to a layer or operation, with specific characters</span>
+<span class="sd">            denoting the type and parameters of the layer.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        list[dict]: A list of dictionaries, where each dictionary represents a parsed layer</span>
+<span class="sd">            or operation. Each dictionary contains:</span>
+<span class="sd">            - &#39;layer_type&#39; (str): The type of the layer (e.g., &quot;Convolution&quot;, &quot;Pooling&quot;).</span>
+<span class="sd">            - Additional keys for parameters specific to the layer type, such as:</span>
+<span class="sd">                - &#39;scale_factor&#39; (int): The scale factor for upsampling layers.</span>
+<span class="sd">                - &#39;mode&#39; (str): The mode for certain operations.</span>
+<span class="sd">                - &#39;dropout_rate&#39; (float): The dropout rate for layers with dropout.</span>
+<span class="sd">                - &#39;activation&#39; (str): The activation function for layers with activation.</span>
+<span class="sd">                - &#39;out_channels_coefficient&#39; (int): Coefficient for output channels.</span>
+<span class="sd">                - Other parameters as defined in the layer&#39;s parameter vocabulary.</span>
+<span class="sd">    Notes:</span>
+<span class="sd">        - The function relies on several predefined vocabularies and mappings:</span>
+<span class="sd">            - `convolution_layer_vocabulary`: Maps codes to convolution layer types.</span>
+<span class="sd">            - `pooling_layer_vocabulary`: Maps codes to pooling layer types.</span>
+<span class="sd">            - `head_vocabulary`: Maps codes to head layer types.</span>
+<span class="sd">            - `upsampling_layer_vocabulary`: Maps codes to upsampling layer types.</span>
+<span class="sd">            - `layer_parameters`: Defines expected parameters for each layer type.</span>
+<span class="sd">            - `parameter_vocabulary`: Maps parameter codes to parameter names.</span>
+<span class="sd">            - `activation_functions_vocabulary`: Maps activation codes to function names.</span>
+<span class="sd">        - Segments with unknown or unsupported codes are assigned &quot;Unknown&quot; as the layer type.</span>
+<span class="sd">        - Skip connections are explicitly identified with the type &quot;SkipConnection&quot;.</span>
+<span class="sd">    Example:</span>
+<span class="sd">        architecture_code = &quot;L1f2mRPE2H3&quot;</span>
+<span class="sd">        parsed_layers = parse_architecture_code(architecture_code)</span>
+<span class="sd">        # parsed_layers will be a list of dictionaries representing the parsed layers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">segments</span> <span class="o">=</span> <span class="n">architecture_code</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">parsed_layers</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">segment</span><span class="p">:</span>  <span class="c1"># Skip empty segments</span>
+            <span class="k">continue</span>
+        
+        <span class="n">segment_type_code</span> <span class="o">=</span> <span class="n">segment</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">layer_type_code</span> <span class="o">=</span> <span class="n">segment</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="c1"># Determine the segment&#39;s layer type and corresponding parameters</span>
+        <span class="k">if</span> <span class="n">segment_type_code</span> <span class="o">==</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span>
+            <span class="n">layer_type</span> <span class="o">=</span> <span class="n">convolution_layer_vocabulary</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">layer_type_code</span><span class="p">,</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">segment_type_code</span> <span class="o">==</span> <span class="s1">&#39;P&#39;</span><span class="p">:</span>
+            <span class="n">layer_type</span> <span class="o">=</span> <span class="n">pooling_layer_vocabulary</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">layer_type_code</span><span class="p">,</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">segment_type_code</span> <span class="o">==</span> <span class="s1">&#39;U&#39;</span><span class="p">:</span>
+            <span class="n">layer_type</span> <span class="o">=</span> <span class="n">upsampling_layer_vocabulary</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">segment_type_code</span><span class="p">,</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">segment_type_code</span> <span class="o">==</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span>  <span class="c1"># For skip connections</span>
+            <span class="n">layer_type</span> <span class="o">=</span> <span class="s2">&quot;SkipConnection&quot;</span>
+        
+        <span class="c1"># Initialize the dictionary for this segment with its type</span>
+        <span class="n">segment_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;layer_type&#39;</span><span class="p">:</span> <span class="n">layer_type</span><span class="p">}</span>
+        
+        <span class="c1"># Get parameter definitions for this layer type</span>
+        <span class="n">param_definitions</span> <span class="o">=</span> <span class="n">layer_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">layer_type</span><span class="p">,</span> <span class="p">[])</span>
+
+        <span class="c1"># Process remaining characters based on the expected parameters for this type</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">segment</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>  <span class="c1"># All after layer type code</span>
+        
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
+            <span class="n">param_code</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">param_code</span> <span class="o">==</span> <span class="s1">&#39;f&#39;</span> <span class="ow">and</span> <span class="s1">&#39;scale_factor&#39;</span> <span class="ow">in</span> <span class="n">param_definitions</span><span class="p">:</span>
+                <span class="n">scale_factor</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                    <span class="n">scale_factor</span> <span class="o">+=</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">segment_info</span><span class="p">[</span><span class="s1">&#39;scale_factor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">scale_factor</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">param_code</span> <span class="o">==</span> <span class="s1">&#39;m&#39;</span> <span class="ow">and</span> <span class="s1">&#39;mode&#39;</span> <span class="ow">in</span> <span class="n">param_definitions</span><span class="p">:</span>
+                <span class="n">segment_info</span><span class="p">[</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">parameter_vocabulary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="n">param_code</span> <span class="ow">and</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">param_definitions</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">param_name</span> <span class="o">==</span> <span class="s1">&#39;dropout_rate&#39;</span><span class="p">:</span>
+                            <span class="n">value</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span>
+                            <span class="n">i</span> <span class="o">+=</span> <span class="mi">4</span>
+                            <span class="n">segment_info</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="n">param_name</span> <span class="o">==</span> <span class="s1">&#39;activation&#39;</span><span class="p">:</span>
+                            <span class="n">segment_info</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">activation_functions_vocabulary</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">)</span>
+                            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">elif</span> <span class="n">param_name</span> <span class="o">==</span> <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">:</span>
+                            <span class="n">value</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+                            <span class="n">i</span> <span class="o">+=</span> <span class="mi">2</span>
+                            <span class="n">segment_info</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">segment_info</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="k">break</span>
+        
+        <span class="n">parsed_layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment_info</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parsed_layers</span></div>
+
+
+<div class="viewcode-block" id="generate_code_from_parsed_architecture">
+<a class="viewcode-back" href="../../../api/core.html#pynas.core.architecture_builder.generate_code_from_parsed_architecture">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_code_from_parsed_architecture</span><span class="p">(</span><span class="n">parsed_layers</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a compact string representation of a neural network architecture </span>
+<span class="sd">    based on a list of parsed layer configurations.</span>
+<span class="sd">    The function converts each layer&#39;s type and parameters into a coded segment </span>
+<span class="sd">    using predefined vocabularies and appends them together to form the final </span>
+<span class="sd">    architecture code. Each layer segment ends with &quot;E&quot;, and the entire </span>
+<span class="sd">    architecture code ends with &quot;EE&quot;.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        parsed_layers (list of dict): A list of dictionaries where each dictionary </span>
+<span class="sd">            represents a layer configuration. Each dictionary must contain a </span>
+<span class="sd">            &#39;layer_type&#39; key and may include additional parameters specific to </span>
+<span class="sd">            the layer type.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        str: A string representing the encoded architecture.</span>
+<span class="sd">    Notes:</span>
+<span class="sd">        - The function uses reverse mappings of predefined vocabularies to encode </span>
+<span class="sd">          layer types and parameters.</span>
+<span class="sd">        - Special handling is applied for certain parameters like &#39;activation&#39;, </span>
+<span class="sd">          &#39;dropout_rate&#39;, and &#39;out_channels_coefficient&#39;.</span>
+<span class="sd">        - Layer types such as &quot;Dropout&quot;, &quot;Upsample&quot;, and &quot;SkipConnection&quot; have </span>
+<span class="sd">          specific encoding rules.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">architecture_code</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    
+    <span class="c1"># Utilize the provided configuration directly</span>
+    <span class="n">reverse_convolution_layer_vocabulary</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">convolution_layer_vocabulary</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">reverse_pooling_layer_vocabulary</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pooling_layer_vocabulary</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">reverse_activation_functions_vocabulary</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">activation_functions_vocabulary</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">reverse_upsampling_functions_vocabulary</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">upsampling_layer_vocabulary</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">parsed_layers</span><span class="p">:</span>
+        <span class="n">layer_type</span> <span class="o">=</span> <span class="n">layer</span><span class="p">[</span><span class="s1">&#39;layer_type&#39;</span><span class="p">]</span>
+        <span class="n">segment_code</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        
+        <span class="c1"># Prepend the type code with &quot;L&quot;, &quot;P&quot;, or &quot;H&quot; based on the layer type</span>
+        <span class="k">if</span> <span class="n">layer_type</span> <span class="ow">in</span> <span class="n">reverse_convolution_layer_vocabulary</span><span class="p">:</span>
+            <span class="n">segment_code</span> <span class="o">+=</span> <span class="s2">&quot;L&quot;</span> <span class="o">+</span> <span class="n">reverse_convolution_layer_vocabulary</span><span class="p">[</span><span class="n">layer_type</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">layer_type</span> <span class="ow">in</span> <span class="n">reverse_pooling_layer_vocabulary</span><span class="p">:</span>
+            <span class="n">segment_code</span> <span class="o">+=</span> <span class="s2">&quot;P&quot;</span> <span class="o">+</span> <span class="n">reverse_pooling_layer_vocabulary</span><span class="p">[</span><span class="n">layer_type</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">layer_type</span> <span class="o">==</span> <span class="s1">&#39;Dropout&#39;</span><span class="p">:</span>
+            <span class="n">segment_code</span> <span class="o">+=</span> <span class="s2">&quot;LD&quot;</span>
+        <span class="k">elif</span> <span class="n">layer_type</span> <span class="o">==</span> <span class="s2">&quot;Upsample&quot;</span><span class="p">:</span> 
+            <span class="n">segment_code</span> <span class="o">+=</span> <span class="s2">&quot;U&quot;</span> <span class="o">+</span> <span class="n">reverse_upsampling_functions_vocabulary</span><span class="p">[</span><span class="n">layer_type</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">layer_type</span> <span class="o">==</span> <span class="s2">&quot;SkipConnection&quot;</span><span class="p">:</span>
+            <span class="n">segment_code</span> <span class="o">+=</span> <span class="s2">&quot;S&quot;</span>
+
+        <span class="c1"># Append each parameter and its value</span>
+        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_value</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">param_name</span> <span class="o">==</span> <span class="s1">&#39;layer_type&#39;</span><span class="p">:</span>  <span class="c1"># Skip &#39;layer_type&#39; as it&#39;s already processed</span>
+                <span class="k">continue</span>
+            
+            <span class="k">if</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">parameter_vocabulary</span><span class="p">:</span>
+                <span class="n">param_code</span> <span class="o">=</span> <span class="n">parameter_vocabulary</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span>
+                
+                <span class="c1"># Special handling for activation parameters</span>
+                <span class="k">if</span> <span class="n">param_name</span> <span class="o">==</span> <span class="s1">&#39;activation&#39;</span><span class="p">:</span>
+                    <span class="n">param_value</span> <span class="o">=</span> <span class="n">reverse_activation_functions_vocabulary</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param_value</span><span class="p">,</span> <span class="n">param_value</span><span class="p">)</span>
+                
+                <span class="n">segment_code</span> <span class="o">+=</span> <span class="n">param_code</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">param_value</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">layer_type</span> <span class="o">==</span> <span class="s1">&#39;Dropout&#39;</span> <span class="ow">and</span> <span class="n">param_name</span> <span class="o">==</span> <span class="s1">&#39;dropout_rate&#39;</span><span class="p">:</span>
+                <span class="n">segment_code</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;d</span><span class="si">{</span><span class="n">param_value</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">elif</span> <span class="n">param_name</span> <span class="o">==</span> <span class="s1">&#39;out_channels_coefficient&#39;</span><span class="p">:</span>
+                <span class="n">segment_code</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;o</span><span class="si">{</span><span class="n">param_value</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+        
+        <span class="c1"># Finalize the segment and add it to the architecture code</span>
+        <span class="n">architecture_code</span> <span class="o">+=</span> <span class="n">segment_code</span> <span class="o">+</span> <span class="s2">&quot;E&quot;</span>
+    
+    <span class="c1"># Ensure the architecture code properly ends with &quot;EE&quot;</span>
+    <span class="k">return</span> <span class="n">architecture_code</span> <span class="o">+</span> <span class="s2">&quot;E&quot;</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

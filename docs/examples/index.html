@@ -1,0 +1,205 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Examples &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Vessel Detection Example" href="vessel_detection.html" />
+    <link rel="prev" title="Edge Deployment" href="../tutorials/edge_deployment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html">Vessel Detection Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote_sensing.html">Remote Sensing Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_optimization.html">Edge Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_blocks.html">Custom Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vessel-detection">Vessel Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#remote-sensing-applications">Remote Sensing Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#edge-device-optimization">Edge Device Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-architecture-blocks">Custom Architecture Blocks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Examples</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/examples/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h1>
+<p>This section provides practical examples of using PyNAS for different applications and scenarios.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="vessel_detection.html">Vessel Detection Example</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html#dataset-setup">Dataset Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html#population-configuration">Population Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html#architecture-search-process">Architecture Search Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html#results-analysis">Results Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html#model-validation">Model Validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html#deployment-preparation">Deployment Preparation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html#performance-comparison">Performance Comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html#key-findings">Key Findings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vessel_detection.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="remote_sensing.html">Remote Sensing Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="remote_sensing.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote_sensing.html#satellite-image-classification">Satellite Image Classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote_sensing.html#hyperspectral-image-analysis">Hyperspectral Image Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote_sensing.html#sar-image-processing">SAR Image Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote_sensing.html#complete-remote-sensing-example">Complete Remote Sensing Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote_sensing.html#data-preprocessing-utilities">Data Preprocessing Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote_sensing.html#performance-optimization-for-large-images">Performance Optimization for Large Images</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="edge_optimization.html">Edge Optimization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="edge_optimization.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_optimization.html#setting-up-edge-optimized-evolution">Setting Up Edge-Optimized Evolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_optimization.html#mobile-optimized-architecture-search">Mobile-Optimized Architecture Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_optimization.html#quantization-and-pruning-integration">Quantization and Pruning Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_optimization.html#performance-profiling-and-analysis">Performance Profiling and Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_optimization.html#complete-edge-optimization-example">Complete Edge Optimization Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_optimization.html#expected-output">Expected Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_optimization.html#key-takeaways">Key Takeaways</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom_blocks.html">Custom Blocks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="custom_blocks.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_blocks.html#creating-custom-convolution-blocks">Creating Custom Convolution Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_blocks.html#attention-mechanism-blocks">Attention Mechanism Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_blocks.html#domain-specific-blocks">Domain-Specific Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_blocks.html#integrating-custom-blocks-into-pynas">Integrating Custom Blocks into PyNAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_blocks.html#evolution-with-custom-blocks">Evolution with Custom Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_blocks.html#complete-custom-block-example">Complete Custom Block Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_blocks.html#expected-output">Expected Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_blocks.html#best-practices-for-custom-blocks">Best Practices for Custom Blocks</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="vessel-detection">
+<h2>Vessel Detection<a class="headerlink" href="#vessel-detection" title="Link to this heading"></a></h2>
+<p>Learn how to use PyNAS for ship detection in SAR imagery.</p>
+<p><a class="reference internal" href="vessel_detection.html"><span class="doc">Vessel Detection Example</span></a></p>
+</section>
+<section id="remote-sensing-applications">
+<h2>Remote Sensing Applications<a class="headerlink" href="#remote-sensing-applications" title="Link to this heading"></a></h2>
+<p>Apply PyNAS to various remote sensing tasks including land cover classification and change detection.</p>
+<p><a class="reference internal" href="remote_sensing.html"><span class="doc">Remote Sensing Applications</span></a></p>
+</section>
+<section id="edge-device-optimization">
+<h2>Edge Device Optimization<a class="headerlink" href="#edge-device-optimization" title="Link to this heading"></a></h2>
+<p>Optimize neural architectures for deployment on resource-constrained edge devices.</p>
+<p><a class="reference internal" href="edge_optimization.html"><span class="doc">Edge Optimization</span></a></p>
+</section>
+<section id="custom-architecture-blocks">
+<h2>Custom Architecture Blocks<a class="headerlink" href="#custom-architecture-blocks" title="Link to this heading"></a></h2>
+<p>Create and integrate custom building blocks into the PyNAS framework.</p>
+<p><a class="reference internal" href="custom_blocks.html"><span class="doc">Custom Blocks</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../tutorials/edge_deployment.html" class="btn btn-neutral float-left" title="Edge Deployment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="vessel_detection.html" class="btn btn-neutral float-right" title="Vessel Detection Example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

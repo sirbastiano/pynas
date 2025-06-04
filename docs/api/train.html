@@ -1,0 +1,396 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Training Module &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contributing to PyNAS" href="../contributing.html" />
+    <link rel="prev" title="Optimization Module" href="opt.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opt.html">Optimization Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Training Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-pynas.train.custom_iou">Custom IoU</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pynas.train.custom_iou.calculate_iou"><code class="docutils literal notranslate"><span class="pre">calculate_iou()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pynas.train.losses">Losses</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pynas.train.losses.CategoricalCrossEntropyLoss"><code class="docutils literal notranslate"><span class="pre">CategoricalCrossEntropyLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.losses.CategoricalCrossEntropyLoss.__init__"><code class="docutils literal notranslate"><span class="pre">CategoricalCrossEntropyLoss.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.losses.CategoricalCrossEntropyLoss.forward"><code class="docutils literal notranslate"><span class="pre">CategoricalCrossEntropyLoss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pynas.train.losses.FocalLoss"><code class="docutils literal notranslate"><span class="pre">FocalLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.losses.FocalLoss.__init__"><code class="docutils literal notranslate"><span class="pre">FocalLoss.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.losses.FocalLoss.forward"><code class="docutils literal notranslate"><span class="pre">FocalLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pynas.train.mean_squared_error">Mean Squared Error</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pynas.train.mean_squared_error.MeanSquaredError"><code class="docutils literal notranslate"><span class="pre">MeanSquaredError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.mean_squared_error.MeanSquaredError.__init__"><code class="docutils literal notranslate"><span class="pre">MeanSquaredError.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.mean_squared_error.MeanSquaredError.update"><code class="docutils literal notranslate"><span class="pre">MeanSquaredError.update()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.mean_squared_error.MeanSquaredError.compute"><code class="docutils literal notranslate"><span class="pre">MeanSquaredError.compute()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pynas.train.my_early_stopping">Early Stopping</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pynas.train.my_early_stopping.TrainEarlyStopping"><code class="docutils literal notranslate"><span class="pre">TrainEarlyStopping</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.my_early_stopping.TrainEarlyStopping.on_validation_end"><code class="docutils literal notranslate"><span class="pre">TrainEarlyStopping.on_validation_end()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.my_early_stopping.TrainEarlyStopping.on_train_epoch_end"><code class="docutils literal notranslate"><span class="pre">TrainEarlyStopping.on_train_epoch_end()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pynas.train.myFit">Fitness Evaluation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pynas.train.myFit.FitnessEvaluator"><code class="docutils literal notranslate"><span class="pre">FitnessEvaluator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.myFit.FitnessEvaluator.__init__"><code class="docutils literal notranslate"><span class="pre">FitnessEvaluator.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.myFit.FitnessEvaluator.rebound_metrics"><code class="docutils literal notranslate"><span class="pre">FitnessEvaluator.rebound_metrics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.myFit.FitnessEvaluator.weighted_sum_exponential"><code class="docutils literal notranslate"><span class="pre">FitnessEvaluator.weighted_sum_exponential()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.myFit.FitnessEvaluator.multiplicative_penalty"><code class="docutils literal notranslate"><span class="pre">FitnessEvaluator.multiplicative_penalty()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.myFit.FitnessEvaluator.logarithmic_penalty"><code class="docutils literal notranslate"><span class="pre">FitnessEvaluator.logarithmic_penalty()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.myFit.FitnessEvaluator.inverse_mcc_penalty"><code class="docutils literal notranslate"><span class="pre">FitnessEvaluator.inverse_mcc_penalty()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynas.train.myFit.FitnessEvaluator.stepwise_penalty"><code class="docutils literal notranslate"><span class="pre">FitnessEvaluator.stepwise_penalty()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Training Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/train.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="training-module">
+<h1>Training Module<a class="headerlink" href="#training-module" title="Link to this heading"></a></h1>
+<p>The training module provides utilities for model training, loss functions, and evaluation metrics.</p>
+<section id="module-pynas.train.custom_iou">
+<span id="custom-iou"></span><h2>Custom IoU<a class="headerlink" href="#module-pynas.train.custom_iou" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="pynas.train.custom_iou.calculate_iou">
+<span class="sig-prename descclassname"><span class="pre">pynas.train.custom_iou.</span></span><span class="sig-name descname"><span class="pre">calculate_iou</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/custom_iou.html#calculate_iou"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.custom_iou.calculate_iou" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-pynas.train.losses">
+<span id="losses"></span><h2>Losses<a class="headerlink" href="#module-pynas.train.losses" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pynas.train.losses.CategoricalCrossEntropyLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynas.train.losses.</span></span><span class="sig-name descname"><span class="pre">CategoricalCrossEntropyLoss</span></span><a class="reference internal" href="../_modules/pynas/train/losses.html#CategoricalCrossEntropyLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.losses.CategoricalCrossEntropyLoss" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.losses.CategoricalCrossEntropyLoss.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/losses.html#CategoricalCrossEntropyLoss.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.losses.CategoricalCrossEntropyLoss.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.losses.CategoricalCrossEntropyLoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/losses.html#CategoricalCrossEntropyLoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.losses.CategoricalCrossEntropyLoss.forward" title="Link to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pynas.train.losses.FocalLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynas.train.losses.</span></span><span class="sig-name descname"><span class="pre">FocalLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/losses.html#FocalLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.losses.FocalLoss" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module" title="(in PyTorch v2.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.losses.FocalLoss.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/losses.html#FocalLoss.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.losses.FocalLoss.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.losses.FocalLoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/losses.html#FocalLoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.losses.FocalLoss.forward" title="Link to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pynas.train.mean_squared_error">
+<span id="mean-squared-error"></span><h2>Mean Squared Error<a class="headerlink" href="#module-pynas.train.mean_squared_error" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pynas.train.mean_squared_error.MeanSquaredError">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynas.train.mean_squared_error.</span></span><span class="sig-name descname"><span class="pre">MeanSquaredError</span></span><a class="reference internal" href="../_modules/pynas/train/mean_squared_error.html#MeanSquaredError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.mean_squared_error.MeanSquaredError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Metric</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.mean_squared_error.MeanSquaredError.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/mean_squared_error.html#MeanSquaredError.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.mean_squared_error.MeanSquaredError.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.mean_squared_error.MeanSquaredError.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/mean_squared_error.html#MeanSquaredError.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.mean_squared_error.MeanSquaredError.update" title="Link to this definition"></a></dt>
+<dd><p>Override this method to update the state variables of your metric class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>preds</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)"><em>Tensor</em></a>)</p></li>
+<li><p><strong>target</strong> (<a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html#torch.Tensor" title="(in PyTorch v2.7)"><em>Tensor</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.mean_squared_error.MeanSquaredError.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/mean_squared_error.html#MeanSquaredError.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.mean_squared_error.MeanSquaredError.compute" title="Link to this definition"></a></dt>
+<dd><p>Override this method to compute the final metric value.</p>
+<p>This method will automatically synchronize state variables when running in distributed backend.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pynas.train.my_early_stopping">
+<span id="early-stopping"></span><h2>Early Stopping<a class="headerlink" href="#module-pynas.train.my_early_stopping" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pynas.train.my_early_stopping.TrainEarlyStopping">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynas.train.my_early_stopping.</span></span><span class="sig-name descname"><span class="pre">TrainEarlyStopping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">monitor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'min'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_finite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stopping_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divergence_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_on_train_epoch_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_rank_zero_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/my_early_stopping.html#TrainEarlyStopping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.my_early_stopping.TrainEarlyStopping" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">EarlyStopping</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>monitor</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+<li><p><strong>min_delta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>)</p></li>
+<li><p><strong>patience</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
+<li><p><strong>strict</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>check_finite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>stopping_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>divergence_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>check_on_train_epoch_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>log_rank_zero_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.my_early_stopping.TrainEarlyStopping.on_validation_end">
+<span class="sig-name descname"><span class="pre">on_validation_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/my_early_stopping.html#TrainEarlyStopping.on_validation_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.my_early_stopping.TrainEarlyStopping.on_validation_end" title="Link to this definition"></a></dt>
+<dd><p>Called when the validation loop ends.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.my_early_stopping.TrainEarlyStopping.on_train_epoch_end">
+<span class="sig-name descname"><span class="pre">on_train_epoch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/my_early_stopping.html#TrainEarlyStopping.on_train_epoch_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.my_early_stopping.TrainEarlyStopping.on_train_epoch_end" title="Link to this definition"></a></dt>
+<dd><p>Called when the train epoch ends.</p>
+<p>To access all batch outputs at the end of the epoch, you can cache step outputs as an attribute of the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">pytorch_lightning.core.LightningModule</span></code> and access them in this hook:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyLightningModule</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">LightningModule</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_step_outputs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">training_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_step_outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">loss</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCallback</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">Callback</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_train_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">pl_module</span><span class="p">):</span>
+        <span class="c1"># do something with all training_step outputs, for example:</span>
+        <span class="n">epoch_mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">pl_module</span><span class="o">.</span><span class="n">training_step_outputs</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">pl_module</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;training_epoch_mean&quot;</span><span class="p">,</span> <span class="n">epoch_mean</span><span class="p">)</span>
+        <span class="c1"># free up the memory</span>
+        <span class="n">pl_module</span><span class="o">.</span><span class="n">training_step_outputs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pynas.train.myFit">
+<span id="fitness-evaluation"></span><h2>Fitness Evaluation<a class="headerlink" href="#module-pynas.train.myFit" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pynas.train.myFit.FitnessEvaluator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynas.train.myFit.</span></span><span class="sig-name descname"><span class="pre">FitnessEvaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/myFit.html#FitnessEvaluator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.myFit.FitnessEvaluator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class to compute fitness functions for balancing FPS and MCC.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.myFit.FitnessEvaluator.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/myFit.html#FitnessEvaluator.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.myFit.FitnessEvaluator.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initializes the fitness evaluator with tunable parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Weight for FPS in the weighted sum formula.</p></li>
+<li><p><strong>beta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Weight for MCC in the weighted sum formula.</p></li>
+<li><p><strong>gamma</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Exponential scaling factor for MCC penalty.</p></li>
+<li><p><strong>delta</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Bias term to avoid MCC reaching zero.</p></li>
+<li><p><strong>epsilon</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Small value for logarithmic stability.</p></li>
+<li><p><strong>lambda</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Sigmoid steepness in inverse MCC penalty.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.myFit.FitnessEvaluator.rebound_metrics">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rebound_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mcc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_fps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">120.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/myFit.html#FitnessEvaluator.rebound_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.myFit.FitnessEvaluator.rebound_metrics" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.myFit.FitnessEvaluator.weighted_sum_exponential">
+<span class="sig-name descname"><span class="pre">weighted_sum_exponential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mcc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/myFit.html#FitnessEvaluator.weighted_sum_exponential"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.myFit.FitnessEvaluator.weighted_sum_exponential" title="Link to this definition"></a></dt>
+<dd><p>Computes fitness using weighted sum with exponential MCC penalty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.myFit.FitnessEvaluator.multiplicative_penalty">
+<span class="sig-name descname"><span class="pre">multiplicative_penalty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mcc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/myFit.html#FitnessEvaluator.multiplicative_penalty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.myFit.FitnessEvaluator.multiplicative_penalty" title="Link to this definition"></a></dt>
+<dd><p>Computes fitness using FPS multiplied by MCC with a bias.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.myFit.FitnessEvaluator.logarithmic_penalty">
+<span class="sig-name descname"><span class="pre">logarithmic_penalty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mcc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/myFit.html#FitnessEvaluator.logarithmic_penalty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.myFit.FitnessEvaluator.logarithmic_penalty" title="Link to this definition"></a></dt>
+<dd><p>Computes fitness using logarithmic MCC scaling.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.myFit.FitnessEvaluator.inverse_mcc_penalty">
+<span class="sig-name descname"><span class="pre">inverse_mcc_penalty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mcc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/myFit.html#FitnessEvaluator.inverse_mcc_penalty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.myFit.FitnessEvaluator.inverse_mcc_penalty" title="Link to this definition"></a></dt>
+<dd><p>Computes fitness by scaling FPS using a sigmoid function of MCC.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynas.train.myFit.FitnessEvaluator.stepwise_penalty">
+<span class="sig-name descname"><span class="pre">stepwise_penalty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mcc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynas/train/myFit.html#FitnessEvaluator.stepwise_penalty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynas.train.myFit.FitnessEvaluator.stepwise_penalty" title="Link to this definition"></a></dt>
+<dd><p>Computes fitness with a stepwise penalty for negative MCC.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="opt.html" class="btn btn-neutral float-left" title="Optimization Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../contributing.html" class="btn btn-neutral float-right" title="Contributing to PyNAS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

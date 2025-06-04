@@ -1,0 +1,182 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<p>This section contains the complete API reference for PyNAS, organized by module.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-pynas.core.population">Population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-pynas.core.individual">Individual</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-pynas.core.architecture_builder">Architecture Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-pynas.core.generic_unet">Generic U-Net</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-pynas.core.generic_lightning_module">Lightning Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#module-pynas.core.vocabulary">Vocabulary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="blocks.html">Blocks Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#module-pynas.blocks.convolutions">Convolution Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#module-pynas.blocks.activations">Activation Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#module-pynas.blocks.pooling">Pooling Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#module-pynas.blocks.heads">Head Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#module-pynas.blocks.residual">Residual Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#utility-functions">Utility Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#lambda-module">Lambda Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#block-configuration">Block Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#usage-examples">Usage Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#best-practices">Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#performance-considerations">Performance Considerations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="opt.html">Optimization Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="opt.html#module-pynas.opt.evo">Evolutionary Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="opt.html#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="train.html">Training Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="train.html#module-pynas.train.custom_iou">Custom IoU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="train.html#module-pynas.train.losses">Losses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="train.html#module-pynas.train.mean_squared_error">Mean Squared Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="train.html#module-pynas.train.my_early_stopping">Early Stopping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="train.html#module-pynas.train.myFit">Fitness Evaluation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="core-modules">
+<h2>Core Modules<a class="headerlink" href="#core-modules" title="Link to this heading"></a></h2>
+<p>The core modules provide the fundamental components for neural architecture search:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="core.html"><span class="doc">Core Module</span></a> - Population, Individual, Architecture Builder, and Lightning integration</p></li>
+<li><p><a class="reference internal" href="blocks.html"><span class="doc">Blocks Module</span></a> - Neural network building blocks and components</p></li>
+</ul>
+</section>
+<section id="optimization">
+<h2>Optimization<a class="headerlink" href="#optimization" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="opt.html"><span class="doc">Optimization Module</span></a> - Metaheuristic optimization algorithms (Grey Wolf, Particle Swarm)</p></li>
+</ul>
+</section>
+<section id="training">
+<h2>Training<a class="headerlink" href="#training" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="train.html"><span class="doc">Training Module</span></a> - Training utilities, losses, and metrics</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,873 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edge Deployment &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Examples" href="../examples/index.html" />
+    <link rel="prev" title="Custom Architectures" href="custom_architectures.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html">Basic Neural Architecture Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_config.html">Advanced Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_architectures.html">Custom Architectures</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Edge Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#edge-device-considerations">Edge Device Considerations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#hardware-constraints">Hardware Constraints</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#model-optimization">Model Optimization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#quantization">Quantization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pruning">Pruning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#knowledge-distillation">Knowledge Distillation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#deployment-frameworks">Deployment Frameworks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#tensorrt-optimization">TensorRT Optimization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#onnx-deployment">ONNX Deployment</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#mobile-deployment">Mobile Deployment</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pytorch-mobile">PyTorch Mobile</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#performance-monitoring">Performance Monitoring</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#real-time-performance-tracking">Real-time Performance Tracking</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#complete-deployment-pipeline">Complete Deployment Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#best-practices">Best Practices</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#basic-neural-architecture-search">Basic Neural Architecture Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#advanced-configuration">Advanced Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#custom-architecture-components">Custom Architecture Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#edge-device-deployment">Edge Device Deployment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Edge Deployment</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/edge_deployment.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="edge-deployment">
+<h1>Edge Deployment<a class="headerlink" href="#edge-deployment" title="Link to this heading"></a></h1>
+<p>This tutorial covers deploying PyNAS-evolved neural networks on edge devices, including optimization techniques, deployment strategies, and performance monitoring.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Deploying neural networks on edge devices requires careful consideration of:</p>
+<ul class="simple">
+<li><p><strong>Resource Constraints</strong>: Limited memory, compute, and power</p></li>
+<li><p><strong>Optimization</strong>: Model compression and acceleration techniques</p></li>
+<li><p><strong>Deployment</strong>: Framework selection and integration</p></li>
+<li><p><strong>Monitoring</strong>: Performance tracking and maintenance</p></li>
+</ul>
+</section>
+<section id="edge-device-considerations">
+<h2>Edge Device Considerations<a class="headerlink" href="#edge-device-considerations" title="Link to this heading"></a></h2>
+<section id="hardware-constraints">
+<h3>Hardware Constraints<a class="headerlink" href="#hardware-constraints" title="Link to this heading"></a></h3>
+<p>Understanding target device limitations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">psutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EdgeDeviceProfiler</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Profile edge device capabilities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_device_info</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_device_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Collect device information.&quot;&quot;&quot;</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;cpu_count&#39;</span><span class="p">:</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">(),</span>
+            <span class="s1">&#39;memory_total&#39;</span><span class="p">:</span> <span class="n">psutil</span><span class="o">.</span><span class="n">virtual_memory</span><span class="p">()</span><span class="o">.</span><span class="n">total</span><span class="p">,</span>
+            <span class="s1">&#39;memory_available&#39;</span><span class="p">:</span> <span class="n">psutil</span><span class="o">.</span><span class="n">virtual_memory</span><span class="p">()</span><span class="o">.</span><span class="n">available</span><span class="p">,</span>
+            <span class="s1">&#39;has_gpu&#39;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">(),</span>
+            <span class="s1">&#39;gpu_memory&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_gpu_memory</span><span class="p">()</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">info</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_gpu_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get GPU memory information.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">get_device_properties</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">total_memory</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">estimate_model_requirements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimate model resource requirements.&quot;&quot;&quot;</span>
+        <span class="c1"># Calculate model size</span>
+        <span class="n">param_size</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">element_size</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="n">buffer_size</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">*</span> <span class="n">b</span><span class="o">.</span><span class="n">element_size</span><span class="p">()</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">buffers</span><span class="p">())</span>
+        <span class="n">model_size</span> <span class="o">=</span> <span class="n">param_size</span> <span class="o">+</span> <span class="n">buffer_size</span>
+
+        <span class="c1"># Estimate inference memory (rough approximation)</span>
+        <span class="n">inference_memory</span> <span class="o">=</span> <span class="n">model_size</span> <span class="o">*</span> <span class="mi">2</span>  <span class="c1"># Parameters + activations</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;model_size_mb&#39;</span><span class="p">:</span> <span class="n">model_size</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">,</span>
+            <span class="s1">&#39;estimated_inference_memory_mb&#39;</span><span class="p">:</span> <span class="n">inference_memory</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">,</span>
+            <span class="s1">&#39;parameter_count&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_compatibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if model can run on device.&quot;&quot;&quot;</span>
+        <span class="n">requirements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimate_model_requirements</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">available_memory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">device_info</span><span class="p">[</span><span class="s1">&#39;memory_available&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;can_run&#39;</span><span class="p">:</span> <span class="n">requirements</span><span class="p">[</span><span class="s1">&#39;estimated_inference_memory_mb&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">available_memory</span> <span class="o">*</span> <span class="mf">0.8</span><span class="p">,</span>
+            <span class="s1">&#39;memory_utilization&#39;</span><span class="p">:</span> <span class="n">requirements</span><span class="p">[</span><span class="s1">&#39;estimated_inference_memory_mb&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">available_memory</span><span class="p">,</span>
+            <span class="s1">&#39;recommendations&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optimization_recommendations</span><span class="p">(</span><span class="n">requirements</span><span class="p">)</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_optimization_recommendations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requirements</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Provide optimization recommendations.&quot;&quot;&quot;</span>
+        <span class="n">recommendations</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">requirements</span><span class="p">[</span><span class="s1">&#39;model_size_mb&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+            <span class="n">recommendations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Consider model quantization&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">requirements</span><span class="p">[</span><span class="s1">&#39;parameter_count&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1e6</span><span class="p">:</span>
+            <span class="n">recommendations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Apply pruning to reduce parameters&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">requirements</span><span class="p">[</span><span class="s1">&#39;estimated_inference_memory_mb&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="n">recommendations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Use gradient checkpointing&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">recommendations</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="model-optimization">
+<h2>Model Optimization<a class="headerlink" href="#model-optimization" title="Link to this heading"></a></h2>
+<section id="quantization">
+<h3>Quantization<a class="headerlink" href="#quantization" title="Link to this heading"></a></h3>
+<p>Reduce model precision for faster inference:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch.quantization</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">quant</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ModelQuantizer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Quantize models for edge deployment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_for_quantization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare model for quantization.&quot;&quot;&quot;</span>
+        <span class="c1"># Set model to evaluation mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+        <span class="c1"># Specify quantization configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">qconfig</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">get_default_qconfig</span><span class="p">(</span><span class="s1">&#39;fbgemm&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Prepare model</span>
+        <span class="n">model_prepared</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model_prepared</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calibrate_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_prepared</span><span class="p">,</span> <span class="n">calibration_loader</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calibrate model with representative data.&quot;&quot;&quot;</span>
+        <span class="n">model_prepared</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">calibration_loader</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">batch_idx</span> <span class="o">&gt;=</span> <span class="mi">100</span><span class="p">:</span>  <span class="c1"># Use 100 batches for calibration</span>
+                    <span class="k">break</span>
+                <span class="n">model_prepared</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">model_prepared</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">quantize_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_prepared</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to quantized model.&quot;&quot;&quot;</span>
+        <span class="n">model_quantized</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">quantization</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">model_prepared</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">model_quantized</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">compare_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original_model</span><span class="p">,</span> <span class="n">quantized_model</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compare original and quantized model performance.&quot;&quot;&quot;</span>
+        <span class="n">original_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_size</span><span class="p">(</span><span class="n">original_model</span><span class="p">)</span>
+        <span class="n">quantized_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_size</span><span class="p">(</span><span class="n">quantized_model</span><span class="p">)</span>
+
+        <span class="n">original_accuracy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_model</span><span class="p">(</span><span class="n">original_model</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">)</span>
+        <span class="n">quantized_accuracy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_model</span><span class="p">(</span><span class="n">quantized_model</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;size_reduction&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">original_size</span> <span class="o">-</span> <span class="n">quantized_size</span><span class="p">)</span> <span class="o">/</span> <span class="n">original_size</span><span class="p">,</span>
+            <span class="s1">&#39;accuracy_drop&#39;</span><span class="p">:</span> <span class="n">original_accuracy</span> <span class="o">-</span> <span class="n">quantized_accuracy</span><span class="p">,</span>
+            <span class="s1">&#39;original_size_mb&#39;</span><span class="p">:</span> <span class="n">original_size</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span><span class="p">,</span>
+            <span class="s1">&#39;quantized_size_mb&#39;</span><span class="p">:</span> <span class="n">quantized_size</span> <span class="o">/</span> <span class="mi">1024</span> <span class="o">/</span> <span class="mi">1024</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_model_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate model size in bytes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="o">*</span> <span class="n">p</span><span class="o">.</span><span class="n">element_size</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate model accuracy.&quot;&quot;&quot;</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="ow">in</span> <span class="n">test_loader</span><span class="p">:</span>
+                <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">predicted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">total</span> <span class="o">+=</span> <span class="n">targets</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">correct</span> <span class="o">+=</span> <span class="p">(</span><span class="n">predicted</span> <span class="o">==</span> <span class="n">targets</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">correct</span> <span class="o">/</span> <span class="n">total</span>
+</pre></div>
+</div>
+</section>
+<section id="pruning">
+<h3>Pruning<a class="headerlink" href="#pruning" title="Link to this heading"></a></h3>
+<p>Remove redundant parameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.utils.prune</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">prune</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ModelPruner</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prune models for edge deployment.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">structured_pruning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pruning_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply structured pruning to remove entire channels.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">named_modules</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">):</span>
+                <span class="n">prune</span><span class="o">.</span><span class="n">ln_structured</span><span class="p">(</span>
+                    <span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">pruning_ratio</span><span class="p">,</span>
+                    <span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span>  <span class="c1"># Prune output channels</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">):</span>
+                <span class="n">prune</span><span class="o">.</span><span class="n">l1_unstructured</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">pruning_ratio</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">unstructured_pruning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pruning_ratio</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply unstructured pruning to remove individual weights.&quot;&quot;&quot;</span>
+        <span class="n">parameters_to_prune</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">named_modules</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">)):</span>
+                <span class="n">parameters_to_prune</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">module</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">))</span>
+
+        <span class="n">prune</span><span class="o">.</span><span class="n">global_unstructured</span><span class="p">(</span>
+            <span class="n">parameters_to_prune</span><span class="p">,</span>
+            <span class="n">pruning_method</span><span class="o">=</span><span class="n">prune</span><span class="o">.</span><span class="n">L1Unstructured</span><span class="p">,</span>
+            <span class="n">amount</span><span class="o">=</span><span class="n">pruning_ratio</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">gradual_pruning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_sparsity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">final_sparsity</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                      <span class="n">num_iterations</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply gradual pruning over multiple iterations.&quot;&quot;&quot;</span>
+        <span class="n">current_sparsity</span> <span class="o">=</span> <span class="n">initial_sparsity</span>
+        <span class="n">sparsity_increment</span> <span class="o">=</span> <span class="p">(</span><span class="n">final_sparsity</span> <span class="o">-</span> <span class="n">initial_sparsity</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_iterations</span>
+
+        <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_iterations</span><span class="p">):</span>
+            <span class="c1"># Apply pruning</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unstructured_pruning</span><span class="p">(</span><span class="n">current_sparsity</span><span class="p">)</span>
+
+            <span class="c1"># Fine-tune model (implement your training loop here)</span>
+            <span class="c1"># self.fine_tune_model()</span>
+
+            <span class="n">current_sparsity</span> <span class="o">+=</span> <span class="n">sparsity_increment</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Iteration </span><span class="si">{</span><span class="n">iteration</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">: Sparsity = </span><span class="si">{</span><span class="n">current_sparsity</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_pruning_masks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Permanently remove pruned weights.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">named_modules</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s1">&#39;weight_mask&#39;</span><span class="p">):</span>
+                <span class="n">prune</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">analyze_sparsity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Analyze current model sparsity.&quot;&quot;&quot;</span>
+        <span class="n">total_params</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">zero_params</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">named_modules</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">):</span>
+                <span class="n">total_params</span> <span class="o">+=</span> <span class="n">module</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span>
+                <span class="n">zero_params</span> <span class="o">+=</span> <span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">weight</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="n">sparsity</span> <span class="o">=</span> <span class="n">zero_params</span> <span class="o">/</span> <span class="n">total_params</span> <span class="k">if</span> <span class="n">total_params</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;total_parameters&#39;</span><span class="p">:</span> <span class="n">total_params</span><span class="p">,</span>
+            <span class="s1">&#39;zero_parameters&#39;</span><span class="p">:</span> <span class="n">zero_params</span><span class="p">,</span>
+            <span class="s1">&#39;sparsity_ratio&#39;</span><span class="p">:</span> <span class="n">sparsity</span><span class="p">,</span>
+            <span class="s1">&#39;compression_ratio&#39;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sparsity</span><span class="p">)</span> <span class="k">if</span> <span class="n">sparsity</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+        <span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="knowledge-distillation">
+<h3>Knowledge Distillation<a class="headerlink" href="#knowledge-distillation" title="Link to this heading"></a></h3>
+<p>Transfer knowledge from larger models:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">KnowledgeDistiller</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Distill knowledge from teacher to student model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">teacher_model</span><span class="p">,</span> <span class="n">student_model</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">teacher</span> <span class="o">=</span> <span class="n">teacher_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">student</span> <span class="o">=</span> <span class="n">student_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="n">temperature</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>  <span class="c1"># Weight for distillation loss</span>
+
+        <span class="c1"># Freeze teacher model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">teacher</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">teacher</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
+            <span class="n">param</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">distillation_loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">student_outputs</span><span class="p">,</span> <span class="n">teacher_outputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate combined distillation and task loss.&quot;&quot;&quot;</span>
+        <span class="c1"># Soft targets from teacher</span>
+        <span class="n">soft_teacher</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">teacher_outputs</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">soft_student</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">log_softmax</span><span class="p">(</span><span class="n">student_outputs</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Distillation loss</span>
+        <span class="n">distill_loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">kl_div</span><span class="p">(</span><span class="n">soft_student</span><span class="p">,</span> <span class="n">soft_teacher</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s1">&#39;batchmean&#39;</span><span class="p">)</span>
+        <span class="n">distill_loss</span> <span class="o">*=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Task loss</span>
+        <span class="n">task_loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">cross_entropy</span><span class="p">(</span><span class="n">student_outputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+
+        <span class="c1"># Combined loss</span>
+        <span class="n">total_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">distill_loss</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">task_loss</span>
+
+        <span class="k">return</span> <span class="n">total_loss</span><span class="p">,</span> <span class="n">distill_loss</span><span class="p">,</span> <span class="n">task_loss</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_student</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">num_epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Train student model with distillation.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">student</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
+            <span class="n">total_loss</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_loader</span><span class="p">):</span>
+                <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+                <span class="c1"># Get predictions</span>
+                <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                    <span class="n">teacher_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">teacher</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">student_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">student</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+                <span class="c1"># Calculate loss</span>
+                <span class="n">loss</span><span class="p">,</span> <span class="n">distill_loss</span><span class="p">,</span> <span class="n">task_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distillation_loss</span><span class="p">(</span>
+                    <span class="n">student_outputs</span><span class="p">,</span> <span class="n">teacher_outputs</span><span class="p">,</span> <span class="n">targets</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Backpropagation</span>
+                <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+                <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+                <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">batch_idx</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s1">, Batch </span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s1">: &#39;</span>
+                          <span class="sa">f</span><span class="s1">&#39;Total Loss: </span><span class="si">{</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">, &#39;</span>
+                          <span class="sa">f</span><span class="s1">&#39;Distill Loss: </span><span class="si">{</span><span class="n">distill_loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">, &#39;</span>
+                          <span class="sa">f</span><span class="s1">&#39;Task Loss: </span><span class="si">{</span><span class="n">task_loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="n">avg_loss</span> <span class="o">=</span> <span class="n">total_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="si">}</span><span class="s1">: Average Loss = </span><span class="si">{</span><span class="n">avg_loss</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="deployment-frameworks">
+<h2>Deployment Frameworks<a class="headerlink" href="#deployment-frameworks" title="Link to this heading"></a></h2>
+<section id="tensorrt-optimization">
+<h3>TensorRT Optimization<a class="headerlink" href="#tensorrt-optimization" title="Link to this heading"></a></h3>
+<p>Optimize for NVIDIA devices:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">tensorrt</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">trt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch2trt</span><span class="w"> </span><span class="kn">import</span> <span class="n">torch2trt</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TensorRTDeployer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deploy models using TensorRT optimization.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="n">input_shape</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">convert_to_tensorrt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp16_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert PyTorch model to TensorRT.&quot;&quot;&quot;</span>
+        <span class="c1"># Create dummy input</span>
+        <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+
+        <span class="c1"># Convert model</span>
+        <span class="n">model_trt</span> <span class="o">=</span> <span class="n">torch2trt</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">cuda</span><span class="p">(),</span>
+            <span class="p">[</span><span class="n">dummy_input</span><span class="p">],</span>
+            <span class="n">fp16_mode</span><span class="o">=</span><span class="n">fp16_mode</span><span class="p">,</span>
+            <span class="n">max_batch_size</span><span class="o">=</span><span class="n">max_batch_size</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">model_trt</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">benchmark_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original_model</span><span class="p">,</span> <span class="n">trt_model</span><span class="p">,</span> <span class="n">num_runs</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Benchmark original vs TensorRT model.&quot;&quot;&quot;</span>
+        <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+
+        <span class="c1"># Benchmark original model</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span><span class="n">enable_timing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span><span class="n">enable_timing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">start_time</span><span class="o">.</span><span class="n">record</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_runs</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">original_model</span><span class="p">(</span><span class="n">dummy_input</span><span class="p">)</span>
+        <span class="n">end_time</span><span class="o">.</span><span class="n">record</span><span class="p">()</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+        <span class="n">original_time</span> <span class="o">=</span> <span class="n">start_time</span><span class="o">.</span><span class="n">elapsed_time</span><span class="p">(</span><span class="n">end_time</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_runs</span>
+
+        <span class="c1"># Benchmark TensorRT model</span>
+        <span class="n">start_time</span><span class="o">.</span><span class="n">record</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_runs</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">trt_model</span><span class="p">(</span><span class="n">dummy_input</span><span class="p">)</span>
+        <span class="n">end_time</span><span class="o">.</span><span class="n">record</span><span class="p">()</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">synchronize</span><span class="p">()</span>
+        <span class="n">trt_time</span> <span class="o">=</span> <span class="n">start_time</span><span class="o">.</span><span class="n">elapsed_time</span><span class="p">(</span><span class="n">end_time</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_runs</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;original_time_ms&#39;</span><span class="p">:</span> <span class="n">original_time</span><span class="p">,</span>
+            <span class="s1">&#39;tensorrt_time_ms&#39;</span><span class="p">:</span> <span class="n">trt_time</span><span class="p">,</span>
+            <span class="s1">&#39;speedup&#39;</span><span class="p">:</span> <span class="n">original_time</span> <span class="o">/</span> <span class="n">trt_time</span>
+        <span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="onnx-deployment">
+<h3>ONNX Deployment<a class="headerlink" href="#onnx-deployment" title="Link to this heading"></a></h3>
+<p>Deploy using ONNX for cross-platform compatibility:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">onnx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">onnxruntime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ort</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ONNXDeployer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deploy models using ONNX format.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="n">input_shape</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">export_to_onnx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">opset_version</span><span class="o">=</span><span class="mi">11</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export PyTorch model to ONNX.&quot;&quot;&quot;</span>
+        <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span>
+
+        <span class="n">torch</span><span class="o">.</span><span class="n">onnx</span><span class="o">.</span><span class="n">export</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">dummy_input</span><span class="p">,</span>
+            <span class="n">output_path</span><span class="p">,</span>
+            <span class="n">export_params</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">opset_version</span><span class="o">=</span><span class="n">opset_version</span><span class="p">,</span>
+            <span class="n">do_constant_folding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">input_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;input&#39;</span><span class="p">],</span>
+            <span class="n">output_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">],</span>
+            <span class="n">dynamic_axes</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;input&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;batch_size&#39;</span><span class="p">},</span>
+                <span class="s1">&#39;output&#39;</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;batch_size&#39;</span><span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Verify ONNX model</span>
+        <span class="n">onnx_model</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="n">onnx</span><span class="o">.</span><span class="n">checker</span><span class="o">.</span><span class="n">check_model</span><span class="p">(</span><span class="n">onnx_model</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output_path</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">optimize_onnx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">onnx_path</span><span class="p">,</span> <span class="n">optimized_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optimize ONNX model for inference.&quot;&quot;&quot;</span>
+        <span class="c1"># Load and optimize</span>
+        <span class="n">sess_options</span> <span class="o">=</span> <span class="n">ort</span><span class="o">.</span><span class="n">SessionOptions</span><span class="p">()</span>
+        <span class="n">sess_options</span><span class="o">.</span><span class="n">graph_optimization_level</span> <span class="o">=</span> <span class="n">ort</span><span class="o">.</span><span class="n">GraphOptimizationLevel</span><span class="o">.</span><span class="n">ORT_ENABLE_ALL</span>
+
+        <span class="c1"># Create optimized session</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">ort</span><span class="o">.</span><span class="n">InferenceSession</span><span class="p">(</span><span class="n">onnx_path</span><span class="p">,</span> <span class="n">sess_options</span><span class="p">)</span>
+
+        <span class="c1"># Save optimized model</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">optimized_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">optimized_path</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">benchmark_onnx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">onnx_path</span><span class="p">,</span> <span class="n">num_runs</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Benchmark ONNX model performance.&quot;&quot;&quot;</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">ort</span><span class="o">.</span><span class="n">InferenceSession</span><span class="p">(</span><span class="n">onnx_path</span><span class="p">)</span>
+        <span class="n">input_name</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+        <span class="c1"># Warmup</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="n">input_name</span><span class="p">:</span> <span class="n">dummy_input</span><span class="p">})</span>
+
+        <span class="c1"># Benchmark</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_runs</span><span class="p">):</span>
+            <span class="n">_</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="n">input_name</span><span class="p">:</span> <span class="n">dummy_input</span><span class="p">})</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="n">avg_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span> <span class="o">/</span> <span class="n">num_runs</span> <span class="o">*</span> <span class="mi">1000</span>  <span class="c1"># Convert to ms</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;average_inference_time_ms&#39;</span><span class="p">:</span> <span class="n">avg_time</span><span class="p">,</span>
+            <span class="s1">&#39;throughput_fps&#39;</span><span class="p">:</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">avg_time</span>
+        <span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mobile-deployment">
+<h2>Mobile Deployment<a class="headerlink" href="#mobile-deployment" title="Link to this heading"></a></h2>
+<section id="pytorch-mobile">
+<h3>PyTorch Mobile<a class="headerlink" href="#pytorch-mobile" title="Link to this heading"></a></h3>
+<p>Deploy on mobile devices:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.mobile_optimizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">optimize_for_mobile</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MobileDeployer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deploy models for mobile devices.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_for_mobile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare model for mobile deployment.&quot;&quot;&quot;</span>
+        <span class="c1"># Set to evaluation mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+        <span class="c1"># Trace the model</span>
+        <span class="n">dummy_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
+        <span class="n">traced_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="n">dummy_input</span><span class="p">)</span>
+
+        <span class="c1"># Optimize for mobile</span>
+        <span class="n">mobile_model</span> <span class="o">=</span> <span class="n">optimize_for_mobile</span><span class="p">(</span><span class="n">traced_model</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mobile_model</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_mobile_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mobile_model</span><span class="p">,</span> <span class="n">output_path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save mobile-optimized model.&quot;&quot;&quot;</span>
+        <span class="n">mobile_model</span><span class="o">.</span><span class="n">_save_for_lite_interpreter</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output_path</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_mobile_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mobile_path</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate mobile model accuracy.&quot;&quot;&quot;</span>
+        <span class="c1"># Load mobile model</span>
+        <span class="n">mobile_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">mobile_path</span><span class="p">)</span>
+        <span class="n">mobile_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+        <span class="n">correct</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">targets</span> <span class="ow">in</span> <span class="n">test_loader</span><span class="p">:</span>
+                <span class="n">outputs</span> <span class="o">=</span> <span class="n">mobile_model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">predicted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">total</span> <span class="o">+=</span> <span class="n">targets</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">correct</span> <span class="o">+=</span> <span class="p">(</span><span class="n">predicted</span> <span class="o">==</span> <span class="n">targets</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+        <span class="n">accuracy</span> <span class="o">=</span> <span class="n">correct</span> <span class="o">/</span> <span class="n">total</span>
+        <span class="k">return</span> <span class="n">accuracy</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="performance-monitoring">
+<h2>Performance Monitoring<a class="headerlink" href="#performance-monitoring" title="Link to this heading"></a></h2>
+<section id="real-time-performance-tracking">
+<h3>Real-time Performance Tracking<a class="headerlink" href="#real-time-performance-tracking" title="Link to this heading"></a></h3>
+<p>Monitor deployed model performance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">psutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PerformanceMonitor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Monitor deployed model performance.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="n">window_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inference_times</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory_usage</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cpu_usage</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">window_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitoring</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor_thread</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapped_inference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wrapped inference with performance monitoring.&quot;&quot;&quot;</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># Run inference</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+
+        <span class="c1"># Record metrics</span>
+        <span class="n">inference_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>  <span class="c1"># Convert to ms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inference_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inference_time</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start background performance monitoring.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitoring</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_monitor_system</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">interval</span><span class="p">,)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop background monitoring.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitoring</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor_thread</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitor_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_monitor_system</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Background system monitoring.&quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitoring</span><span class="p">:</span>
+            <span class="c1"># Record memory usage</span>
+            <span class="n">memory_info</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">virtual_memory</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">memory_usage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">memory_info</span><span class="o">.</span><span class="n">percent</span><span class="p">)</span>
+
+            <span class="c1"># Record CPU usage</span>
+            <span class="n">cpu_percent</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">cpu_percent</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cpu_usage</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cpu_percent</span><span class="p">)</span>
+
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_performance_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get current performance statistics.&quot;&quot;&quot;</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inference_times</span><span class="p">:</span>
+            <span class="n">stats</span><span class="p">[</span><span class="s1">&#39;inference&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;mean_time_ms&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inference_times</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inference_times</span><span class="p">),</span>
+                <span class="s1">&#39;min_time_ms&#39;</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inference_times</span><span class="p">),</span>
+                <span class="s1">&#39;max_time_ms&#39;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inference_times</span><span class="p">),</span>
+                <span class="s1">&#39;throughput_fps&#39;</span><span class="p">:</span> <span class="mi">1000</span> <span class="o">/</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inference_times</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inference_times</span><span class="p">))</span>
+            <span class="p">}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">:</span>
+            <span class="n">stats</span><span class="p">[</span><span class="s1">&#39;memory&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;mean_usage_percent&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">),</span>
+                <span class="s1">&#39;peak_usage_percent&#39;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">)</span>
+            <span class="p">}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cpu_usage</span><span class="p">:</span>
+            <span class="n">stats</span><span class="p">[</span><span class="s1">&#39;cpu&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;mean_usage_percent&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cpu_usage</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cpu_usage</span><span class="p">),</span>
+                <span class="s1">&#39;peak_usage_percent&#39;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cpu_usage</span><span class="p">)</span>
+            <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">stats</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="complete-deployment-pipeline">
+<h2>Complete Deployment Pipeline<a class="headerlink" href="#complete-deployment-pipeline" title="Link to this heading"></a></h2>
+<p>Here’s a complete example of the deployment pipeline:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">deploy_nas_model</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">target_device</span><span class="o">=</span><span class="s1">&#39;mobile&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Complete deployment pipeline for NAS-evolved models.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Load trained model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+    <span class="c1"># Profile device capabilities</span>
+    <span class="n">profiler</span> <span class="o">=</span> <span class="n">EdgeDeviceProfiler</span><span class="p">()</span>
+    <span class="n">compatibility</span> <span class="o">=</span> <span class="n">profiler</span><span class="o">.</span><span class="n">check_compatibility</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">compatibility</span><span class="p">[</span><span class="s1">&#39;can_run&#39;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Model optimization required for target device&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Apply quantization</span>
+        <span class="n">quantizer</span> <span class="o">=</span> <span class="n">ModelQuantizer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">model_prepared</span> <span class="o">=</span> <span class="n">quantizer</span><span class="o">.</span><span class="n">prepare_for_quantization</span><span class="p">()</span>
+        <span class="c1"># Note: You would need calibration data here</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">quantizer</span><span class="o">.</span><span class="n">quantize_model</span><span class="p">(</span><span class="n">model_prepared</span><span class="p">)</span>
+
+        <span class="c1"># Apply pruning if still too large</span>
+        <span class="n">pruner</span> <span class="o">=</span> <span class="n">ModelPruner</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">pruner</span><span class="o">.</span><span class="n">unstructured_pruning</span><span class="p">(</span><span class="n">pruning_ratio</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+        <span class="n">pruner</span><span class="o">.</span><span class="n">remove_pruning_masks</span><span class="p">()</span>
+
+    <span class="c1"># Choose deployment strategy</span>
+    <span class="k">if</span> <span class="n">target_device</span> <span class="o">==</span> <span class="s1">&#39;mobile&#39;</span><span class="p">:</span>
+        <span class="n">deployer</span> <span class="o">=</span> <span class="n">MobileDeployer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">mobile_model</span> <span class="o">=</span> <span class="n">deployer</span><span class="o">.</span><span class="n">prepare_for_mobile</span><span class="p">()</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="s1">&#39;model_mobile.ptl&#39;</span>
+        <span class="n">deployer</span><span class="o">.</span><span class="n">save_mobile_model</span><span class="p">(</span><span class="n">mobile_model</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">target_device</span> <span class="o">==</span> <span class="s1">&#39;nvidia&#39;</span><span class="p">:</span>
+        <span class="n">deployer</span> <span class="o">=</span> <span class="n">TensorRTDeployer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">trt_model</span> <span class="o">=</span> <span class="n">deployer</span><span class="o">.</span><span class="n">convert_to_tensorrt</span><span class="p">()</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="s1">&#39;model_tensorrt.pth&#39;</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">trt_model</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># ONNX for general deployment</span>
+        <span class="n">deployer</span> <span class="o">=</span> <span class="n">ONNXDeployer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="s1">&#39;model.onnx&#39;</span>
+        <span class="n">deployer</span><span class="o">.</span><span class="n">export_to_onnx</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="n">optimized_path</span> <span class="o">=</span> <span class="s1">&#39;model_optimized.onnx&#39;</span>
+        <span class="n">deployer</span><span class="o">.</span><span class="n">optimize_onnx</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">optimized_path</span><span class="p">)</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="n">optimized_path</span>
+
+    <span class="c1"># Setup performance monitoring</span>
+    <span class="n">monitor</span> <span class="o">=</span> <span class="n">PerformanceMonitor</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">monitor</span><span class="o">.</span><span class="n">start_monitoring</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model deployed successfully: </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">monitor</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">model_path</span> <span class="o">=</span> <span class="s2">&quot;best_nas_model.pth&quot;</span>
+    <span class="n">deployed_path</span><span class="p">,</span> <span class="n">monitor</span> <span class="o">=</span> <span class="n">deploy_nas_model</span><span class="p">(</span><span class="n">model_path</span><span class="p">,</span> <span class="n">target_device</span><span class="o">=</span><span class="s1">&#39;mobile&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Monitor for a while</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="n">monitor</span><span class="o">.</span><span class="n">get_performance_stats</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Performance stats: </span><span class="si">{</span><span class="n">stats</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">monitor</span><span class="o">.</span><span class="n">stop_monitoring</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Profile First</strong>: Always profile target devices before deployment</p></li>
+<li><p><strong>Gradual Optimization</strong>: Apply optimizations incrementally</p></li>
+<li><p><strong>Validate Accuracy</strong>: Check model accuracy after each optimization</p></li>
+<li><p><strong>Monitor Performance</strong>: Continuously monitor deployed models</p></li>
+<li><p><strong>A/B Testing</strong>: Compare optimized vs original models in production</p></li>
+</ol>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="custom_architectures.html"><span class="doc">Custom Architectures</span></a> for creating edge-optimized architectures</p></li>
+<li><p><a class="reference internal" href="../examples/edge_optimization.html"><span class="doc">&lt;no title&gt;</span></a> for edge optimization examples</p></li>
+<li><p><a class="reference internal" href="../api/train.html"><span class="doc">Training Module</span></a> for training API reference</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="custom_architectures.html" class="btn btn-neutral float-left" title="Custom Architectures" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../examples/index.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

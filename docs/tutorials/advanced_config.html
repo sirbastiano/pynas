@@ -1,0 +1,562 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Configuration &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Custom Architectures" href="custom_architectures.html" />
+    <link rel="prev" title="Basic Neural Architecture Search" href="basic_nas.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html">Basic Neural Architecture Search</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Advanced Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuration-files">Configuration Files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#creating-a-configuration-file">Creating a Configuration File</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#loading-and-using-configuration">Loading and Using Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-search-spaces">Custom Search Spaces</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuring-layer-parameters">Configuring Layer Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-fitness-functions">Custom Fitness Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-objective-optimization">Multi-Objective Optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-evolution-strategies">Advanced Evolution Strategies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#adaptive-mutation-rates">Adaptive Mutation Rates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#island-evolution">Island Evolution</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#performance-monitoring">Performance Monitoring</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hyperparameter-optimization">Hyperparameter Optimization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="custom_architectures.html">Custom Architectures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_deployment.html">Edge Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#basic-neural-architecture-search">Basic Neural Architecture Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#advanced-configuration">Advanced Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#custom-architecture-components">Custom Architecture Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#edge-device-deployment">Edge Device Deployment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Tutorials</a></li>
+      <li class="breadcrumb-item active">Advanced Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/advanced_config.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="advanced-configuration">
+<h1>Advanced Configuration<a class="headerlink" href="#advanced-configuration" title="Link to this heading"></a></h1>
+<p>This tutorial covers advanced configuration options for PyNAS, including parameter tuning, custom search spaces, and optimization strategies.</p>
+<section id="configuration-files">
+<h2>Configuration Files<a class="headerlink" href="#configuration-files" title="Link to this heading"></a></h2>
+<p>PyNAS supports comprehensive configuration through INI files. Here’s how to create and use advanced configurations:</p>
+<section id="creating-a-configuration-file">
+<h3>Creating a Configuration File<a class="headerlink" href="#creating-a-configuration-file" title="Link to this heading"></a></h3>
+<p>Create a <code class="docutils literal notranslate"><span class="pre">config.ini</span></code> file with the following structure:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Task]</span>
+<span class="c1">; Task type: segmentation or classification</span>
+<span class="na">type_head</span><span class="o">=</span><span class="s">segmentation</span>
+
+<span class="k">[NAS]</span>
+<span class="c1">; Architecture search parameters</span>
+<span class="na">max_layers</span><span class="o">=</span><span class="s">7</span>
+
+<span class="k">[GA]</span>
+<span class="c1">; Genetic Algorithm parameters</span>
+<span class="na">population_size</span><span class="o">=</span><span class="s">50</span>
+<span class="na">epochs</span><span class="o">=</span><span class="s">15</span>
+<span class="na">batch_size</span><span class="o">=</span><span class="s">16</span>
+<span class="na">max_iterations</span><span class="o">=</span><span class="s">25</span>
+<span class="na">mating_pool_cutoff</span><span class="o">=</span><span class="s">0.6</span>
+<span class="na">mutation_probability</span><span class="o">=</span><span class="s">0.25</span>
+<span class="na">n_random</span><span class="o">=</span><span class="s">8</span>
+<span class="na">k_best</span><span class="o">=</span><span class="s">3</span>
+<span class="na">task</span><span class="o">=</span><span class="s">segmentation</span>
+
+<span class="k">[Computation]</span>
+<span class="c1">; Hardware and computation settings</span>
+<span class="na">seed</span><span class="o">=</span><span class="s">42</span>
+<span class="na">num_workers</span><span class="o">=</span><span class="s">8</span>
+<span class="na">accelerator</span><span class="o">=</span><span class="s">gpu</span>
+
+<span class="k">[Optimizer]</span>
+<span class="c1">; Optimizer selection (1=GreyWolf, 2=ParticleSwarm)</span>
+<span class="na">optimizer_selection</span><span class="o">=</span><span class="s">1</span>
+</pre></div>
+</div>
+</section>
+<section id="loading-and-using-configuration">
+<h3>Loading and Using Configuration<a class="headerlink" href="#loading-and-using-configuration" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">configparser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span>
+
+<span class="c1"># Load configuration</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+<span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;config.ini&#39;</span><span class="p">)</span>
+
+<span class="c1"># Extract parameters</span>
+<span class="n">population_size</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;GA&#39;</span><span class="p">,</span> <span class="s1">&#39;population_size&#39;</span><span class="p">)</span>
+<span class="n">max_layers</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;NAS&#39;</span><span class="p">,</span> <span class="s1">&#39;max_layers&#39;</span><span class="p">)</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;GA&#39;</span><span class="p">,</span> <span class="s1">&#39;epochs&#39;</span><span class="p">)</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getint</span><span class="p">(</span><span class="s1">&#39;GA&#39;</span><span class="p">,</span> <span class="s1">&#39;batch_size&#39;</span><span class="p">)</span>
+<span class="n">mutation_prob</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">getfloat</span><span class="p">(</span><span class="s1">&#39;GA&#39;</span><span class="p">,</span> <span class="s1">&#39;mutation_probability&#39;</span><span class="p">)</span>
+
+<span class="c1"># Use in population creation</span>
+<span class="n">pop</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
+    <span class="n">n_individuals</span><span class="o">=</span><span class="n">population_size</span><span class="p">,</span>
+    <span class="n">max_layers</span><span class="o">=</span><span class="n">max_layers</span><span class="p">,</span>
+    <span class="n">dm</span><span class="o">=</span><span class="n">dm</span><span class="p">,</span>
+    <span class="n">max_parameters</span><span class="o">=</span><span class="mi">500_000</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="custom-search-spaces">
+<h2>Custom Search Spaces<a class="headerlink" href="#custom-search-spaces" title="Link to this heading"></a></h2>
+<p>PyNAS allows you to define custom search spaces for different layer types.</p>
+<section id="configuring-layer-parameters">
+<h3>Configuring Layer Parameters<a class="headerlink" href="#configuring-layer-parameters" title="Link to this heading"></a></h3>
+<p>Modify the configuration to customize layer parameter ranges:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[ConvAct]</span>
+<span class="c1">; Convolutional layer parameters</span>
+<span class="na">min_kernel_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">3</span>
+<span class="na">max_kernel_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">7</span>
+<span class="na">min_stride</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+<span class="na">max_stride</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">2</span>
+<span class="na">min_padding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">1</span>
+<span class="na">max_padding</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">3</span>
+<span class="na">min_out_channels_coefficient</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">4</span>
+<span class="na">max_out_channels_coefficient</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">16</span>
+
+<span class="k">[MBConv]</span>
+<span class="c1">; MobileNet Inverted Bottleneck parameters</span>
+<span class="na">min_expansion_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">2</span>
+<span class="na">max_expansion_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">8</span>
+<span class="na">min_dw_kernel_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">3</span>
+<span class="na">max_dw_kernel_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">5</span>
+
+<span class="k">[ResNetBlock]</span>
+<span class="c1">; ResNet block parameters</span>
+<span class="na">min_reduction_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">2</span>
+<span class="na">max_reduction_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">6</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="custom-fitness-functions">
+<h2>Custom Fitness Functions<a class="headerlink" href="#custom-fitness-functions" title="Link to this heading"></a></h2>
+<p>Create custom fitness evaluation strategies:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pynas.train.myFit</span><span class="w"> </span><span class="kn">import</span> <span class="n">FitnessEvaluator</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomFitnessEvaluator</span><span class="p">(</span><span class="n">FitnessEvaluator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom fitness evaluator with domain-specific metrics.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">weighted_sum_exponential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fps</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">iou</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Custom fitness function emphasizing accuracy over speed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fps: Frames per second (inference speed)</span>
+<span class="sd">            iou: Intersection over Union (accuracy metric)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Fitness score combining speed and accuracy</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">fps</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">iou</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Custom weights favoring accuracy</span>
+        <span class="n">accuracy_weight</span> <span class="o">=</span> <span class="mf">0.8</span>
+        <span class="n">speed_weight</span> <span class="o">=</span> <span class="mf">0.2</span>
+
+        <span class="c1"># Normalize metrics</span>
+        <span class="n">normalized_iou</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">iou</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">normalized_fps</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">fps</span> <span class="o">/</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>  <span class="c1"># Assume max 100 FPS</span>
+
+        <span class="c1"># Exponential weighting for accuracy</span>
+        <span class="n">fitness</span> <span class="o">=</span> <span class="p">(</span><span class="n">accuracy_weight</span> <span class="o">*</span> <span class="p">(</span><span class="n">normalized_iou</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span>
+                  <span class="n">speed_weight</span> <span class="o">*</span> <span class="n">normalized_fps</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fitness</span>
+
+<span class="c1"># Use custom evaluator</span>
+<span class="n">evaluator</span> <span class="o">=</span> <span class="n">CustomFitnessEvaluator</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="multi-objective-optimization">
+<h2>Multi-Objective Optimization<a class="headerlink" href="#multi-objective-optimization" title="Link to this heading"></a></h2>
+<p>Balance multiple objectives like accuracy, speed, and model size:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">pareto_fitness</span><span class="p">(</span><span class="n">individual</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Multi-objective fitness using Pareto ranking.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        individual: Individual to evaluate</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Pareto rank and crowding distance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">objectives</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">individual</span><span class="o">.</span><span class="n">iou</span><span class="p">,</span>           <span class="c1"># Maximize accuracy</span>
+        <span class="n">individual</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span>           <span class="c1"># Maximize speed</span>
+        <span class="o">-</span><span class="n">individual</span><span class="o">.</span><span class="n">model_size</span>    <span class="c1"># Minimize model size</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Implement Pareto ranking logic</span>
+    <span class="k">return</span> <span class="n">calculate_pareto_rank</span><span class="p">(</span><span class="n">objectives</span><span class="p">)</span>
+
+<span class="c1"># Apply during evolution</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">custom_evolution_step</span><span class="p">(</span><span class="n">pop</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom evolution with Pareto selection.&quot;&quot;&quot;</span>
+    <span class="c1"># Calculate Pareto ranks for all individuals</span>
+    <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">population</span><span class="p">:</span>
+        <span class="n">individual</span><span class="o">.</span><span class="n">pareto_rank</span> <span class="o">=</span> <span class="n">pareto_fitness</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+
+    <span class="c1"># Select based on Pareto dominance</span>
+    <span class="n">selected</span> <span class="o">=</span> <span class="n">pareto_selection</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">n_individuals</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">selected</span>
+</pre></div>
+</div>
+</section>
+<section id="advanced-evolution-strategies">
+<h2>Advanced Evolution Strategies<a class="headerlink" href="#advanced-evolution-strategies" title="Link to this heading"></a></h2>
+<p>Implement sophisticated evolution techniques:</p>
+<section id="adaptive-mutation-rates">
+<h3>Adaptive Mutation Rates<a class="headerlink" href="#adaptive-mutation-rates" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">AdaptiveEvolution</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Evolution with adaptive parameters.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_mutation_rate</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutation_rate</span> <span class="o">=</span> <span class="n">initial_mutation_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generation</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_fitness_history</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">adapt_mutation_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_best_fitness</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adapt mutation rate based on progress.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">best_fitness_history</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">recent_improvement</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_best_fitness</span> <span class="o">-</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">best_fitness_history</span><span class="p">[</span><span class="o">-</span><span class="mi">5</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">recent_improvement</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">:</span>  <span class="c1"># Stagnation</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mutation_rate</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation_rate</span> <span class="o">*</span> <span class="mf">1.2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Good progress</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mutation_rate</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation_rate</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">best_fitness_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_best_fitness</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">evolve_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evolve with adaptive parameters.&quot;&quot;&quot;</span>
+        <span class="c1"># Get current best fitness</span>
+        <span class="n">pop</span><span class="o">.</span><span class="n">_sort_population</span><span class="p">()</span>
+        <span class="n">best_fitness</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fitness</span>
+
+        <span class="c1"># Adapt mutation rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adapt_mutation_rate</span><span class="p">(</span><span class="n">best_fitness</span><span class="p">)</span>
+
+        <span class="c1"># Evolve with current mutation rate</span>
+        <span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+            <span class="n">mutation_probability</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_rate</span><span class="p">,</span>
+            <span class="n">mating_pool_cutoff</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">k_best</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">n_random</span><span class="o">=</span><span class="mi">5</span>
+        <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generation </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generation</span><span class="si">}</span><span class="s2">: &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;Best fitness = </span><span class="si">{</span><span class="n">best_fitness</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, &quot;</span>
+              <span class="sa">f</span><span class="s2">&quot;Mutation rate = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_rate</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">generation</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</section>
+<section id="island-evolution">
+<h3>Island Evolution<a class="headerlink" href="#island-evolution" title="Link to this heading"></a></h3>
+<p>Run parallel evolution with migration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">island_evolution</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">num_islands</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">migration_interval</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run evolution on multiple islands with periodic migration.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dm: Data module</span>
+<span class="sd">        num_islands: Number of parallel populations</span>
+<span class="sd">        migration_interval: Generations between migrations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create multiple populations (islands)</span>
+    <span class="n">islands</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_islands</span><span class="p">):</span>
+        <span class="n">pop</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
+            <span class="n">n_individuals</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+            <span class="n">max_layers</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">dm</span><span class="o">=</span><span class="n">dm</span><span class="p">,</span>
+            <span class="n">max_parameters</span><span class="o">=</span><span class="mi">300_000</span>
+        <span class="p">)</span>
+        <span class="n">pop</span><span class="o">.</span><span class="n">initial_poll</span><span class="p">()</span>
+        <span class="n">islands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+
+    <span class="c1"># Evolution with migration</span>
+    <span class="k">for</span> <span class="n">generation</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+        <span class="c1"># Evolve each island</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">island</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">islands</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evolving island </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">island</span><span class="o">.</span><span class="n">train_generation</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;classification&#39;</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+            <span class="n">island</span><span class="o">.</span><span class="n">_sort_population</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">generation</span> <span class="o">&lt;</span> <span class="mi">29</span><span class="p">:</span>  <span class="c1"># Don&#39;t evolve on last generation</span>
+                <span class="n">island</span><span class="o">.</span><span class="n">evolve</span><span class="p">()</span>
+
+        <span class="c1"># Migration every few generations</span>
+        <span class="k">if</span> <span class="n">generation</span> <span class="o">%</span> <span class="n">migration_interval</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">generation</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">migrate_individuals</span><span class="p">(</span><span class="n">islands</span><span class="p">,</span> <span class="n">num_migrants</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Combine results from all islands</span>
+    <span class="n">all_individuals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">island</span> <span class="ow">in</span> <span class="n">islands</span><span class="p">:</span>
+        <span class="n">all_individuals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">island</span><span class="o">.</span><span class="n">population</span><span class="p">)</span>
+
+    <span class="c1"># Sort and return best</span>
+    <span class="n">all_individuals</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">fitness</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">all_individuals</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="performance-monitoring">
+<h2>Performance Monitoring<a class="headerlink" href="#performance-monitoring" title="Link to this heading"></a></h2>
+<p>Advanced monitoring and analysis tools:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EvolutionAnalyzer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Analyze and visualize evolution progress.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generation_stats</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">record_generation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop</span><span class="p">,</span> <span class="n">generation</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Record statistics for current generation.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pop</span><span class="o">.</span><span class="n">population</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">fitnesses</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind</span><span class="o">.</span><span class="n">fitness</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">population</span> <span class="k">if</span> <span class="n">ind</span><span class="o">.</span><span class="n">fitness</span><span class="p">]</span>
+
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;generation&#39;</span><span class="p">:</span> <span class="n">generation</span><span class="p">,</span>
+            <span class="s1">&#39;best_fitness&#39;</span><span class="p">:</span> <span class="nb">max</span><span class="p">(</span><span class="n">fitnesses</span><span class="p">)</span> <span class="k">if</span> <span class="n">fitnesses</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;mean_fitness&#39;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="n">fitnesses</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">fitnesses</span><span class="p">)</span> <span class="k">if</span> <span class="n">fitnesses</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;std_fitness&#39;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">fitnesses</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="k">if</span> <span class="n">fitnesses</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;population_size&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">population</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">generation_stats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_evolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot evolution progress.&quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generation_stats</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;generation&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;best_fitness&#39;</span><span class="p">],</span> <span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Best Fitness Over Generations&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Generation&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Fitness&#39;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;generation&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;mean_fitness&#39;</span><span class="p">],</span> <span class="s1">&#39;g-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Mean Fitness Over Generations&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Generation&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Mean Fitness&#39;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;generation&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;std_fitness&#39;</span><span class="p">],</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Fitness Standard Deviation&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Generation&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Std Deviation&#39;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Usage</span>
+<span class="n">analyzer</span> <span class="o">=</span> <span class="n">EvolutionAnalyzer</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">generation</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="c1"># ... evolution code ...</span>
+    <span class="n">analyzer</span><span class="o">.</span><span class="n">record_generation</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">generation</span><span class="p">)</span>
+
+<span class="n">analyzer</span><span class="o">.</span><span class="n">plot_evolution</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="hyperparameter-optimization">
+<h2>Hyperparameter Optimization<a class="headerlink" href="#hyperparameter-optimization" title="Link to this heading"></a></h2>
+<p>Optimize evolution hyperparameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParameterGrid</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">hyperparameter_search</span><span class="p">(</span><span class="n">dm</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search for optimal evolution hyperparameters.&quot;&quot;&quot;</span>
+
+    <span class="n">param_grid</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;population_size&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+        <span class="s1">&#39;mutation_probability&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>
+        <span class="s1">&#39;mating_pool_cutoff&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span>
+        <span class="s1">&#39;k_best&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+    <span class="p">}</span>
+
+    <span class="n">best_params</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">best_result</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">ParameterGrid</span><span class="p">(</span><span class="n">param_grid</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Testing parameters: </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create population with current parameters</span>
+        <span class="n">pop</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
+            <span class="n">n_individuals</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;population_size&#39;</span><span class="p">],</span>
+            <span class="n">max_layers</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">dm</span><span class="o">=</span><span class="n">dm</span><span class="p">,</span>
+            <span class="n">max_parameters</span><span class="o">=</span><span class="mi">200_000</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Run short evolution</span>
+        <span class="n">pop</span><span class="o">.</span><span class="n">initial_poll</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">gen</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>  <span class="c1"># Short test</span>
+            <span class="n">pop</span><span class="o">.</span><span class="n">train_generation</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;classification&#39;</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+            <span class="n">pop</span><span class="o">.</span><span class="n">_sort_population</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">gen</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+                    <span class="n">mutation_probability</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;mutation_probability&#39;</span><span class="p">],</span>
+                    <span class="n">mating_pool_cutoff</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;mating_pool_cutoff&#39;</span><span class="p">],</span>
+                    <span class="n">k_best</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;k_best&#39;</span><span class="p">]</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Evaluate result</span>
+        <span class="n">final_fitness</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fitness</span> <span class="k">if</span> <span class="n">pop</span><span class="o">.</span><span class="n">population</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">final_fitness</span> <span class="o">&gt;</span> <span class="n">best_result</span><span class="p">:</span>
+            <span class="n">best_result</span> <span class="o">=</span> <span class="n">final_fitness</span>
+            <span class="n">best_params</span> <span class="o">=</span> <span class="n">params</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best parameters: </span><span class="si">{</span><span class="n">best_params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best result: </span><span class="si">{</span><span class="n">best_result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">best_params</span>
+</pre></div>
+</div>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Experiment with different configuration combinations</p></li>
+<li><p>Implement custom architectural components</p></li>
+<li><p>Try multi-objective optimization for your specific use case</p></li>
+<li><p>Explore distributed evolution for larger search spaces</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="basic_nas.html" class="btn btn-neutral float-left" title="Basic Neural Architecture Search" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="custom_architectures.html" class="btn btn-neutral float-right" title="Custom Architectures" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

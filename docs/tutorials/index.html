@@ -1,0 +1,206 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorials &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Basic Neural Architecture Search" href="basic_nas.html" />
+    <link rel="prev" title="Quick Start Guide" href="../quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html">Basic Neural Architecture Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_config.html">Advanced Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_architectures.html">Custom Architectures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_deployment.html">Edge Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-neural-architecture-search">Basic Neural Architecture Search</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-configuration">Advanced Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-architecture-components">Custom Architecture Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#edge-device-deployment">Edge Device Deployment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorials</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading"></a></h1>
+<p>This section provides step-by-step tutorials for using PyNAS effectively.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_nas.html">Basic Neural Architecture Search</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html#key-concepts">Key Concepts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html#step-1-setting-up-data">Step 1: Setting Up Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html#step-2-creating-a-population">Step 2: Creating a Population</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html#step-3-initial-population-generation">Step 3: Initial Population Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html#step-4-training-and-evaluation">Step 4: Training and Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html#step-5-evolution-process">Step 5: Evolution Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html#step-6-analyzing-results">Step 6: Analyzing Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html#step-7-model-export">Step 7: Model Export</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html#understanding-the-output">Understanding the Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_nas.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_config.html">Advanced Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="advanced_config.html#configuration-files">Configuration Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_config.html#custom-search-spaces">Custom Search Spaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_config.html#custom-fitness-functions">Custom Fitness Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_config.html#multi-objective-optimization">Multi-Objective Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_config.html#advanced-evolution-strategies">Advanced Evolution Strategies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_config.html#performance-monitoring">Performance Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_config.html#hyperparameter-optimization">Hyperparameter Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced_config.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom_architectures.html">Custom Architectures</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="custom_architectures.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_architectures.html#creating-custom-blocks">Creating Custom Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_architectures.html#integrating-custom-blocks">Integrating Custom Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_architectures.html#evolutionary-configuration">Evolutionary Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_architectures.html#advanced-customization">Advanced Customization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_architectures.html#architecture-constraints">Architecture Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_architectures.html#complete-example">Complete Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom_architectures.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="edge_deployment.html">Edge Deployment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="edge_deployment.html#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_deployment.html#edge-device-considerations">Edge Device Considerations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_deployment.html#model-optimization">Model Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_deployment.html#deployment-frameworks">Deployment Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_deployment.html#mobile-deployment">Mobile Deployment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_deployment.html#performance-monitoring">Performance Monitoring</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_deployment.html#complete-deployment-pipeline">Complete Deployment Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="edge_deployment.html#best-practices">Best Practices</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="basic-neural-architecture-search">
+<h2>Basic Neural Architecture Search<a class="headerlink" href="#basic-neural-architecture-search" title="Link to this heading"></a></h2>
+<p>Learn the fundamentals of using PyNAS for neural architecture search with genetic algorithms.</p>
+<p><a class="reference internal" href="basic_nas.html"><span class="doc">Basic Neural Architecture Search</span></a></p>
+</section>
+<section id="advanced-configuration">
+<h2>Advanced Configuration<a class="headerlink" href="#advanced-configuration" title="Link to this heading"></a></h2>
+<p>Explore advanced configuration options and parameter tuning strategies.</p>
+<p><a class="reference internal" href="advanced_config.html"><span class="doc">Advanced Configuration</span></a></p>
+</section>
+<section id="custom-architecture-components">
+<h2>Custom Architecture Components<a class="headerlink" href="#custom-architecture-components" title="Link to this heading"></a></h2>
+<p>Create custom building blocks and extend PyNAS with your own components.</p>
+<p><a class="reference internal" href="custom_architectures.html"><span class="doc">Custom Architectures</span></a></p>
+</section>
+<section id="edge-device-deployment">
+<h2>Edge Device Deployment<a class="headerlink" href="#edge-device-deployment" title="Link to this heading"></a></h2>
+<p>Optimize and deploy your discovered architectures on edge devices.</p>
+<p><a class="reference internal" href="edge_deployment.html"><span class="doc">Edge Deployment</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../quickstart.html" class="btn btn-neutral float-left" title="Quick Start Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="basic_nas.html" class="btn btn-neutral float-right" title="Basic Neural Architecture Search" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

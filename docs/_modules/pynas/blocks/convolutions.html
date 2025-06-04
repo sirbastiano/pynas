@@ -1,0 +1,521 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pynas.blocks.convolutions &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples/index.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../blocks.html">pynas.blocks</a></li>
+      <li class="breadcrumb-item active">pynas.blocks.convolutions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pynas.blocks.convolutions</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.activations</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReLU</span>
+
+
+<span class="c1"># Classic Conv</span>
+<div class="viewcode-block" id="ConvAct">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.ConvAct">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConvAct</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>
+<div class="viewcode-block" id="ConvAct.__init__">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.ConvAct.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">padding</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ConvBnAct">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.ConvBnAct">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConvBnAct</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>
+<div class="viewcode-block" id="ConvBnAct.__init__">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.ConvBnAct.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">padding</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">num_features</span><span class="o">=</span><span class="n">out_channels</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SEBlock">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.SEBlock">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SEBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="SEBlock.__init__">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.SEBlock.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="mi">16</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avg_pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">AdaptiveAvgPool2d</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">reduced_channels</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">in_channels</span> <span class="o">//</span> <span class="n">reduction</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Ensure at least 1 output feature</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">reduced_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">reduced_channels</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">()</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SEBlock.forward">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.SEBlock.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avg_pool</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="o">.</span><span class="n">expand_as</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ConvSE">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.ConvSE">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConvSE</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">):</span>
+<div class="viewcode-block" id="ConvSE.__init__">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.ConvSE.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">ConvBnAct</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="n">kernel_size</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="n">stride</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">),</span>
+            <span class="n">SEBlock</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">in_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">),</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># MBConv Inverted</span>
+<div class="viewcode-block" id="MBConv">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.MBConv">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MBConv</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="MBConv.__init__">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.MBConv.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">dw_kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">expansion_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="n">expanded_channels</span> <span class="o">=</span> <span class="n">in_channels</span> <span class="o">*</span> <span class="n">expansion_factor</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="c1"># Narrow to wide</span>
+            <span class="n">ConvBnAct</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">expanded_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">),</span>
+            <span class="c1"># Wide to wide (depthwise convolution)</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">expanded_channels</span><span class="p">,</span> <span class="n">expanded_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="n">dw_kernel_size</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">expanded_channels</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">expanded_channels</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">(),</span>
+            <span class="c1"># Wide to narrow</span>
+            <span class="n">ConvBnAct</span><span class="p">(</span><span class="n">expanded_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MBConv.forward">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.MBConv.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+</div>
+
+    
+
+<div class="viewcode-block" id="MBConvNoRes">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.MBConvNoRes">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MBConvNoRes</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="MBConvNoRes.__init__">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.MBConvNoRes.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">dw_kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">expansion_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="n">expanded_channels</span> <span class="o">=</span> <span class="n">in_channels</span> <span class="o">*</span> <span class="n">expansion_factor</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="c1"># Narrow to wide</span>
+            <span class="n">ConvBnAct</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">expanded_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">),</span>
+            <span class="c1"># Wide to wide (depthwise convolution)</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">expanded_channels</span><span class="p">,</span> <span class="n">expanded_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="n">dw_kernel_size</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">expanded_channels</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">expanded_channels</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">(),</span>
+            <span class="c1"># Wide to narrow</span>
+            <span class="n">ConvBnAct</span><span class="p">(</span><span class="n">expanded_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MBConvNoRes.forward">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.MBConvNoRes.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+</div>
+
+
+
+<span class="c1"># CSP Conv</span>
+<div class="viewcode-block" id="CSPConvBlock">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.CSPConvBlock">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CSPConvBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="CSPConvBlock.__init__">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.CSPConvBlock.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">num_blocks</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Use the same value for hidden_channels to avoid the issue with odd in_channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span> <span class="o">=</span> <span class="n">in_channels</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_channels</span> <span class="o">=</span> <span class="n">in_channels</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span>
+
+        <span class="c1"># Main path (processed part)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_path</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">[</span><span class="n">ConvBnAct</span><span class="p">(</span>
+                <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span><span class="p">,</span>
+                <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span><span class="p">,</span>
+                <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span>
+            <span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_blocks</span><span class="p">)],</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Shortcut path is just a passthrough</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_path</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
+
+        <span class="c1"># Final 1x1 convolution after merging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_transition</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+                <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">shortcut_channels</span><span class="p">,</span>
+                <span class="n">out_channels</span><span class="o">=</span><span class="n">in_channels</span><span class="p">,</span>
+                <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CSPConvBlock.forward">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.CSPConvBlock.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="c1"># Apply first transition which is just a passthrough here</span>
+        <span class="c1">#shortcut = nn.Identity(x)</span>
+
+        <span class="c1"># Splitting the input tensor into two paths</span>
+        <span class="n">main_data</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+        <span class="n">shortcut_data</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span><span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+        <span class="n">main_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_path</span><span class="p">(</span><span class="n">main_data</span><span class="p">)</span>
+        <span class="n">shortcut_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_path</span><span class="p">(</span><span class="n">shortcut_data</span><span class="p">)</span>
+
+        <span class="c1"># Concatenating the main and shortcut paths</span>
+        <span class="n">combined</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">tensors</span><span class="o">=</span><span class="p">(</span><span class="n">main_data</span><span class="p">,</span> <span class="n">shortcut_data</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_transition</span><span class="p">(</span><span class="n">combined</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CSPMBConvBlock">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.CSPMBConvBlock">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CSPMBConvBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="CSPMBConvBlock.__init__">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.CSPMBConvBlock.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">num_blocks</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dw_kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">expansion_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="c1"># Use the same value for hidden_channels to avoid the issue with odd in_channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span> <span class="o">=</span> <span class="n">in_channels</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_channels</span> <span class="o">=</span> <span class="n">in_channels</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span>
+
+        <span class="c1"># Main path (processed part)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_path</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">[</span><span class="n">MBConv</span><span class="p">(</span>
+                <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span><span class="p">,</span>
+                <span class="n">out_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span><span class="p">,</span>
+                <span class="n">expansion_factor</span><span class="o">=</span><span class="n">expansion_factor</span><span class="p">,</span>
+                <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span>
+                <span class="n">dw_kernel_size</span><span class="o">=</span><span class="n">dw_kernel_size</span><span class="p">,</span>
+            <span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_blocks</span><span class="p">)],</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Shortcut path is just a passthrough</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_path</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span>
+
+        <span class="c1"># Final 1x1 convolution after merging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_transition</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+                <span class="n">in_channels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">shortcut_channels</span><span class="p">,</span>
+                <span class="n">out_channels</span><span class="o">=</span><span class="n">in_channels</span><span class="p">,</span>
+                <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CSPMBConvBlock.forward">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.CSPMBConvBlock.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="c1"># Apply first transition which is just a passthrough here</span>
+        <span class="c1">#shortcut = nn.Identity(x)</span>
+
+        <span class="c1"># Splitting the input tensor into two paths</span>
+        <span class="n">main_data</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+        <span class="n">shortcut_data</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_channels</span><span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+        <span class="n">main_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_path</span><span class="p">(</span><span class="n">main_data</span><span class="p">)</span>
+        <span class="n">shortcut_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_path</span><span class="p">(</span><span class="n">shortcut_data</span><span class="p">)</span>
+
+        <span class="c1"># Concatenating the main and shortcut paths</span>
+        <span class="n">combined</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">tensors</span><span class="o">=</span><span class="p">(</span><span class="n">main_data</span><span class="p">,</span> <span class="n">shortcut_data</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_transition</span><span class="p">(</span><span class="n">combined</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+</div>
+
+
+
+<span class="c1"># DenseNetBlock</span>
+<div class="viewcode-block" id="DenseNetBlock">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.DenseNetBlock">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DenseNetBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Basic DenseNet block composed by one 3x3 convs with residual connection.</span>
+<span class="sd">    The residual connection is perfomed by concatenate the input and the output.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="DenseNetBlock.__init__">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.DenseNetBlock.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">),</span>
+            <span class="n">activation</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="o">=</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DenseNetBlock.forward">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.DenseNetBlock.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">res</span><span class="p">,</span> <span class="n">x</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># ResNetBlock and derivatives (https://paperswithcode.com/method/resnext)</span>
+<div class="viewcode-block" id="ResNetBasicBlock">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.ResNetBasicBlock">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResNetBasicBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="ResNetBasicBlock.__init__">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.ResNetBasicBlock.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">reduction_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">out_channels</span> <span class="o">==</span> <span class="n">in_channels</span>
+        <span class="n">reduced_channels</span> <span class="o">=</span> <span class="n">in_channels</span> <span class="o">//</span> <span class="n">reduction_factor</span>
+        
+        <span class="k">if</span> <span class="n">reduced_channels</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>             
+            <span class="n">reduced_channels</span> <span class="o">=</span> <span class="n">in_channels</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">steps</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="c1"># Narrow to wide</span>
+            <span class="n">ConvBnAct</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">reduced_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">),</span>
+            <span class="c1"># Wide to wide (depthwise convolution)</span>
+            <span class="n">ConvBnAct</span><span class="p">(</span><span class="n">reduced_channels</span><span class="p">,</span> <span class="n">reduced_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">),</span>
+            <span class="c1"># Wide to narrow</span>
+            <span class="n">ConvBnAct</span><span class="p">(</span><span class="n">reduced_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">)</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ResNetBasicBlock.forward">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.ResNetBasicBlock.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+</div>
+
+    
+
+<div class="viewcode-block" id="ResNetBlock">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.ResNetBlock">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResNetBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="ResNetBlock.__init__">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.ResNetBlock.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">reduction_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">ReLU</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">out_channels</span> <span class="o">==</span> <span class="n">in_channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_path</span> <span class="o">=</span> <span class="n">ResNetBasicBlock</span><span class="p">(</span>
+            <span class="n">in_channels</span><span class="o">=</span><span class="n">in_channels</span><span class="p">,</span> 
+            <span class="n">out_channels</span><span class="o">=</span><span class="n">out_channels</span><span class="p">,</span>
+            <span class="n">reduction_factor</span><span class="o">=</span><span class="n">reduction_factor</span><span class="p">,</span>
+            <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ResNetBlock.forward">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.ResNetBlock.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">main_path</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+</div>
+
+    
+ 
+<div class="viewcode-block" id="Upsample">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.Upsample">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Upsample</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="Upsample.__init__">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.Upsample.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="n">scale_factor</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Upsample.forward">
+<a class="viewcode-back" href="../../../api/blocks.html#pynas.blocks.convolutions.Upsample.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+</div>
+
+
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">class ResNextBlock(nn.Module):</span>
+<span class="sd">    def __init__(self, in_channels, out_channels, reduction_factor=4, cardinality=1, activation=ReLU):</span>
+<span class="sd">        super().__init__()</span>
+<span class="sd">        assert out_channels == in_channels</span>
+<span class="sd">        self.in_channels = in_channels</span>
+<span class="sd">        self.out_channels = out_channels</span>
+<span class="sd">        self.cardinality = cardinality</span>
+
+<span class="sd">        self.is_divisible = False</span>
+<span class="sd">        if in_channels % cardinality == 0:</span>
+<span class="sd">            self.is_divisible = True</span>
+
+<span class="sd">        # Works only with combinations with module 0</span>
+<span class="sd">        self.parallel_channels = self.in_channels // self.cardinality</span>
+<span class="sd">        self.parallel_paths = []</span>
+<span class="sd">        for path in range(self.cardinality):</span>
+<span class="sd">            path = ResNetBasicBlock(</span>
+<span class="sd">                in_channels=self.parallel_channels, </span>
+<span class="sd">                out_channels=self.out_channels,</span>
+<span class="sd">                reduction_factor=reduction_factor,</span>
+<span class="sd">                activation=activation(),</span>
+<span class="sd">            )</span>
+<span class="sd">            self.parallel_paths.append(path)</span>
+<span class="sd">        </span>
+
+<span class="sd">    def forward(self, x):</span>
+<span class="sd">        res = x</span>
+<span class="sd">        paths_sum = torch.zeros_like(x)</span>
+<span class="sd">        if self.is_divisible:</span>
+<span class="sd">            i = 0</span>
+<span class="sd">            while i&lt;self.in_channels:</span>
+<span class="sd">                path_channels = x[:][i:self.parallel_channels][:][:] # check se funziona.</span>
+<span class="sd">                path_channels = self.parallel_paths(i//self.cardinality)(path_channels)</span>
+<span class="sd">                paths_sum = torch.add(paths_sum, path_channels)</span>
+<span class="sd">                i += self.cardinality</span>
+<span class="sd">        else:</span>
+<span class="sd">            print(&quot;Cardinality was not divisible, using Identity instead of ResNextBlock.&quot;)</span>
+<span class="sd">        x = torch.add(paths_sum, res)</span>
+<span class="sd">        return x</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

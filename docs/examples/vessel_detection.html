@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vessel Detection Example &mdash; PyNAS 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Remote Sensing Applications" href="remote_sensing.html" />
+    <link rel="prev" title="Examples" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980b9" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PyNAS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Examples</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Vessel Detection Example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dataset-setup">Dataset Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#population-configuration">Population Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#architecture-search-process">Architecture Search Process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#results-analysis">Results Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model-validation">Model Validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deployment-preparation">Deployment Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#performance-comparison">Performance Comparison</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#key-findings">Key Findings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="remote_sensing.html">Remote Sensing Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#vessel-detection">Vessel Detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#remote-sensing-applications">Remote Sensing Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#edge-device-optimization">Edge Device Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#custom-architecture-blocks">Custom Architecture Blocks</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/blocks.html">Blocks Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/opt.html">Optimization Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/train.html">Training Module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing to PyNAS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980b9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNAS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Examples</a></li>
+      <li class="breadcrumb-item active">Vessel Detection Example</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/examples/vessel_detection.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="vessel-detection-example">
+<h1>Vessel Detection Example<a class="headerlink" href="#vessel-detection-example" title="Link to this heading"></a></h1>
+<p>This example demonstrates how to use PyNAS for automated vessel detection in Synthetic Aperture Radar (SAR) imagery, a common application in maritime surveillance and remote sensing.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Vessel detection in SAR images presents unique challenges:</p>
+<ul class="simple">
+<li><p><strong>Speckle noise</strong> inherent in SAR imagery</p></li>
+<li><p><strong>Variable vessel sizes</strong> from small boats to large ships</p></li>
+<li><p><strong>Complex backgrounds</strong> including sea clutter and weather effects</p></li>
+<li><p><strong>Real-time requirements</strong> for operational systems</p></li>
+</ul>
+<p>PyNAS can automatically discover architectures optimized for these specific challenges while maintaining efficiency for edge deployment.</p>
+</section>
+<section id="dataset-setup">
+<h2>Dataset Setup<a class="headerlink" href="#dataset-setup" title="Link to this heading"></a></h2>
+<p>First, set up the vessel detection dataset:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytorch_lightning</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datasets.RawVessels.loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">RawVesselsDataModule</span>
+
+<span class="c1"># Set up reproducibility</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">seed_everything</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="n">workers</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">set_float32_matmul_precision</span><span class="p">(</span><span class="s2">&quot;medium&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure dataset paths</span>
+<span class="n">root_dir</span> <span class="o">=</span> <span class="s1">&#39;data/TASI/DataSAR_real_refined&#39;</span>
+
+<span class="c1"># Verify dataset exists</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">root_dir</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset not found at </span><span class="si">{</span><span class="n">root_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Initialize data module for vessel detection</span>
+<span class="n">dm</span> <span class="o">=</span> <span class="n">RawVesselsDataModule</span><span class="p">(</span>
+    <span class="n">root_dir</span><span class="o">=</span><span class="n">root_dir</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>           <span class="c1"># Adjust based on GPU memory</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>          <span class="c1"># Parallel data loading</span>
+    <span class="n">test_size</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span>         <span class="c1"># 15% for testing</span>
+    <span class="n">val_size</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span>          <span class="c1"># 15% for validation</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>                <span class="c1"># Reproducibility</span>
+    <span class="n">transform</span><span class="o">=</span><span class="kc">None</span>          <span class="c1"># Add augmentations if needed</span>
+<span class="p">)</span>
+
+<span class="c1"># Setup the data module</span>
+<span class="n">dm</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+
+<span class="c1"># Inspect dataset properties</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset information:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Input shape: </span><span class="si">{</span><span class="n">dm</span><span class="o">.</span><span class="n">input_shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Number of classes: </span><span class="si">{</span><span class="n">dm</span><span class="o">.</span><span class="n">num_classes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Training samples: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">train_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Validation samples: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">val_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Test samples: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dm</span><span class="o">.</span><span class="n">test_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="population-configuration">
+<h2>Population Configuration<a class="headerlink" href="#population-configuration" title="Link to this heading"></a></h2>
+<p>Configure the genetic algorithm for vessel detection:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.population</span><span class="w"> </span><span class="kn">import</span> <span class="n">Population</span>
+
+<span class="c1"># Create population optimized for vessel detection</span>
+<span class="n">pop</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span>
+    <span class="n">n_individuals</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>        <span class="c1"># Moderate population size</span>
+    <span class="n">max_layers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>           <span class="c1"># Allow deeper networks for complex features</span>
+    <span class="n">dm</span><span class="o">=</span><span class="n">dm</span><span class="p">,</span>                  <span class="c1"># Vessel detection data module</span>
+    <span class="n">max_parameters</span><span class="o">=</span><span class="mi">300_000</span>  <span class="c1"># Balance accuracy and efficiency</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initialized population for vessel detection:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Population size: </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">n_individuals</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Max layers: </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">max_layers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Parameter budget: </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">max_parameters</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="architecture-search-process">
+<h2>Architecture Search Process<a class="headerlink" href="#architecture-search-process" title="Link to this heading"></a></h2>
+<p>Run the neural architecture search optimized for vessel detection:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">configparser</span>
+
+<span class="c1"># Load vessel-specific configuration</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="o">.</span><span class="n">ConfigParser</span><span class="p">()</span>
+<span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;pynas/core/config.ini&#39;</span><span class="p">)</span>
+
+<span class="c1"># Extract vessel detection parameters</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">12</span>              <span class="c1"># More epochs for complex SAR data</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">8</span>           <span class="c1"># Balance memory and gradient quality</span>
+<span class="n">max_generations</span> <span class="o">=</span> <span class="mi">15</span>     <span class="c1"># Sufficient exploration</span>
+
+<span class="c1"># Initialize population</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating initial population for vessel detection...&quot;</span><span class="p">)</span>
+<span class="n">pop</span><span class="o">.</span><span class="n">initial_poll</span><span class="p">()</span>
+
+<span class="c1"># Evolution loop</span>
+<span class="n">best_fitness_history</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">generation</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_generations</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n</span><span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">50</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generation </span><span class="si">{</span><span class="n">generation</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">max_generations</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;=&#39;</span><span class="o">*</span><span class="mi">50</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Train current generation</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Training architectures on vessel detection task...&quot;</span><span class="p">)</span>
+    <span class="n">pop</span><span class="o">.</span><span class="n">train_generation</span><span class="p">(</span>
+        <span class="n">task</span><span class="o">=</span><span class="s1">&#39;classification&#39;</span><span class="p">,</span>  <span class="c1"># Binary: vessel/no-vessel</span>
+        <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span>
+        <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>              <span class="c1"># Conservative learning rate</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Sort population by fitness</span>
+    <span class="n">pop</span><span class="o">.</span><span class="n">_sort_population</span><span class="p">()</span>
+
+    <span class="c1"># Record best fitness</span>
+    <span class="k">if</span> <span class="n">pop</span><span class="o">.</span><span class="n">population</span><span class="p">:</span>
+        <span class="n">best_fitness</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fitness</span>
+        <span class="n">best_fitness_history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">best_fitness</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best fitness: </span><span class="si">{</span><span class="n">best_fitness</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best IoU: </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">iou</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best FPS: </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fps</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best model size: </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">model_size</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> parameters&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Evolve to next generation (except last)</span>
+    <span class="k">if</span> <span class="n">generation</span> <span class="o">&lt;</span> <span class="n">max_generations</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Evolving to next generation...&quot;</span><span class="p">)</span>
+        <span class="n">pop</span><span class="o">.</span><span class="n">evolve</span><span class="p">(</span>
+            <span class="n">mating_pool_cutoff</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>    <span class="c1"># Top 60% for mating</span>
+            <span class="n">mutation_probability</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>  <span class="c1"># Higher mutation for exploration</span>
+            <span class="n">k_best</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>                   <span class="c1"># Keep top 3 performers</span>
+            <span class="n">n_random</span><span class="o">=</span><span class="mi">5</span>                  <span class="c1"># Add diversity</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Checkpoint progress</span>
+    <span class="n">pop</span><span class="o">.</span><span class="n">save_population</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generation </span><span class="si">{</span><span class="n">generation</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> completed and saved&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="results-analysis">
+<h2>Results Analysis<a class="headerlink" href="#results-analysis" title="Link to this heading"></a></h2>
+<p>Analyze the discovered architectures:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># Get top performing models</span>
+<span class="n">top_models</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">elite_models</span><span class="p">(</span><span class="n">k_best</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;VESSEL DETECTION RESULTS&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">top_models</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nRank </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Architecture: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">architecture</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Fitness: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">fitness</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Detection Accuracy (IoU): </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">iou</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Inference Speed: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">fps</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> FPS&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Model Complexity: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">model_size</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> parameters&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Calculate efficiency ratio</span>
+    <span class="n">efficiency</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">iou</span> <span class="o">/</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">model_size</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>  <span class="c1"># Accuracy per 1K params</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Efficiency Ratio: </span><span class="si">{</span><span class="n">efficiency</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> IoU/1K params&quot;</span><span class="p">)</span>
+
+<span class="c1"># Plot evolution progress</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_fitness_history</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">best_fitness_history</span><span class="p">,</span> <span class="s1">&#39;b-o&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Fitness Evolution - Vessel Detection&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Generation&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Best Fitness&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Fitness vs Model Size scatter plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">fitnesses</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">fitness</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">top_models</span><span class="p">]</span>
+<span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">model_size</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">top_models</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">sizes</span><span class="p">,</span> <span class="n">fitnesses</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Fitness vs Model Size&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Model Size (parameters)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Fitness&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># IoU vs FPS trade-off</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">ious</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">iou</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">top_models</span><span class="p">]</span>
+<span class="n">fps</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">fps</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">top_models</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">fps</span><span class="p">,</span> <span class="n">ious</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Accuracy vs Speed Trade-off&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Inference Speed (FPS)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Detection Accuracy (IoU)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="model-validation">
+<h2>Model Validation<a class="headerlink" href="#model-validation" title="Link to this heading"></a></h2>
+<p>Validate the best model on test data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the best performing model</span>
+<span class="n">best_individual</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">population</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Build the final model</span>
+<span class="n">best_model</span><span class="p">,</span> <span class="n">is_valid</span> <span class="o">=</span> <span class="n">pop</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
+    <span class="n">best_individual</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">,</span>
+    <span class="n">task</span><span class="o">=</span><span class="s1">&#39;classification&#39;</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">is_valid</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nBest model validation:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Architecture: </span><span class="si">{</span><span class="n">best_individual</span><span class="o">.</span><span class="n">architecture</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Model built successfully: </span><span class="si">{</span><span class="n">is_valid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Total parameters: </span><span class="si">{</span><span class="n">pop</span><span class="o">.</span><span class="n">evaluate_parameters</span><span class="p">(</span><span class="n">best_model</span><span class="p">)</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Additional validation metrics</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nPerformance metrics:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Final test accuracy: </span><span class="si">{</span><span class="n">best_individual</span><span class="o">.</span><span class="n">iou</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Inference speed: </span><span class="si">{</span><span class="n">best_individual</span><span class="o">.</span><span class="n">fps</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> FPS&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Memory footprint: </span><span class="si">{</span><span class="n">best_individual</span><span class="o">.</span><span class="n">model_size</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> parameters&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Calculate deployment metrics</span>
+    <span class="n">model_size_mb</span> <span class="o">=</span> <span class="n">best_individual</span><span class="o">.</span><span class="n">model_size</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Assuming float32</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Estimated model size: </span><span class="si">{</span><span class="n">model_size_mb</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> MB&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Real-time capability assessment</span>
+    <span class="k">if</span> <span class="n">best_individual</span><span class="o">.</span><span class="n">fps</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  ✅ Suitable for real-time vessel detection&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  ⚠️  May not meet real-time requirements&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="deployment-preparation">
+<h2>Deployment Preparation<a class="headerlink" href="#deployment-preparation" title="Link to this heading"></a></h2>
+<p>Prepare the model for edge deployment:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch.jit</span>
+
+<span class="c1"># Export best model for deployment</span>
+<span class="n">best_model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<span class="c1"># Create example input for tracing</span>
+<span class="n">example_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">dm</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span>
+
+<span class="c1"># Trace the model for deployment</span>
+<span class="n">traced_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">example_input</span><span class="p">)</span>
+
+<span class="c1"># Save the traced model</span>
+<span class="n">model_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;vessel_detection_best_model.pt&quot;</span>
+<span class="n">traced_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model saved for deployment: </span><span class="si">{</span><span class="n">model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Save architecture information</span>
+<span class="n">architecture_info</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;architecture_code&#39;</span><span class="p">:</span> <span class="n">best_individual</span><span class="o">.</span><span class="n">architecture</span><span class="p">,</span>
+    <span class="s1">&#39;parsed_layers&#39;</span><span class="p">:</span> <span class="n">best_individual</span><span class="o">.</span><span class="n">parsed_layers</span><span class="p">,</span>
+    <span class="s1">&#39;fitness&#39;</span><span class="p">:</span> <span class="n">best_individual</span><span class="o">.</span><span class="n">fitness</span><span class="p">,</span>
+    <span class="s1">&#39;iou&#39;</span><span class="p">:</span> <span class="n">best_individual</span><span class="o">.</span><span class="n">iou</span><span class="p">,</span>
+    <span class="s1">&#39;fps&#39;</span><span class="p">:</span> <span class="n">best_individual</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span>
+    <span class="s1">&#39;model_size&#39;</span><span class="p">:</span> <span class="n">best_individual</span><span class="o">.</span><span class="n">model_size</span><span class="p">,</span>
+    <span class="s1">&#39;input_shape&#39;</span><span class="p">:</span> <span class="n">dm</span><span class="o">.</span><span class="n">input_shape</span><span class="p">,</span>
+    <span class="s1">&#39;num_classes&#39;</span><span class="p">:</span> <span class="n">dm</span><span class="o">.</span><span class="n">num_classes</span>
+<span class="p">}</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;vessel_detection_architecture.json&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">architecture_info</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Architecture information saved: vessel_detection_architecture.json&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="performance-comparison">
+<h2>Performance Comparison<a class="headerlink" href="#performance-comparison" title="Link to this heading"></a></h2>
+<p>Compare with baseline architectures:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define baseline architectures for comparison</span>
+<span class="n">baselines</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Simple CNN&#39;</span><span class="p">:</span> <span class="s1">&#39;c3g c3g c3g a C&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ResNet-like&#39;</span><span class="p">:</span> <span class="s1">&#39;c3g R3g R3g a C&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MobileNet-like&#39;</span><span class="p">:</span> <span class="s1">&#39;m4g m4g m4g a C&#39;</span>
+<span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nComparing with baseline architectures:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">arch_code</span> <span class="ow">in</span> <span class="n">baselines</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="c1"># Create individual with baseline architecture</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core.individual</span><span class="w"> </span><span class="kn">import</span> <span class="n">Individual</span>
+    <span class="n">baseline_individual</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">(</span><span class="n">max_layers</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">baseline_individual</span><span class="o">.</span><span class="n">architecture</span> <span class="o">=</span> <span class="n">arch_code</span>
+
+    <span class="c1"># Parse and validate</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pynas.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">architecture_builder</span>
+    <span class="n">baseline_individual</span><span class="o">.</span><span class="n">parsed_layers</span> <span class="o">=</span> <span class="n">architecture_builder</span><span class="o">.</span><span class="n">parse_architecture_code</span><span class="p">(</span><span class="n">arch_code</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">pop</span><span class="o">.</span><span class="n">check_individual</span><span class="p">(</span><span class="n">baseline_individual</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Architecture: </span><span class="si">{</span><span class="n">arch_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Model size: </span><span class="si">{</span><span class="n">baseline_individual</span><span class="o">.</span><span class="n">model_size</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> parameters&quot;</span><span class="p">)</span>
+        <span class="c1"># Note: Would need to train for fair comparison</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: Invalid architecture&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="key-findings">
+<h2>Key Findings<a class="headerlink" href="#key-findings" title="Link to this heading"></a></h2>
+<p>From this vessel detection example, typical findings include:</p>
+<ol class="arabic simple">
+<li><p><strong>Architecture Patterns</strong>: Successful architectures often combine:
+- Multiple convolutional layers for feature extraction
+- Efficient blocks (MBConv) for parameter efficiency
+- Appropriate pooling for spatial reduction</p></li>
+<li><p><strong>Performance Trade-offs</strong>:
+- Higher accuracy often requires more parameters
+- Real-time performance favors efficient architectures
+- SAR-specific features benefit from deeper networks</p></li>
+<li><p><strong>Optimization Insights</strong>:
+- Genetic algorithms effectively explore architecture space
+- Population diversity is crucial for finding optimal solutions
+- Evolution converges to practical architectures</p></li>
+</ol>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Experiment with data augmentation for improved robustness</p></li>
+<li><p>Try multi-scale architectures for detecting vessels of different sizes</p></li>
+<li><p>Implement ensemble methods combining top architectures</p></li>
+<li><p>Explore transfer learning from pre-trained models</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="remote_sensing.html" class="btn btn-neutral float-right" title="Remote Sensing Applications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ESA Φ-lab and Little Place Lab.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
