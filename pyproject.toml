@@ -16,21 +16,22 @@ authors = [
 ]
 maintainers = [{name = "Roberto Del Prete", email = "robertodelprete88@gmail.com"}]
 dependencies = [
-  "numpy",
+  "numpy<2.0.0",
   "opencv-python",
   "pandas",
   "tqdm",
   "matplotlib",
   "seaborn",
-  "torch",
+  "torch==2.0.1",
   "pytorch-lightning",
   "rasterio",
   "tifffile",
   "plotly",
   "scikit-image",
   "ipykernel",
-  "torchvision>=0.22.0",
-  "scikit-learn>=1.6.1"
+  "torchvision>=0.15.2",
+  "scikit-learn>=1.6.1",
+  "torchaudio>=2.0.2"
 ]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -48,3 +49,12 @@ Source = "https://github.com/sirbastiano/pynas"
 
 [tool.setuptools.packages.find]
 include = ["pynas*"]
+[dependency-groups]
+dev = [
+    "sphinx>=7.4.7",
+    "sphinx-rtd-theme>=3.0.2",
+    "myst-parser>=3.0.1",
+    "sphinx-autodoc-typehints>=2.3.0",
+    "sphinx-copybutton>=0.5.2",
+    "nbsphinx>=0.9.7",
+]

@@ -975,10 +975,10 @@ class Population:
 
 
         # Ensure results directory exists
-        os.makedirs(f"models_traced/generation_{gen}", exist_ok=True)
+        os.makedirs(f"./models_traced/generation_{gen}", exist_ok=True)
 
         # Save the results to a text file.
-        with open(f"models_traced/generation_{gen}/results_model_{self.idx}.txt", "w") as f:
+        with open(f"./models_traced/generation_{gen}/results_model_{self.idx}.txt", "w") as f:
             f.write("Test Results:\n")
             for key, value in self.results[0].items():
                 f.write(f"{key}: {value}\n")
@@ -994,7 +994,7 @@ class Population:
         
         if save_torchscript:
             traced_model = torch.jit.trace(LM.model, example_input)
-            traced_model.save(ts_save_path)
+            traced_model.save(ts_save_path) # type: ignore
             print(f"Scripted (TorchScript) model saved at {ts_save_path}")
         
         if save_standard:
@@ -1006,49 +1006,7 @@ class Population:
             torch.save(save_dict, std_save_path)
             print(f"Standard model saved at {std_save_path}")
 
-        '''
-        if save_myriad:
-            print("[INFO] Entering Myriad export subprocess")
-
-            import subprocess
-            import tempfile
-            import shutil
-            import os
-
-            # Save model as temporary ONNX
-            temp_onnx_path = os.path.join("/tmp", f"temp_model_{self.idx}.onnx")
-            dummy_input = torch.randn(*input_shape).to("cpu")
-            torch.onnx.export(LM.model.cpu(), dummy_input, temp_onnx_path, opset_version=11)
-
-            # Output OpenVINO model directory
-            output_dir = os.path.abspath(f"{openvino_save_path}")
-            os.makedirs(output_dir, exist_ok=True)
-
-            try:
-                result = subprocess.run(
-                    [
-                        "mo",  # Model Optimizer CLI
-                        "--input_model", temp_onnx_path,
-                        "--output_dir", output_dir
-                        #"--data_type", "FP16"
-                    ],
-                    env={**os.environ, "OPENVINO_CONF_IGNORE": "YES"},
-                    check=True,
-                    capture_output=True,
-                    text=True
-                )
-                print("[Myriad X] OpenVINO model converted successfully.")
-                print(result.stdout)
-
-            except subprocess.CalledProcessError as e:
-                print("[ERROR] Myriad export failed via subprocess:")
-                print(e.stderr)
-                self.logger.error(f"Myriad export failed: {e.stderr}")
-
-            finally:
-                if os.path.exists(temp_onnx_path):
-                    os.remove(temp_onnx_path)
-        '''
+        
         if save_myriad:
             print("[INFO] Entering Myriad export subprocess")
 

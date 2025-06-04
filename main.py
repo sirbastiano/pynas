@@ -43,7 +43,7 @@ def main(args):
     k_best = int(config['GA']['k_best'])
     
     # Define population
-    pop = Population(n_individuals=n_individuals, max_layers=max_layers, dm=dm, max_parameters=400_000)
+    pop = Population(n_individuals=n_individuals, max_layers=max_layers, dm=dm, max_parameters=1_500_000)
     if args.gen is not None:
         pop.load_generation(args.gen)
     else:
