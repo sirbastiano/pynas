@@ -964,7 +964,7 @@ class Population:
                    ts_save_path=None,
                    save_standard=True, 
                    std_save_path=None,
-                   save_myriad=True,  # <-- add this
+                   save_myriad=False,  # <-- add this
                   openvino_save_path=None):
         
         gen = self.generation
