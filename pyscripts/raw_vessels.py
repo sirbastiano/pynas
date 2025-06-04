@@ -80,14 +80,6 @@ print(f"Data module type: {type(dm)}")
 
 
 
-
-
-
-
-
-
-
-
 # Test if we can create a simple model manually
 try:
     from pynas.core.individual import Individual

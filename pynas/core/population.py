@@ -4,6 +4,11 @@ import pickle
 from copy import deepcopy
 import tqdm, os
 import json
+import subprocess
+import tempfile
+import shutil
+
+
 
 from ..blocks.heads import MultiInputClassifier
 from .individual import Individual 
@@ -18,7 +23,6 @@ import torch.nn as nn
 import pytorch_lightning as pl
 import torch.multiprocessing as mp
 from pytorch_lightning.callbacks import EarlyStopping
-
 
 from IPython.display import clear_output
 
@@ -962,7 +966,11 @@ class Population:
                    std_save_path=None,
                    save_myriad=True,  # <-- add this
                   openvino_save_path=None):
+        
         gen = self.generation
+        # Ensure results directory exists
+        os.makedirs(f"./models_traced/generation_{gen}", exist_ok=True)
+        
         
         if ts_save_path is None:
             ts_save_path = f"models_traced/generation_{gen}/model_and_architecture_{self.idx}.pt"
@@ -974,8 +982,6 @@ class Population:
             openvino_save_path = f"models_traced/generation_{gen}/openvino_model_{self.idx}"
 
 
-        # Ensure results directory exists
-        os.makedirs(f"./models_traced/generation_{gen}", exist_ok=True)
 
         # Save the results to a text file.
         with open(f"./models_traced/generation_{gen}/results_model_{self.idx}.txt", "w") as f:
@@ -1009,12 +1015,6 @@ class Population:
         
         if save_myriad:
             print("[INFO] Entering Myriad export subprocess")
-
-            import subprocess
-            import tempfile
-            import shutil
-            import os
-
             # Save model as temporary ONNX
             temp_onnx_path = os.path.join("/tmp", f"temp_model_{self.idx}.onnx")
             dummy_input = torch.randn(*input_shape).to("cpu")
@@ -1053,9 +1053,6 @@ class Population:
             finally:
                 if os.path.exists(temp_onnx_path):
                     os.remove(temp_onnx_path)
-
-
-
 
 
 
