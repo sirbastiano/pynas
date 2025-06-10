@@ -15,6 +15,7 @@ clean_models:
 	rm -rf models_traced/*
 	rm -rf lightning_logs/*
 	rm -rf logs/*
+	rm -rf Results/*
 	@echo "All cleaned."
 
 

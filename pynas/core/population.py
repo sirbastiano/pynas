@@ -7,7 +7,7 @@ import json
 import subprocess
 import tempfile
 import shutil
-
+import configparser
 
 
 from ..blocks.heads import MultiInputClassifier
@@ -28,7 +28,7 @@ from IPython.display import clear_output
 
 
 # Update config_path to use the directory of the current file
-config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
+config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini')
 
 #mp.set_start_method('fork', force=True)
 import torch.multiprocessing as mp
@@ -40,10 +40,11 @@ except RuntimeError:
 
 def update_config_path(config_path, model_path):
     with open(config_path, 'r') as f:
-        config = json.load(f)
+        config = configparser.ConfigParser()
+        config.read_file(f)
     config['model_filepath'] = model_path
     with open(config_path, 'w') as f:
-        json.dump(config, f)
+        config.write(f)
 
 
 class Population:
@@ -447,7 +448,7 @@ class Population:
                         failed_attempts += 1
                 except Exception as e:
                     failed_attempts += 1
-                    self.logger.warning(f"Failed to create individual on attempt {attempts}: {e}")
+                    self.logger.warning(f"Failed to create individual (attempt {attempts}): {e}")
                     
                 # Periodically log progress
                 if attempts % 10 == 0:
@@ -803,19 +804,22 @@ class Population:
             self.logger.error(f"Error saving DataFrame to {path}: {e}")
     
     
-    def load_dataframe(self, generation):
-        path = f'./models_traced/src/df_population_{generation}.pkl'
-        try:
-            df = pd.read_pickle(path)
-            return df
-        except Exception as e:
-            self.logger.error(f"Error loading DataFrame from {path}: {e}")
-            return None
-    
     
     def save_population(self):
-        path = f'./models_traced/src/population_{self.generation}.pkl'
+        """
+        Save the current population to a pickle file.
+        
+        The population is saved at a path that includes the current generation number.
+        In case of an error during saving, the exception details are logged.
+        
+        Returns:
+            None
+        """
+        path = f'{self.save_directory}/src/population_{self.generation}.pkl'
         try:
+            # Ensure the directory exists before saving
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            
             with open(path, 'wb') as f:
                 pickle.dump(self.population, f)
             self.logger.info(f"Population saved to {path}")
@@ -823,14 +827,45 @@ class Population:
             self.logger.error(f"Error saving population to {path}: {e}")
     
     
-    def load_population(self, generation):
-        path = f'./models_traced/src/population_{generation}.pkl'
+    def load_population(self, generation: int):
+        """
+        Load a population from a pickle file for the specified generation.
+        
+        Parameters:
+            generation (int): The generation number to load
+            
+        Returns:
+            list or None: The loaded population or None if loading failed
+        """
+        path = f'{self.save_directory}/src/population_{generation}.pkl'
         try:
             with open(path, 'rb') as f:
                 population = pickle.load(f)
+            self.logger.info(f"Population loaded from {path}")
             return population
         except Exception as e:
             self.logger.error(f"Error loading population from {path}: {e}")
+            return None
+    
+    
+    def load_dataframe(self, generation: int):
+        """
+        Load a DataFrame from a pickle file for the specified generation.
+        
+        Parameters:
+            generation (int): The generation number to load
+            
+        Returns:
+            pd.DataFrame or None: The loaded DataFrame or None if loading failed
+        """
+        # Use self.save_directory instead of hardcoded path
+        path = f'{self.save_directory}/src/df_population_{generation}.pkl'
+        try:
+            df = pd.read_pickle(path)
+            self.logger.info(f"DataFrame loaded from {path}")
+            return df
+        except Exception as e:
+            self.logger.error(f"Error loading DataFrame from {path}: {e}")
             return None
 
     def train_individual(self, idx, task, epochs=20, lr=1e-3, batch_size=None):
@@ -891,6 +926,18 @@ class Population:
         results = trainer.test(LM, self.dm)
         self.results = results
         
+        # Print training results
+        print(f"\n[Generation {self.generation} | Individual {idx}] Training Results:")
+        print("=" * 60)
+        for key, value in results[0].items():
+            print(f"{key}: {value}")
+        print("=" * 60)
+        
+        # Log training results
+        self.logger.info(f"[Generation {self.generation} | Individual {idx}] Training Results:")
+        for key, value in results[0].items():
+            self.logger.info(f"  {key}: {value}")
+        
         # ===== Save model =====
         self.idx = idx  # required for save_model() paths
         self.LM = LM
@@ -900,17 +947,36 @@ class Population:
         self.logger.info(f"[Generation {self.generation} | Individual {idx}] Training completed. Evaluating model...")
         try:
             #  ===== Extract metrics
-            accuracy = np.float32(results["accuracy"])
-            latency = np.float32(results["latency"])
+            accuracy = np.float32(results[0]["accuracy"])
+            latency = np.float32(results[0]["latency"])
         
             # ===== Update individual metrics and fitness
             individual.iou = accuracy
             individual.metric = accuracy
             individual.fps = latency
             individual._prompt_fitness()
+            
+            # Print individual metrics and fitness
+            print(f"\n[Generation {self.generation} | Individual {idx}] Individual Metrics:")
+            print("-" * 40)
+            print(f"Accuracy/IoU: {individual.iou:.4f}")
+            print(f"Metric: {individual.metric:.4f}")
+            print(f"FPS: {individual.fps:.4f}")
+            print(f"Model Size (params): {individual.model_size}")
+            print(f"Fitness: {individual.fitness:.4f}")
+            print("-" * 40)
+            
+            # Log individual metrics and fitness
+            self.logger.info(f"[Generation {self.generation} | Individual {idx}] Individual Metrics:")
+            self.logger.info(f"  Accuracy/IoU: {individual.iou:.4f}")
+            self.logger.info(f"  Metric: {individual.metric:.4f}")
+            self.logger.info(f"  FPS: {individual.fps:.4f}")
+            self.logger.info(f"  Model Size (params): {individual.model_size}")
+            self.logger.info(f"  Fitness: {individual.fitness:.4f}")
         
         except Exception as e:
             self.logger.error(f"[Generation {self.generation} | Individual {idx}] API call failed: {e}")
+            print(f"\n[Generation {self.generation} | Individual {idx}] Training FAILED: {e}")
             
             # Mark as failed
             individual.iou = None
@@ -980,7 +1046,6 @@ class Population:
             self.std_save_path = std_save_path
         if openvino_save_path is None:
             openvino_save_path = f"models_traced/generation_{gen}/openvino_model_{self.idx}"
-
 
 
         # Save the results to a text file.
@@ -1057,7 +1122,7 @@ class Population:
 
 
 
-
+# ============= Individual Population Class Methods =============
 
     def __getitem__(self, index):
         """
