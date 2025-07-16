@@ -27,10 +27,33 @@ class FitnessEvaluator:
         self.target_fps = target_fps
 
     @staticmethod
-    def rebound_metrics(fps, mcc, target_fps=120.0):
-        fps_ratio = min(fps / target_fps, 1.0)  # Cap at 1.0 to avoid rewarding excessively high FPS
-        #mcc_norm = (mcc + 1) / 2  # Normalizing MCC from [-1, 1] to [0, 1]
+    def rebound_metrics(fps: float, mcc: float, target_fps: float = 120.0) -> tuple:
+        """
+        Normalize and validate FPS and MCC metrics.
+        
+        Args:
+            fps: Frames per second value
+            mcc: Matthews Correlation Coefficient value
+            target_fps: Target FPS for normalization
+            
+        Returns:
+            tuple: Normalized (fps_ratio, mcc_norm)
+        """
+        # Validate FPS input
+        assert fps > 0, f'FPS must be positive, got {fps}'
+        assert not np.isnan(fps), f'FPS cannot be NaN'
+        assert not np.isinf(fps), f'FPS cannot be infinite'
+        
+        # Validate MCC input
+        assert -1.0 <= mcc <= 1.0, f'MCC must be between -1 and 1, got {mcc}'
+        assert not np.isnan(mcc), f'MCC cannot be NaN'
+        
+        # Normalize FPS (cap at 1.0 to avoid rewarding excessively high FPS)
+        fps_ratio = min(fps / target_fps, 1.0)
+        
+        # Use MCC as-is (already normalized between -1 and 1)
         mcc_norm = mcc
+        
         return fps_ratio, mcc_norm
 
 

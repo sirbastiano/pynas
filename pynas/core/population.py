@@ -184,7 +184,7 @@ class Population:
         raise RuntimeError(error_msg)
     
 
-    def _sort_population(self):
+    def _sort_population(self) -> list:
         """
         Sort the population by fitness in descending order.
         
@@ -203,7 +203,7 @@ class Population:
             return []
         
         try:
-            # Filter out individuals with invalid fitness values
+            # Filter and fix individuals with invalid fitness values
             valid_individuals = []
             invalid_count = 0
             
@@ -211,21 +211,25 @@ class Population:
                 # Check if the individual has a fitness attribute and it's a valid value
                 if (hasattr(individual, 'fitness') and 
                     individual.fitness is not None and 
-                    not np.isnan(individual.fitness)):
+                    not np.isnan(individual.fitness) and
+                    isinstance(individual.fitness, (int, float))):
                     valid_individuals.append(individual)
                 else:
                     invalid_count += 1
+                    # Set a default fitness of 0 for invalid individuals
+                    individual.fitness = 0.0
+                    valid_individuals.append(individual)
             
             if invalid_count > 0:
-                self.logger.warning(f"Found {invalid_count} individuals with invalid fitness values")
-            
-            if not valid_individuals:
-                self.logger.error("No individuals with valid fitness values found!")
-                return self.population  # Return unsorted population as fallback
+                self.logger.warning(f"Found {invalid_count} individuals with invalid fitness values, set to 0.0")
             
             # Sort the valid individuals
             self.logger.debug(f"Sorting {len(valid_individuals)} individuals by fitness")
-            sorted_population = sorted(valid_individuals, key=lambda ind: ind.fitness, reverse=True)
+            sorted_population = sorted(
+                valid_individuals, 
+                key=lambda ind: ind.fitness if ind.fitness is not None else 0.0, 
+                reverse=True
+            )
             
             # Update the population with sorted individuals
             self.population = sorted_population
@@ -868,122 +872,129 @@ class Population:
             self.logger.error(f"Error loading DataFrame from {path}: {e}")
             return None
 
-    def train_individual(self, idx, task, epochs=20, lr=1e-3, batch_size=None):
+    def train_individual(self, idx: int, task: str, epochs: int = 20, lr: float = 1e-3, batch_size: int = None):
         """
-        Train the individual using the data module and the specified number of epochs and learning rate.
+        Train the individual using the data module and the specified parameters.
 
-        Parameters:
-            individual (Individual): The individual to train.
-            epochs (int): The number of epochs to train the individual. Defaults to 20.
-            lr (float): The learning rate to use during training. Defaults to 1e-3.
+        Args:
+            idx: Index of the individual to train
+            task: The task type ('classification' or 'segmentation')
+            epochs: The number of epochs to train the individual
+            lr: The learning rate to use during training
+            batch_size: Batch size for training (if None, uses dm default)
 
         Returns:
             None
         """
         individual = self.population[idx]
         
-        
         model, _ = self.build_model(individual.parsed_layers, task=task)
-        if task == "segmentation":
+        
+        if task == 'segmentation':
             LM = GenericLightningSegmentationNetwork(
                 model=model,
                 learning_rate=lr,
             )
-        
-        elif task == "classification":
+        elif task == 'classification':
             LM = GenericLightningNetwork(
                 model=model,
                 learning_rate=lr,
                 num_classes=self.dm.num_classes,
             )
         else:
-            raise ValueError(f"Task {task} not supported.")
-
+            raise ValueError(f'Task {task} not supported.')
 
         early_stop_callback = EarlyStopping(
-                            monitor="val_loss",     # or "val_iou" or any metric you're logging
-                            mode="min",             # "min" if loss, "max" if accuracy or IoU
-                            patience=3,             # number of epochs with no improvement
-                            verbose=False)
-
+            monitor='val_loss',
+            mode='min',
+            patience=3,
+            verbose=False
+        )
         
-        # Create a PyTorch Lightning trainer
         trainer = pl.Trainer(
-                            #strategy="ddp_notebook",
-                            accelerator="gpu",
-                            devices=1,
-                            max_epochs=epochs,
-                            callbacks=[early_stop_callback]   
-                            )
-        # Set the batch size if specified
+            accelerator='gpu',
+            devices=1,
+            max_epochs=epochs,
+            callbacks=[early_stop_callback],
+            logger=False,  # Disable logging for cleaner output
+            enable_checkpointing=False,  # Disable checkpointing for speed
+        )
+        
         if batch_size is not None:
             self.dm.batch_size = batch_size
-        # Train the lightning model
-        print("Strategy in use:", trainer.strategy)
+        
         trainer.fit(LM, self.dm)
-        
-        
         results = trainer.test(LM, self.dm)
         self.results = results
         
-        # Print training results
-        print(f"\n[Generation {self.generation} | Individual {idx}] Training Results:")
-        print("=" * 60)
+        print(f'\n[Generation {self.generation} | Individual {idx}] Training Results:')
+        print('=' * 60)
         for key, value in results[0].items():
-            print(f"{key}: {value}")
-        print("=" * 60)
+            print(f'{key}: {value}')
+        print('=' * 60)
         
-        # Log training results
-        self.logger.info(f"[Generation {self.generation} | Individual {idx}] Training Results:")
+        self.logger.info(f'[Generation {self.generation} | Individual {idx}] Training Results:')
         for key, value in results[0].items():
-            self.logger.info(f"  {key}: {value}")
+            self.logger.info(f'  {key}: {value}')
         
-        # ===== Save model =====
-        self.idx = idx  # required for save_model() paths
+        self.idx = idx
         self.LM = LM
         self.save_model(LM)
 
-        # ===== Test model ===== TODO: Implement a separate test method
-        self.logger.info(f"[Generation {self.generation} | Individual {idx}] Training completed. Evaluating model...")
-        try:
-            #  ===== Extract metrics
-            accuracy = np.float32(results[0]["accuracy"])
-            latency = np.float32(results[0]["latency"])
+        self.logger.info(f'[Generation {self.generation} | Individual {idx}] Training completed. Evaluating model...')
         
-            # ===== Update individual metrics and fitness
+        try:
+            # Extract metrics based on task type with validation
+            if task == 'segmentation':
+                accuracy = float(results[0]['test_iou'])
+                fps = float(results[0].get('fps', 1.0))
+                
+                # Validate FPS is reasonable (not too high or too low)
+                if fps > 10000 or fps < 0.1:
+                    self.logger.warning(f'Unusual FPS value detected: {fps}. Using fallback value.')
+                    fps = 1.0
+                    
+            else:  # classification
+                accuracy = float(results[0]['test_accuracy'])
+                fps = float(results[0]['fps'])
+                
+                # Validate FPS is reasonable
+                if fps > 10000 or fps < 0.1:
+                    self.logger.warning(f'Unusual FPS value detected: {fps}. Using fallback value.')
+                    fps = 1.0
+        
+            # Update individual metrics and fitness
             individual.iou = accuracy
             individual.metric = accuracy
-            individual.fps = latency
+            individual.fps = fps
             individual._prompt_fitness()
             
-            # Print individual metrics and fitness
-            print(f"\n[Generation {self.generation} | Individual {idx}] Individual Metrics:")
-            print("-" * 40)
-            print(f"Accuracy/IoU: {individual.iou:.4f}")
-            print(f"Metric: {individual.metric:.4f}")
-            print(f"FPS: {individual.fps:.4f}")
-            print(f"Model Size (params): {individual.model_size}")
-            print(f"Fitness: {individual.fitness:.4f}")
-            print("-" * 40)
+            print(f'\n[Generation {self.generation} | Individual {idx}] Individual Metrics:')
+            print('-' * 40)
+            print(f'Accuracy/IoU: {individual.iou:.4f}')
+            print(f'Metric: {individual.metric:.4f}')
+            print(f'FPS: {individual.fps:.4f}')
+            print(f'Model Size (params): {individual.model_size}')
+            print(f'Fitness: {individual.fitness:.4f}')
+            print('-' * 40)
             
-            # Log individual metrics and fitness
-            self.logger.info(f"[Generation {self.generation} | Individual {idx}] Individual Metrics:")
-            self.logger.info(f"  Accuracy/IoU: {individual.iou:.4f}")
-            self.logger.info(f"  Metric: {individual.metric:.4f}")
-            self.logger.info(f"  FPS: {individual.fps:.4f}")
-            self.logger.info(f"  Model Size (params): {individual.model_size}")
-            self.logger.info(f"  Fitness: {individual.fitness:.4f}")
+            self.logger.info(f'[Generation {self.generation} | Individual {idx}] Individual Metrics:')
+            self.logger.info(f'  Accuracy/IoU: {individual.iou:.4f}')
+            self.logger.info(f'  Metric: {individual.metric:.4f}')
+            self.logger.info(f'  FPS: {individual.fps:.4f}')
+            self.logger.info(f'  Model Size (params): {individual.model_size}')
+            self.logger.info(f'  Fitness: {individual.fitness:.4f}')
         
         except Exception as e:
-            self.logger.error(f"[Generation {self.generation} | Individual {idx}] API call failed: {e}")
-            print(f"\n[Generation {self.generation} | Individual {idx}] Training FAILED: {e}")
+            self.logger.error(f'[Generation {self.generation} | Individual {idx}] Training failed: {e}')
+            print(f'\n[Generation {self.generation} | Individual {idx}] Training FAILED: {e}')
             
-            # Mark as failed
-            individual.iou = None
-            individual.metric = None
-            individual.fps = None
-            individual.fitness = None
-            individual.failed = True  # Optional: flag to identify failed evaluations
+            # Mark as failed with default values
+            individual.iou = 0.0
+            individual.metric = 0.0
+            individual.fps = 1.0
+            individual.fitness = 0.0
+            individual.failed = True
 
         # ===== Ensure DataFrame is aligned with population before updating =====
         if self.df is None or idx not in self.df.index:

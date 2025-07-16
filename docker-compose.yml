@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  pynas:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: pynas-app
+    container_name: pynas_container
+    # Example command to run one of your scripts
+    command: >
+      bash -c "pdm run python3 nas_seg_burned.py --mutation_probability 0.1"
+    volumes:
+      # Mount project directory to allow for code changes without rebuilding
+      - .:/app
+      # Mount data, logs, and results directories.
+      # IMPORTANT: The host paths on the left are absolute and may need to be
+      # adjusted to match your system's file structure.
+      - /Data_large/marine/PythonProjects/OtherProjects/lpl-PyNas/data:/app/data
+      - ./logs:/app/logs
+      - ./lightning_logs:/app/lightning_logs
+      - ./models_traced:/app/models_traced
+      - ./Results:/app/Results
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all

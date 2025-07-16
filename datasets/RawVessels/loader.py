@@ -284,7 +284,7 @@ def get_real_data_sm(dataset_path: str, test_size: float = 0.2, val_size: float 
 class RawVesselsDataModule(LightningDataModule):
     """Lightning DataModule for vessel segmentation datasets."""
     
-    def __init__(self, root_dir: str, batch_size: int = 8, num_workers: int = 0, transform: Optional[Any] = None, 
+    def __init__(self, root_dir: str, batch_size: int = 8, num_workers: int = 4, transform: Optional[Any] = None, 
                  test_size: float = 0.15, val_size: float = 0.15, seed: int = 42) -> None:
         """
         Initialize the RawVesselsDataModule.
@@ -302,7 +302,7 @@ class RawVesselsDataModule(LightningDataModule):
         self.root_dir = root_dir
         self.batch_size = batch_size
         self.transform = transform
-        self.num_workers = num_workers
+        self.num_workers = min(num_workers, os.cpu_count() or 1)  # Cap at available CPUs
         self.test_size = test_size
         self.val_size = val_size
         self.seed = seed
@@ -375,7 +375,7 @@ class RawVesselsDataModule(LightningDataModule):
             DataLoader: Test dataloader.
         """
         return DataLoader(
-            dataset=self.val_dataset,
+            dataset=self.test_dataset,
             batch_size=self.batch_size,
             shuffle=False,
             num_workers=self.num_workers

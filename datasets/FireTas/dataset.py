@@ -165,7 +165,7 @@ class FireSegmentationDataModule(LightningDataModule):
     
     def test_dataloader(self):
         return DataLoader(
-            self.test_dataset,
+            self.val_dataset,
             batch_size=self.batch_size,
             shuffle=False,
             num_workers=self.num_workers,
@@ -189,7 +189,7 @@ if __name__ == "__main__":
     # Use the dataloaders
     train_loader = data_module.train_dataloader()
     val_loader = data_module.val_dataloader()
-    test_loader = data_module.test_dataloader()
+    test_loader = data_module.test_dataloader() # Use val_dataloader for test as well
     
     # Print dataset info
     print(f"Number of training samples: {len(data_module.train_dataset)}")

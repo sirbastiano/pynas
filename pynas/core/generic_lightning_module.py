@@ -11,7 +11,11 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 from ..train.losses import CategoricalCrossEntropyLoss, FocalLoss
-from ..train.custom_iou import calculate_iou
+from ..train.custom_iou import calculate_iou, calculate_iou_minclass
+
+
+USE_MIN_CLASS = True
+
 
 
 class GenericLightningNetwork(pl.LightningModule):
@@ -72,22 +76,54 @@ class GenericLightningNetwork(pl.LightningModule):
         return loss
 
     def test_step(self, batch, batch_idx):
+        """
+        Test step with accurate FPS measurement.
+        
+        Args:
+            batch: Input batch containing (x, y)
+            batch_idx: Batch index
+            
+        Returns:
+            float: Test loss
+        """
         import time
         x, y = batch
-
-        start_time = time.time()
-        loss, scores, y = self._common_step(batch, batch_idx)
+        
+        # Ensure model is in eval mode for inference timing
+        self.model.eval()
+        
+        # Warm up GPU if using CUDA (first batch only)
+        if batch_idx == 0 and x.is_cuda:
+            with torch.no_grad():
+                _ = self.model(x)
+            torch.cuda.synchronize()
+        
+        # Accurate timing measurement
         if x.is_cuda:
             torch.cuda.synchronize()
-        elapsed_time = time.time() - start_time
-
-        fps = x.shape[0] / elapsed_time if elapsed_time > 0 else 0.0
-
+        
+        start_time = time.perf_counter()
+        
+        with torch.no_grad():
+            loss, scores, y = self._common_step(batch, batch_idx)
+        
+        if x.is_cuda:
+            torch.cuda.synchronize()
+        
+        end_time = time.perf_counter()
+        elapsed_time = end_time - start_time
+        
+        # Calculate FPS: samples per second
+        batch_size = x.shape[0]
+        fps = batch_size / elapsed_time if elapsed_time > 0 else 0.0
+        
+        # Compute metrics
         accuracy = self.accuracy(torch.argmax(scores, dim=1), y)
         f1_score = self.f1_score(torch.argmax(scores, dim=1), y)
         mcc = self.mcc(torch.argmax(scores, dim=1), y)
         self.conf_matrix.update(torch.argmax(scores, dim=1), y)
         self.conf_matrix.compute()
+        
         self.log_dict({
             'test_loss': loss,
             'test_accuracy': accuracy,
@@ -154,76 +190,118 @@ class GenericLightningSegmentationNetwork(pl.LightningModule):
     GenericLightningSegmentationNetwork is a PyTorch Lightning module designed for segmentation tasks. 
     It wraps a given model and provides training, validation, testing, and prediction steps, 
     along with logging for loss, mean squared error (MSE), and intersection over union (IoU).
-    Attributes:
-        model (torch.nn.Module): The segmentation model to be trained and evaluated.
-        learning_rate (float): The learning rate for the optimizer. Default is 1e-3.
-        loss_fn (callable): The loss function used for training. Default is FocalLoss.
-        mse (torchmetrics.Metric): Metric to compute mean squared error.
-        iou (callable): Function to calculate intersection over union (IoU).
-    Methods:
-        forward(x):
-            Performs a forward pass through the model.
-        _common_step(batch, batch_idx):
-            Computes the loss, MSE, and IoU for a given batch. Used internally by training, validation, and test steps.
-        training_step(batch, batch_idx):
-            Defines the training step, computes metrics, and logs them.
-        validation_step(batch, batch_idx):
-            Defines the validation step, computes metrics, and logs them.
-        test_step(batch, batch_idx):
-            Defines the test step, computes metrics, and logs them.
-        predict_step(batch, batch_idx, dataloader_idx=0):
-            Defines the prediction step, returning the model's output for a given batch.
-        configure_optimizers():
-            Configures the optimizer for training. Uses Adam optimizer with the specified learning rate.
     """
-    def __init__(self, model, learning_rate=1e-3):
+    def __init__(self, model: torch.nn.Module, learning_rate: float = 1e-3):
+        """
+        Initialize the segmentation network.
+        
+        Args:
+            model: The segmentation model to be trained and evaluated
+            learning_rate: The learning rate for the optimizer
+        """
         super(GenericLightningSegmentationNetwork, self).__init__()
         self.lr = learning_rate
         self.model = model
         
-        #self.loss_fn = CategoricalCrossEntropyLoss()
         self.loss_fn = FocalLoss()
         self.mse = MeanSquaredError()
-        self.iou = calculate_iou
+        if USE_MIN_CLASS:
+            self.iou = calculate_iou_minclass
+        else:
+            self.iou = calculate_iou
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Forward pass through the model."""
         return self.model(x)
 
-    def _common_step(self, batch, batch_idx):
+    def _common_step(self, batch: tuple, batch_idx: int) -> tuple:
+        """Common step for training, validation, and testing."""
         x, y = batch
         logits = self(x)
         loss = self.loss_fn(logits, y)
         mse = self.mse(logits, y)
-        iou = self.iou(logits, y).mean()  # Compute mean IoU for logging
+        iou = self.iou(logits, y).mean()
         return loss, mse, iou
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch: tuple, batch_idx: int) -> torch.Tensor:
+        """Training step."""
         loss, mse, iou = self._common_step(batch, batch_idx)
         self.log('train_loss', loss)
         self.log('train_mse', mse)
         self.log('train_iou', iou)
         return loss
 
-    def validation_step(self, batch, batch_idx):
+    def validation_step(self, batch: tuple, batch_idx: int) -> torch.Tensor:
+        """Validation step."""
         loss, mse, iou = self._common_step(batch, batch_idx)
         self.log('val_loss', loss)
         self.log('val_mse', mse)
         self.log('val_iou', iou)
         return loss
 
-    def test_step(self, batch, batch_idx):
-        loss, mse, iou = self._common_step(batch, batch_idx)
-        self.log('test_loss', loss)
-        self.log('test_mse', mse)
-        self.log('test_iou', iou)
+    def test_step(self, batch: tuple, batch_idx: int) -> torch.Tensor:
+        """
+        Test step with accurate FPS measurement for segmentation.
+        
+        Args:
+            batch: Input batch containing (x, y)
+            batch_idx: Batch index
+            
+        Returns:
+            torch.Tensor: Test loss
+        """
+        import time
+        x, y = batch
+        
+        # Ensure model is in eval mode for inference timing
+        self.model.eval()
+        
+        # Warm up GPU if using CUDA (first batch only)
+        if batch_idx == 0 and x.is_cuda:
+            with torch.no_grad():
+                _ = self.model(x)
+            torch.cuda.synchronize()
+        
+        # Accurate timing measurement
+        if x.is_cuda:
+            torch.cuda.synchronize()
+        
+        start_time = time.perf_counter()
+        
+        with torch.no_grad():
+            loss, mse, iou = self._common_step(batch, batch_idx)
+        
+        if x.is_cuda:
+            torch.cuda.synchronize()
+        
+        end_time = time.perf_counter()
+        elapsed_time = end_time - start_time
+        
+        # Calculate FPS: samples per second
+        batch_size = x.shape[0]
+        fps = batch_size / elapsed_time if elapsed_time > 0 else 0.0
+        
+        self.log_dict({
+            'test_loss': loss,
+            'test_mse': mse,
+            'test_iou': iou,
+            'fps': fps,
+        },
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True
+        )
         return loss
 
-    def predict_step(self, batch, batch_idx, dataloader_idx=0):
+    def predict_step(self, batch: torch.Tensor, batch_idx: int, dataloader_idx: int = 0) -> torch.Tensor:
+        """Prediction step."""
         x = batch
         logits = self(x)
         return logits
 
-    def configure_optimizers(self):
+    def configure_optimizers(self) -> torch.optim.Optimizer:
+        """Configure the optimizer."""
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
         return optimizer
 
