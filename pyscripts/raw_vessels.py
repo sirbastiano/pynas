@@ -81,13 +81,13 @@ print(f"Data module type: {type(dm)}")
 
 
 # Test if we can create a simple model manually
-try:
-    from pynas.core.individual import Individual
-    test_individual = Individual(max_layers=5)
-    print(f"Test individual layers: {test_individual.parsed_layers}")
-    print(f"Individual created successfully: {test_individual is not None}")
-except Exception as e:
-    print(f"Failed to create test individual: {e}")
+# try:
+#     from pynas.core.individual import Individual
+#     test_individual = Individual(max_layers=5)
+#     print(f"Test individual layers: {test_individual.parsed_layers}")
+#     print(f"Individual created successfully: {test_individual is not None}")
+# except Exception as e:
+#     print(f"Failed to create test individual: {e}")
 
 
 
@@ -164,13 +164,28 @@ def main(args):
 
         
         if args.gen is not None:
-            pop.load_generation(args.gen) # load a generation from the saved models
+            pop.load_population(args.gen) # load a generation from the saved models
+            print(f"Generation {args.gen} loaded.")
         else:
             pop.initial_poll() # create a new generation
+            
         # 2. Train and evolve the population
-        for _ in range(max_gen):
-            pop.train_generation(task="segmentation", lr=0.001, epochs=epochs, batch_size=batch_size)
-            pop.evolve(mating_pool_cutoff=mating_pool_cutoff, mutation_probability=mutation_probability, k_best=k_best, n_random=n_random)
+        start_gen = args.gen if args.gen is not None else 0
+        for gen in range(start_gen, max_gen):
+            print(f"=== Processing Generation {gen} ===")
+            
+            # Check if generation needs training
+            needs_training = pop.check_generation_needs_training()
+            if needs_training:
+                print(f"Training generation {gen}...")
+                pop.train_generation(task=task, lr=0.001, epochs=epochs, batch_size=batch_size)
+            else:
+                print(f"Generation {gen} already trained, skipping training.")
+            
+            # Only evolve if not the last generation
+            if gen < max_gen - 1:
+                print(f"Evolving generation {gen} to {gen + 1}...")
+                pop.evolve(mating_pool_cutoff=mating_pool_cutoff, mutation_probability=mutation_probability, k_best=k_best, n_random=n_random)
 
         return 0
     except Exception as e:

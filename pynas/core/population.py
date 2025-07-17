@@ -567,34 +567,53 @@ class Population:
         Generates a new population ensuring that the total number of individuals equals pop.n_individuals.
         
         Parameters:
-            pop                  : List or collection of individuals. Assumed to have attributes: 
-                                .n_individuals and .generation.
             mating_pool_cutoff   : Fraction determining the size of the mating pool (top percent of individuals).
             mutation_probability : The probability to use during mutation.
             k_best               : The number of best individuals from the current population to retain.
+            n_random             : The number of random individuals to add to the new population.
         
         Returns:
-            new_population: A list representing the new generation of individuals.
-            
-        Note:
-            Assumes that helper functions single_point_crossover(), mutation(), and create_random_individual() exist.
+            None
         """
+        # Ensure all individuals have been trained before evolving
+        if self.check_generation_needs_training():
+            self.logger.error("Cannot evolve: some individuals in the current generation have not been trained")
+            raise ValueError("All individuals must be trained before evolution. Call train_generation() first.")
+        
         new_population = []
         self.generation += 1
+        
+        # 1. Get elite models from current generation
         self.topModels = self.elite_models(k_best=k_best)
-
-
+        
         # 2. Create the mating pool based on the cutoff from the sorted population
-        sorted_pop = sorted(self, key=lambda individual: individual.fitness, reverse=True)
-        mating_pool = sorted_pop[:int(np.floor(mating_pool_cutoff * self.n_individuals))].copy()
-        assert len(mating_pool) > 0, "Mating pool is empty."
+        sorted_pop = self._sort_population()  # Use the class method instead of built-in sorted
+        mating_pool_size = max(1, int(np.floor(mating_pool_cutoff * self.n_individuals)))
+        mating_pool = sorted_pop[:mating_pool_size].copy()
+        
+        if len(mating_pool) == 0:
+            self.logger.error("Mating pool is empty - this should not happen after validation")
+            raise ValueError("Mating pool is empty. Check if individuals have valid fitness values.")
+        
+        self.logger.info(f"Created mating pool with {len(mating_pool)} individuals")
         
         # Generate offspring until reaching the desired population size
         while len(new_population) < self.n_individuals - n_random - k_best:
             try:
                 parent1 = np.random.choice(mating_pool)
                 parent2 = np.random.choice(mating_pool)
-                assert parent1.parsed_layers != parent2.parsed_layers, "Parents are the same individual."
+                
+                # Ensure parents are different
+                max_parent_attempts = 10
+                attempts = 0
+                while (parent1.parsed_layers == parent2.parsed_layers and 
+                       attempts < max_parent_attempts):
+                    parent2 = np.random.choice(mating_pool)
+                    attempts += 1
+                    
+                if attempts >= max_parent_attempts:
+                    self.logger.warning("Could not find different parents after multiple attempts")
+                    
             except Exception as e:
                 self.logger.error(f"Error selecting parents: {e}")
                 continue
@@ -605,38 +624,77 @@ class Population:
             mutated_children = gene_mutation(children, mutation_probability)
             # c) Random choice of one of the mutated children
             for kid in mutated_children:
+                if len(new_population) >= self.n_individuals - n_random - k_best:
+                    break
                 kid.reset()
                 if self.check_individual(kid):
                     new_population.append(kid)
                 else:
-                    pass
-
+                    self.logger.debug("Generated child failed validation, skipping")
 
         # 3. Add random individuals to the new population
         while len(new_population) < self.n_individuals - k_best:
             try:
                 individual = self.create_random_individual()
-                model_representation, is_valid = self.build_model(individual.parsed_layers)
-                if is_valid:
-                    individual.model_size = int(self.evaluate_parameters(model_representation))
-                    assert individual.model_size > 0, f"Model size is {individual.model_size}"
-                    assert individual.model_size < self.max_parameters, f"Model size is {individual.model_size}"
-                    assert individual.model_size is not None, f"Model size is None"
+                if self.check_individual(individual):
                     new_population.append(individual)
             except Exception as e:
                 self.logger.error(f"Error encountered when evolving population: {e}")
                 continue
         
-        
         # 4. Add the best individuals from the previous generation
         new_population.extend(self.topModels)
-       
-
-        assert len(new_population) == self.n_individuals, f"Population size is {len(new_population)}, expected {self.n_individuals}"
+        
+        if len(new_population) != self.n_individuals:
+            self.logger.error(f"Population size mismatch: {len(new_population)} != {self.n_individuals}")
+            raise ValueError(f"Population size is {len(new_population)}, expected {self.n_individuals}")
+            
         self.population = new_population
+        self.logger.info(f"Successfully evolved to generation {self.generation}")
         self._checkpoint()
-
-
+    
+    def check_generation_needs_training(self):
+        """
+        Check if the current generation needs training by examining if individuals have valid fitness values.
+        
+        Returns:
+            bool: True if generation needs training, False otherwise
+        """
+        if not self.population:
+            self.logger.warning('Population is empty, cannot check training status')
+            return True
+            
+        # Update dataframe to ensure it's current
+        self._update_df()
+        
+        # Check if any individual lacks fitness or has invalid fitness
+        for idx, individual in enumerate(self.population):
+            # Check if individual has been trained - use multiple indicators
+            has_fitness = (hasattr(individual, 'fitness') and 
+                          individual.fitness is not None and 
+                          not np.isnan(individual.fitness))
+            
+            has_metric = (hasattr(individual, 'metric') and 
+                         individual.metric is not None and 
+                         not np.isnan(individual.metric))
+            
+            has_fps = (hasattr(individual, 'fps') and 
+                      individual.fps is not None and 
+                      not np.isnan(individual.fps))
+            
+            # An individual is considered trained if it has all three metrics
+            # even if fitness is 0.0 (which can be a legitimate poor performance)
+            is_trained = has_fitness and has_metric and has_fps
+            
+            if not is_trained:
+                self.logger.info(f'Individual {idx} needs training (fitness: {getattr(individual, "fitness", "missing")}, '
+                               f'metric: {getattr(individual, "metric", "missing")}, '
+                               f'fps: {getattr(individual, "fps", "missing")})')
+                return True
+                
+        self.logger.info('All individuals in generation have been trained')
+        return False
+    
     def remove_duplicates(self, population):
         """
         Remove duplicates from the given population by replacing duplicates with newly generated unique individuals.
@@ -839,19 +897,36 @@ class Population:
             generation (int): The generation number to load
             
         Returns:
-            list or None: The loaded population or None if loading failed
+            None
         """
         path = f'{self.save_directory}/src/population_{generation}.pkl'
         try:
             with open(path, 'rb') as f:
                 population = pickle.load(f)
-            self.logger.info(f"Population loaded from {path}")
-            return population
+            
+            # Set the loaded population and update generation number
+            self.population = population
+            self.generation = generation
+            
+            # Load corresponding dataframe if it exists
+            df_path = f'{self.save_directory}/src/df_population_{generation}.pkl'
+            if os.path.exists(df_path):
+                try:
+                    self.df = pd.read_pickle(df_path)
+                    self.logger.info(f'DataFrame loaded from {df_path}')
+                except Exception as e:
+                    self.logger.warning(f'Failed to load DataFrame: {e}. Will regenerate.')
+                    self._update_df()
+            else:
+                self.logger.info('No existing DataFrame found, generating new one')
+                self._update_df()
+            
+            self.logger.info(f'Population loaded from {path}. Generation set to {generation}')
+            
         except Exception as e:
-            self.logger.error(f"Error loading population from {path}: {e}")
-            return None
-    
-    
+            self.logger.error(f'Error loading population from {path}: {e}')
+            raise RuntimeError(f'Failed to load population from {path}: {e}')
+
     def load_dataframe(self, generation: int):
         """
         Load a DataFrame from a pickle file for the specified generation.
@@ -874,76 +949,78 @@ class Population:
 
     def train_individual(self, idx: int, task: str, epochs: int = 20, lr: float = 1e-3, batch_size: int = None):
         """
-        Train the individual using the data module and the specified parameters.
+        Train an individual using the data module and the specified parameters.
 
         Args:
-            idx: Index of the individual to train
-            task: The task type ('classification' or 'segmentation')
-            epochs: The number of epochs to train the individual
-            lr: The learning rate to use during training
-            batch_size: Batch size for training (if None, uses dm default)
+            idx (int): Index of the individual to train
+            task (str): The task type ('classification' or 'segmentation')
+            epochs (int): The number of epochs to train the individual
+            lr (float): The learning rate to use during training
+            batch_size (int): Batch size for training (if None, uses dm default)
 
         Returns:
             None
         """
         individual = self.population[idx]
         
-        model, _ = self.build_model(individual.parsed_layers, task=task)
-        
-        if task == 'segmentation':
-            LM = GenericLightningSegmentationNetwork(
-                model=model,
-                learning_rate=lr,
-            )
-        elif task == 'classification':
-            LM = GenericLightningNetwork(
-                model=model,
-                learning_rate=lr,
-                num_classes=self.dm.num_classes,
-            )
-        else:
-            raise ValueError(f'Task {task} not supported.')
-
-        early_stop_callback = EarlyStopping(
-            monitor='val_loss',
-            mode='min',
-            patience=3,
-            verbose=False
-        )
-        
-        trainer = pl.Trainer(
-            accelerator='gpu',
-            devices=1,
-            max_epochs=epochs,
-            callbacks=[early_stop_callback],
-            logger=False,  # Disable logging for cleaner output
-            enable_checkpointing=False,  # Disable checkpointing for speed
-        )
-        
-        if batch_size is not None:
-            self.dm.batch_size = batch_size
-        
-        trainer.fit(LM, self.dm)
-        results = trainer.test(LM, self.dm)
-        self.results = results
-        
-        print(f'\n[Generation {self.generation} | Individual {idx}] Training Results:')
-        print('=' * 60)
-        for key, value in results[0].items():
-            print(f'{key}: {value}')
-        print('=' * 60)
-        
-        self.logger.info(f'[Generation {self.generation} | Individual {idx}] Training Results:')
-        for key, value in results[0].items():
-            self.logger.info(f'  {key}: {value}')
-        
-        self.idx = idx
-        self.LM = LM
-        self.save_model(LM)
-
-        self.logger.info(f'[Generation {self.generation} | Individual {idx}] Training completed. Evaluating model...')
-        
         try:
+            # Build model and create lightning module
+            model, _ = self.build_model(individual.parsed_layers, task=task)
+            
+            if task == 'segmentation':
+                LM = GenericLightningSegmentationNetwork(
+                    model=model,
+                    learning_rate=lr,
+                )
+            elif task == 'classification':
+                LM = GenericLightningNetwork(
+                    model=model,
+                    learning_rate=lr,
+                    num_classes=self.dm.num_classes,
+                )
+            else:
+                raise ValueError(f'Task {task} not supported.')
+
+            early_stop_callback = EarlyStopping(
+                monitor='val_loss',
+                mode='min',
+                patience=3,
+                verbose=False
+            )
+            
+            trainer = pl.Trainer(
+                accelerator='gpu',
+                devices=1,
+                max_epochs=epochs,
+                callbacks=[early_stop_callback],
+                logger=False,  # Disable logging for cleaner output
+                enable_checkpointing=False,  # Disable checkpointing for speed
+            )
+            
+            if batch_size is not None:
+                self.dm.batch_size = batch_size
+            
+            # Attempt training
+            trainer.fit(LM, self.dm)
+            results = trainer.test(LM, self.dm)
+            self.results = results
+            
+            print(f'\n[Generation {self.generation} | Individual {idx}] Training Results:')
+            print('=' * 60)
+            for key, value in results[0].items():
+                print(f'{key}: {value}')
+            print('=' * 60)
+            
+            self.logger.info(f'[Generation {self.generation} | Individual {idx}] Training Results:')
+            for key, value in results[0].items():
+                self.logger.info(f'  {key}: {value}')
+            
+            self.idx = idx
+            self.LM = LM
+            self.save_model(LM)
+
+            self.logger.info(f'[Generation {self.generation} | Individual {idx}] Training completed. Evaluating model...')
+            
             # Extract metrics based on task type with validation
             if task == 'segmentation':
                 accuracy = float(results[0]['test_iou'])
@@ -963,11 +1040,17 @@ class Population:
                     self.logger.warning(f'Unusual FPS value detected: {fps}. Using fallback value.')
                     fps = 1.0
         
-            # Update individual metrics and fitness
+            # Update individual metrics and fitness - ensure all values are set
             individual.iou = accuracy
             individual.metric = accuracy
             individual.fps = fps
+            
+            # Ensure fitness is calculated and set
             individual._prompt_fitness()
+            
+            # Ensure fitness is not NaN or None
+            if individual.fitness is None or np.isnan(individual.fitness):
+                individual.fitness = 0.0
             
             print(f'\n[Generation {self.generation} | Individual {idx}] Individual Metrics:')
             print('-' * 40)
@@ -986,19 +1069,25 @@ class Population:
             self.logger.info(f'  Fitness: {individual.fitness:.4f}')
         
         except Exception as e:
+            # Handle any training failure (CUDA errors, memory issues, etc.)
             self.logger.error(f'[Generation {self.generation} | Individual {idx}] Training failed: {e}')
             print(f'\n[Generation {self.generation} | Individual {idx}] Training FAILED: {e}')
             
-            # Mark as failed with default values
+            # Mark as failed with default values - ensure all metrics are set
             individual.iou = 0.0
             individual.metric = 0.0
             individual.fps = 1.0
             individual.fitness = 0.0
             individual.failed = True
+            
+            # Clear GPU memory if possible
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                self.logger.info('Cleared GPU cache after training failure')
 
         # ===== Ensure DataFrame is aligned with population before updating =====
-        if self.df is None or idx not in self.df.index:
-            print(f"[INFO] DataFrame missing or index {idx} not found. Regenerating DataFrame.")
+        if self.df is None or len(self.df) != len(self.population):
+            print(f'[INFO] DataFrame missing or misaligned. Regenerating DataFrame.')
             self._update_df()
 
         # ===== Update DataFrame regardless of success or failure =====
@@ -1012,9 +1101,12 @@ class Population:
         print('saved population')
         self._checkpoint()
         print('checkpointed')
-        ###### new code ends here
 
-    def train_generation(self, task='classification', lr=0.001, epochs=4, batch_size=32):
+    def train_generation(self, task='classification', 
+                lr=0.001, 
+                epochs=4, 
+                batch_size=32,
+                ):
         """
         Train all individuals in the current generation that have not been trained yet.
 
@@ -1028,6 +1120,7 @@ class Population:
             None
         """
         for idx in range(len(self)):
+            print(f"== Checking indidual {idx} ==")
             if 'Fitness' in self.df.columns and not pd.isna(self.df.loc[idx, 'Fitness']) and self.df.loc[idx, 'Fitness'] != 0:
                 print(f"Skipping individual {idx}/{len(self)} as it has already been trained")
                 continue

@@ -48,8 +48,8 @@ def calculate_iou_minclass(logits: torch.Tensor, targets: torch.Tensor, num_clas
         preds = torch.argmax(logits, dim=1)  # Convert logits to class predictions
         targets = torch.argmax(targets, dim=1)  # Convert one-hot targets to class labels
 
-        # Calculate IoU only for class 0 (minority class)
-        cls = 0
+        # Calculate IoU only for class 1 (minority class)
+        cls = 1 # the vessel
         pred_mask = (preds == cls)
         target_mask = (targets == cls)
 
