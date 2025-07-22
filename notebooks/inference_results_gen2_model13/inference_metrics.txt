@@ -1,0 +1,8 @@
+Detailed Inference Metrics
+==============================
+num_samples: 50
+avg_iou: 0.4313
+avg_accuracy: 0.9987
+avg_precision: 0.6887
+avg_recall: 0.5028
+avg_f1: 0.5812

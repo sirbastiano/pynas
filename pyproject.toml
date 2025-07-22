@@ -31,7 +31,9 @@ dependencies = [
   "ipykernel",
   "torchvision>=0.15.2",
   "scikit-learn>=1.6.1",
-  "torchaudio>=2.0.2"
+  "torchaudio>=2.0.2",
+  "lxml>=6.0.0",
+  "onnx>=1.18.0"
 ]
 classifiers = [
   "Development Status :: 3 - Alpha",
