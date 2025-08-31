@@ -447,7 +447,7 @@ def build_layer(layer, config, current_channels, current_height, current_width, 
     elif lt in ['AvgPool', 'MaxPool']:
         pool_cls = pooling.AvgPool if lt == 'AvgPool' else pooling.MaxPool
         kernel_size = int(layer.get('kernel_size', config[lt]['default_kernel_size']))
-        stride = int(layer.get('tride', config[lt]['default_stride']))
+        stride = int(layer.get('stride', config[lt]['default_stride']))
         layer_inst = pool_cls(kernel_size=kernel_size, stride=stride)
         current_height = ((current_height - kernel_size) // stride) + 1
         current_width = ((current_width - kernel_size) // stride) + 1
