@@ -435,7 +435,7 @@ def plot_metric_fps_vs_generation(ax: plt.Axes, evolution_df: pd.DataFrame) -> N
     # set ylim to match the original script
     # ax.grid(True, alpha=0.3, linestyle='--')
     ax.set_yticks(np.arange(0.7, 1.1, 0.1)) # Consistent with original
-    ax.text(0.1, 0.915, "(d)", fontsize=12, ha='center', va='bottom', transform=ax.transAxes)
+    ax.text(0.1, 0.915, "(c)", fontsize=12, ha='center', va='bottom', transform=ax.transAxes)
     ax.set_xlim(-.5, 9.5) # Consistent with original
 
 
