@@ -304,7 +304,7 @@ def plot_sota_comparison(ax: plt.Axes, sota_models_data: Dict[str, List[Any]], c
 
 
 # --- Plotting Functions 2 ---
-def plot_pareto_front(ax: plt.Axes, top_models_df: pd.DataFrame, ylim=[160, 185]) -> None:
+def plot_pareto_front(ax: plt.Axes, top_models_df: pd.DataFrame, ylim=[160, 185], idx_best: int = 0) -> None:
     """
     Plots the Pareto front of the top models.
     Args:
@@ -318,7 +318,8 @@ def plot_pareto_front(ax: plt.Axes, top_models_df: pd.DataFrame, ylim=[160, 185]
     else:
         scatter = ax.scatter(top_models_df['Metric'], top_models_df['FPS'], alpha=0.8,
                    c=top_models_df['Generation'], cmap='viridis', s=30, edgecolor='k', linewidth=0.3)
-        best_model = top_models_df.iloc[0]  # Assumes df is sorted by fitness (nlargest)
+        best_model = top_models_df.iloc[idx_best] # Select the best model by index
+        print(f"Best Model - Metric: {best_model['Metric']}, FPS: {best_model['FPS']}, Generation: {best_model['Generation']}")
         ax.scatter([best_model['Metric']], [best_model['FPS']], s=70, facecolors='none', edgecolors='r', linewidth=1.5)
         add_annotation(ax, best_model['Metric'], best_model['FPS'], 
                        f"Best PyNAS:\n{best_model['FPS']:.0f} FPS", 'red', -0.021, 1.02)
@@ -336,6 +337,7 @@ def plot_pareto_front(ax: plt.Axes, top_models_df: pd.DataFrame, ylim=[160, 185]
     
     ax.text(0.1, 0.915, "(a)", fontsize=12, ha='center', va='bottom', transform=ax.transAxes)
     ax.set_ylim(ylim[0], ylim[1])  # Consistent with original
+    ax.set_xlim(0.92, 0.99)  # Consistent with original
     # ax.grid(True, alpha=0.3, linestyle='--')
 
 
@@ -387,7 +389,7 @@ def plot_fitness_vs_generation(ax: plt.Axes, evolution_df: pd.DataFrame, fitness
             
     ax.set_xlabel('Generation')
     ax.set_xlim(-0.5, 9.5) # Consistent with original
-    ax.set_ylim(-0.5, 2) # Consistent with original
+    ax.set_ylim(-0.5, 6) # Consistent with original
     ax.set_ylabel('Fitness / Gap')
     ax.text(0.1, 0.915, "(b)", fontsize=12, ha='center', va='bottom', transform=ax.transAxes)
     # ax.grid(True, alpha=0.3, linestyle='--')
@@ -415,12 +417,13 @@ def plot_metric_fps_vs_generation(ax: plt.Axes, evolution_df: pd.DataFrame) -> N
         ax_twin = ax.twinx()
         ax_twin.plot(evolution_df['Generation'], evolution_df['Max FPS'], 's-', color='tab:red', linewidth=1, markersize=2, label='Max FPS')
         ax_twin.set_ylabel('FPS', color='tab:red')
+        ax_twin.set_ylim(2000,10000)  # Set y-limits for FPS
         ax_twin.tick_params(axis='y', labelcolor='tab:red')
         ax_twin.grid(False)
 
         # Annotations
         if not pd.isna(evolution_df['Max Metric'].iloc[-1]):
-            add_annotation(ax, latest_gen, evolution_df['Max Metric'].iloc[-1], f"{evolution_df['Max Metric'].iloc[-1]:.3f}", 'tab:green', -1, 1.1)
+            add_annotation(ax, latest_gen, evolution_df['Max Metric'].iloc[-1], f"{evolution_df['Max Metric'].iloc[-1]:.3f}", 'tab:green', -0.5, 0.9)
         if not pd.isna(evolution_df['Max FPS'].iloc[-1]):
             add_annotation(ax_twin, latest_gen, evolution_df['Max FPS'].iloc[-1], f"{evolution_df['Max FPS'].iloc[-1]:.1f}", 'tab:red', -2, 0.999)
 
@@ -435,7 +438,7 @@ def plot_metric_fps_vs_generation(ax: plt.Axes, evolution_df: pd.DataFrame) -> N
     # set ylim to match the original script
     # ax.grid(True, alpha=0.3, linestyle='--')
     ax.set_yticks(np.arange(0.7, 1.1, 0.1)) # Consistent with original
-    ax.text(0.1, 0.915, "(c)", fontsize=12, ha='center', va='bottom', transform=ax.transAxes)
+    ax.text(0.1, 0.915, "(b)", fontsize=12, ha='center', va='bottom', transform=ax.transAxes)
     ax.set_xlim(-.5, 9.5) # Consistent with original
 
 
